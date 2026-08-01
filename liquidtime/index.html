@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>流体时间 · LIQUID TIME</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    overflow: hidden;
+    background: #751545;
+    font-family: ui-monospace, "SF Mono", Menlo, "PingFang SC", "Microsoft YaHei", monospace;
+    -webkit-font-smoothing: antialiased;
+    cursor: crosshair;
+  }
+
+  /* ---------- the liquid field ---------- */
+  #sea { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* ---------- stage: title up top, clock dead center, local block hugging the world strip ---------- */
+  .stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center;
+    padding: clamp(1.2rem, 3vw, 2.6rem) clamp(1.4rem, 3.5vw, 3rem);
+    /* leave room so the local block sits just above the pinned world strip */
+    padding-bottom: calc(clamp(1rem, 3vh, 2.2rem) + 3.4rem);
+    color: var(--ink, #F0EA9B);
+    transition: color 2.5s ease;
+  }
+
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .micro {
+    font-size: clamp(.6rem, 1vw, .8rem);
+    letter-spacing: .34em; text-transform: uppercase; opacity: .7;
+  }
+
+  /* ---------- the digits: cropped, melting, dispersed ---------- */
+  .clock {
+    position: relative;
+    height: 40vh; min-height: 200px;
+    overflow: hidden;              /* crop the letterforms by the band edges */
+    /* negative letter-spacing also trims the box after the LAST glyph;
+       horizontal padding gives the final digit's ink room so it isn't sliced */
+    padding: 0 clamp(.5rem, 1.6vw, 1.8rem);
+    display: flex; align-items: center; justify-content: center;
+    filter: url(#melt);
+  }
+  .digits {
+    position: relative;
+    font-family: -apple-system, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    font-size: clamp(7rem, 26vw, 30rem);
+    letter-spacing: -.045em;
+    line-height: .8;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .digits span { position: absolute; inset: 0; mix-blend-mode: var(--blend, screen); pointer-events: none; }
+  .digits .r { color: rgba(255,60,90,.55);  transform: translate(var(--dx, 3px), 0); }
+  .digits .b { color: rgba(60,140,255,.55); transform: translate(calc(var(--dx, 3px) * -1), 1px); }
+  .digits .core { position: relative; color: var(--ink, #F0EA9B); transition: color 2.5s ease; }
+
+  /* ---------- merged local block: globe + date + zone, centered, hugging the world strip ---------- */
+  .row-top { justify-content: center; }
+  .bottom { display: flex; flex-direction: column; gap: .9rem; }
+  .local {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.1rem;
+  }
+  #globe { width: clamp(56px, 5.5vw, 76px); height: clamp(56px, 5.5vw, 76px); display: block; cursor: pointer; }
+  .local .lt { display: flex; flex-direction: column; gap: .42em; text-align: left; }
+  .ldate {
+    font-size: clamp(.78rem, 1.35vw, 1.05rem);
+    letter-spacing: .3em; text-transform: uppercase; opacity: .92;
+  }
+  .lzone {
+    font-size: clamp(.6rem, 1vw, .76rem);
+    letter-spacing: .26em; text-transform: uppercase; opacity: .55;
+  }
+
+  /* ---------- world strip: pinned to the bottom edge ---------- */
+  .world {
+    position: fixed; left: 50%; bottom: clamp(1rem, 3vh, 2.2rem);
+    transform: translateX(-50%);
+    width: max-content; max-width: 94vw;
+    display: flex; gap: clamp(1rem, 3vw, 2.6rem);
+    justify-content: center; flex-wrap: wrap;
+    border-top: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+    padding-top: .9rem;
+    font-size: clamp(.6rem, 1.05vw, .82rem);
+    letter-spacing: .2em; text-transform: uppercase;
+  }
+  .world .w { display: flex; gap: .55em; align-items: baseline; }
+  .world .wn { opacity: .5; }
+  .world .we { opacity: .9; }
+  .world .wt { font-variant-numeric: tabular-nums; }
+
+  .hint {
+    position: fixed; left: 50%; top: 15vh; transform: translateX(-50%);
+    font-size: .58rem; letter-spacing: .4em; text-transform: uppercase;
+    opacity: 0; animation: hint 6s ease 2s forwards; pointer-events: none;
+  }
+  @keyframes hint { 0% {opacity:0} 25% {opacity:.55} 75% {opacity:.55} 100% {opacity:0} }
+
+  /* ---------- power-save badge ---------- */
+  #powersave {
+    position: fixed; left: 50%; top: 14vh; transform: translateX(-50%);
+    font-size: .6rem; letter-spacing: .4em; text-transform: uppercase;
+    opacity: 0; transition: opacity 1s ease; pointer-events: none;
+  }
+  #powersave.on { opacity: .65; }
+
+  /* ---------- easter egg: the quote takes over — everything else dims ---------- */
+  .egg {
+    position: fixed; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "New York", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: clamp(2.4rem, 6.5vw, 5.6rem);
+    letter-spacing: .05em;
+    color: var(--ink, #F0EA9B);
+    text-shadow:
+      0 0 24px rgba(141,184,238,.85),
+      0 0 90px rgba(141,184,238,.55),
+      0 2px 30px rgba(0,0,20,.4);
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .egg.show { animation: egg 14s cubic-bezier(.22,.8,.3,1) forwards; }
+  @keyframes egg {
+    0%   { opacity: 0; filter: blur(20px); letter-spacing: .22em; }
+    20%  { opacity: 1; filter: blur(0); }
+    72%  { opacity: 1; filter: blur(0); letter-spacing: .05em; }
+    100% { opacity: 0; filter: blur(14px); letter-spacing: .3em; }
+  }
+  .digits, .local, .world { transition: opacity 1.6s ease; }
+  body.eggmode .digits { opacity: .1; }
+  body.eggmode .local  { opacity: .25; }
+  body.eggmode .world  { opacity: .25; }
+</style>
+</head>
+<body>
+
+<canvas id="sea"></canvas>
+
+<!-- turbulence that makes the digits breathe like ink in water -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="melt" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.014" numOctaves="2" seed="7" result="n">
+      <animate attributeName="baseFrequency" dur="14s" values="0.006 0.014;0.009 0.010;0.006 0.014" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap id="meltMap" in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="stage">
+  <div class="row row-top">
+    <span class="micro">Liquid Time — Be Water, My Friend</span>
+  </div>
+
+  <div class="clock">
+    <div class="digits" id="digits">
+      <span class="r"  id="dR">--:--</span>
+      <span class="b"  id="dB">--:--</span>
+      <span class="core" id="dC">--:--</span>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="local">
+      <canvas id="globe"></canvas>
+      <div class="lt">
+        <div class="ldate" id="dateEn">—</div>
+      </div>
+    </div>
+    <div class="world" id="world"></div>
+  </div>
+</div>
+
+<div class="hint">移动鼠标 · 搅动这片液体</div>
+<div id="powersave">⚡ 节能模式 · 动画已暂停</div>
+<div class="egg" id="egg">“Be water, my friend.”</div>
+
+<script>
+/* ============================================================
+   1. THE LIQUID SEA — full-screen domain-warped FBM shader.
+      Mouse movement injects ripples; palette follows the hour.
+   ============================================================ */
+const canvas = document.getElementById("sea");
+const gl = canvas.getContext("webgl", { antialias: false });
+/* if WebGL is unavailable (locked-down web processes, ancient GPUs) the sea
+   simply stays away — the clock, globe and egg must keep working */
+if (!gl) canvas.style.display = "none";
+
+const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }`;
+const FRAG = `
+precision highp float;
+uniform vec2  uRes;
+uniform float uT;
+uniform vec2  uMouse;
+uniform float uForce;
+uniform vec3  uA, uB, uC;
+
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }
+float noise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  f = f*f*(3.-2.*f);
+  return mix(mix(hash(i), hash(i+vec2(1,0)), f.x),
+             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+}
+float fbm(vec2 p){
+  float v = 0., a = .55;
+  for(int i=0;i<5;i++){ v += a*noise(p); p = p*2.03 + vec2(11.3,7.7); a *= .5; }
+  return v;
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec2 p  = uv * vec2(uRes.x/uRes.y, 1.) * 2.4;
+  float t = uT * .09;
+
+  // mouse ripple: a decaying ring that bends the warp field
+  float d = length((uv - uMouse) * vec2(uRes.x/uRes.y, 1.));
+  float ripple = sin(d*34. - uT*7.) * exp(-d*7.) * uForce;
+
+  vec2 q = vec2(fbm(p + t), fbm(p + vec2(5.2,1.3) - t));
+  vec2 r = vec2(fbm(p + 2.2*q + vec2(1.7,9.2) + .28*t + ripple),
+                fbm(p + 2.2*q + vec2(8.3,2.8) - .22*t - ripple));
+  float f = fbm(p + 2.4*r);
+  float w = dot(q, r) * .5 + .5;
+
+  vec3 col = mix(uA, uB, smoothstep(.28,.78,f));
+  col = mix(col, uC, smoothstep(.55,.88,w) * .7);   // accent filaments, not a wash
+  col += pow(f, 3.) * .22 * uC;                    // bright veins where the field folds
+  col += ripple * 1.4 * uC;                       // ripple flashes with the accent hue
+  col *= .92 + .08 * (1. - smoothstep(.3,.85,length(uv-.5))); // gentle vignette
+  col += (hash(gl_FragCoord.xy + uT) - .5) * .028;    // film grain
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+let prog = null;
+if (gl) {
+  function shader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error("shader compile failed:", gl.getShaderInfoLog(s));
+    }
+    return s;
+  }
+  prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.error("program link failed:", gl.getProgramInfoLog(prog));
+  }
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "p");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+}
+
+const U = {};
+
+/* Local timezone: the screensaver's web process may lack TZ env (falls back
+   to GMT), so the native saver injects window.__TIMEZONE__ with the real
+   system zone; browsers simply use their own resolved zone. */
+const LOCAL_TZ = window.__TIMEZONE__ || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+
+/* all local-time rendering goes through Intl with the explicit zone,
+   never through bare new Date() getters */
+function localParts() {
+  const now = new Date();
+  const p = {};
+  new Intl.DateTimeFormat("en-GB", {
+    timeZone: LOCAL_TZ, hour12: false,
+    year: "numeric", month: "numeric", day: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", weekday: "long",
+  }).formatToParts(now).forEach(x => p[x.type] = x.value);
+  p.monthName = new Intl.DateTimeFormat("en-US", { timeZone: LOCAL_TZ, month: "long" }).format(now);
+  return p;
+}
+if (gl) ["uRes","uT","uMouse","uForce","uA","uB","uC"].forEach(n => U[n] = gl.getUniformLocation(prog, n));
+
+/* palettes borrowed from a warm, earthy world — no black anywhere.
+   They rotate with the hour of the day: night → dawn → day → dusk. */
+const PALETTES = {  // [deep, mid, accent]  + ink/blend for the type
+  night: { a:[.182,.043,.137], b:[.459,.082,.271], c:[.545,.722,.933], ink:"#F0EA9B", blend:"screen" },   // plum / plum / blue
+  dawn:  { a:[.459,.082,.271], b:[1.0,.678,.353],  c:[.941,.918,.608], ink:"#751545", blend:"multiply" }, // plum → peach / cream
+  day:   { a:[1.0,.678,.353],  b:[.812,.769,.506], c:[.875,.416,.486], ink:"#751545", blend:"multiply" }, // peach / gold / rose
+  dusk:  { a:[.812,.769,.506], b:[.875,.416,.486], c:[.459,.082,.271], ink:"#F0EA9B", blend:"screen" },   // gold / rose / plum
+};
+function paletteFor(h) {
+  if (h < 5 || h >= 21) return PALETTES.night;
+  if (h < 8)  return PALETTES.dawn;
+  if (h < 17) return PALETTES.day;
+  return PALETTES.dusk;
+}
+/* wallpaper renderers may pin the hour via window.__FORCE_HOUR__.
+   The live hour is cached for 1s so the rAF loop doesn't rebuild
+   Intl formatters sixty times a second. (Declared before first use:
+   paletteFor(currentHour()) below runs while later `let`s are still
+   in the temporal dead zone.) */
+let hourCache = { t: 0, hour: 0 };
+let pal = paletteFor(currentHour());
+let cur = { a:[...pal.a], b:[...pal.b], c:[...pal.c] };   // eased towards target
+
+/* wallpaper renderers may pin the hour via window.__FORCE_HOUR__ */
+function currentHour() {
+  if (typeof window.__FORCE_HOUR__ === "number") return window.__FORCE_HOUR__;
+  const now = Date.now();
+  if (now - hourCache.t >= 1000) {
+    hourCache = { t: now, hour: Number(localParts().hour) % 24 };
+  }
+  return hourCache.hour;
+}
+
+function resize() {
+  const dpr = Math.min(devicePixelRatio, 2);
+  canvas.width  = innerWidth  * dpr;
+  canvas.height = innerHeight * dpr;
+  if (gl) gl.viewport(0, 0, canvas.width, canvas.height);   /* without this the sea renders in a 300×150 corner box */
+}
+resize(); addEventListener("resize", resize);
+
+/* mouse ripple physics */
+let mx = .5, my = .5, force = 0;
+addEventListener("pointermove", (e) => {
+  const nx = e.clientX / innerWidth, ny = 1 - e.clientY / innerHeight;
+  force = Math.min(1, force + Math.hypot(nx - mx, ny - my) * 9);
+  mx = nx; my = ny;
+});
+
+/* power-save: server tells us (via /power) whether to freeze GPU work.
+   Paused = skip all GL/canvas drawing; rAF keeps ticking as a cheap no-op. */
+const POWER = { paused: false };
+function pollPower() {
+  fetch("/power").then(r => r.json()).then(s => {
+    POWER.paused = !!s.paused;
+    document.getElementById("powersave").classList.toggle("on", POWER.paused);
+  }).catch(() => {});   // opened as file:// or no server → never pause
+}
+pollPower(); setInterval(pollPower, 15000);
+
+let appliedPal = null;
+let t0 = performance.now();
+(function frame(now) {
+  const t = (now - t0) / 1000;
+  force *= .94;
+  pal = paletteFor(currentHour());
+  ["a","b","c"].forEach(k => cur[k].forEach((v,i) => cur[k][i] = v + (pal[k][i]-v)*.008));
+  if (pal !== appliedPal) {          // palette only changes on the hour
+    document.documentElement.style.setProperty("--ink", pal.ink);
+    document.documentElement.style.setProperty("--blend", pal.blend);
+    appliedPal = pal;
+  }
+  document.documentElement.style.setProperty("--dx", (2 + force*6).toFixed(2) + "px");
+
+  if (gl && !POWER.paused) {
+    gl.uniform2f(U.uRes, canvas.width, canvas.height);
+    gl.uniform1f(U.uT, t);
+    gl.uniform2f(U.uMouse, mx, my);
+    gl.uniform1f(U.uForce, force);
+    gl.uniform3fv(U.uA, cur.a); gl.uniform3fv(U.uB, cur.b); gl.uniform3fv(U.uC, cur.c);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(frame);
+})(t0);
+
+/* ============================================================
+   1.5 THE GLOBE — wireframe orthographic sphere, accent blue.
+       Meridians/parallels projected point-by-point; back
+       hemisphere dropped. A pulsing marker sits on your city.
+   ============================================================ */
+const gc = document.getElementById("globe");
+const gtx = gc.getContext("2d");
+const GLOBE_BLUE = "#8BB8EE";
+/* approximate lat/lon of the local timezone's reference city */
+const TZ_GEO = {
+  "Asia/Shanghai": [31.2, 121.5], "Asia/Tokyo": [35.7, 139.7],
+  "Europe/London": [51.5, -0.13], "America/New_York": [40.7, -74.0],
+  "Australia/Sydney": [-33.9, 151.2], "Asia/Hong_Kong": [22.3, 114.2],
+  "Asia/Singapore": [1.35, 103.8], "Europe/Paris": [48.9, 2.35],
+  "America/Los_Angeles": [34.05, -118.2],
+};
+const HOME = TZ_GEO[(window.__TIMEZONE__ || Intl.DateTimeFormat().resolvedOptions().timeZone)] || [31.2, 121.5];
+
+function sizeGlobe() {
+  const dpr = Math.min(devicePixelRatio, 2);
+  const s = gc.clientWidth || 96;
+  gc.width = s * dpr; gc.height = s * dpr;
+}
+sizeGlobe(); addEventListener("resize", sizeGlobe);
+
+/* hover pauses the spin; after 3s of continuous hover there is a 50%
+   chance the hidden quote surfaces (hourly trigger stays untouched) */
+let rotAngle = 0, lastGT = null;
+let globeHover = false, hoverSince = 0, hoverEggArmed = false;
+gc.addEventListener("pointerenter", () => {
+  globeHover = true; hoverSince = performance.now(); hoverEggArmed = true;
+});
+gc.addEventListener("pointerleave", () => { globeHover = false; hoverEggArmed = false; });
+
+function drawGlobe(t) {
+  const W = gc.width, R = W * 0.42, cx = W / 2, cy = W / 2;
+  const rot = rotAngle;                     // accumulated spin (pauses on hover)
+  gtx.clearRect(0, 0, W, W);
+  gtx.lineWidth = Math.max(1, W / 150);
+  gtx.strokeStyle = GLOBE_BLUE;
+  gtx.shadowColor = GLOBE_BLUE;
+  gtx.shadowBlur = W * 0.04;
+
+  const proj = (lat, lon) => {
+    const la = lat * Math.PI / 180, lo = lon * Math.PI / 180 + rot;
+    const x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), z = Math.cos(la) * Math.cos(lo);
+    return [cx + x * R, cy - y * R, z];
+  };
+  const line = (pts, alpha) => {
+    gtx.globalAlpha = alpha;
+    gtx.beginPath();
+    let pen = false;
+    for (const [x, y, z] of pts) {
+      if (z > -0.02) { pen ? gtx.lineTo(x, y) : gtx.moveTo(x, y); pen = true; }
+      else pen = false;
+    }
+    gtx.stroke();
+  };
+
+  // rim
+  gtx.globalAlpha = .9;
+  gtx.beginPath(); gtx.arc(cx, cy, R, 0, Math.PI * 2); gtx.stroke();
+
+  // parallels every 30°
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const pts = [];
+    for (let lon = 0; lon <= 360; lon += 4) pts.push(proj(lat, lon));
+    line(pts, lat === 0 ? .95 : .6);
+  }
+  // meridians every 30°
+  for (let lon = 0; lon < 360; lon += 30) {
+    const pts = [];
+    for (let lat = -90; lat <= 90; lat += 4) pts.push(proj(lat, lon));
+    line(pts, .6);
+  }
+
+  // home marker — pulsing dot, drawn even slightly through the sphere
+  const [hx, hy, hz] = proj(HOME[0], HOME[1]);
+  const pulse = 1 + Math.sin(t * 3) * .35;
+  gtx.globalAlpha = hz > -0.15 ? 1 : .25;
+  gtx.fillStyle = GLOBE_BLUE;
+  gtx.beginPath(); gtx.arc(hx, hy, W * 0.028 * pulse, 0, Math.PI * 2); gtx.fill();
+  gtx.globalAlpha = (hz > -0.15 ? .5 : .12);
+  gtx.beginPath(); gtx.arc(hx, hy, W * 0.07 * pulse, 0, Math.PI * 2); gtx.stroke();
+  gtx.globalAlpha = 1;
+}
+/* the globe spins on its own loop, independent of the sea */
+(function globeFrame(now) {
+  const dt = lastGT == null ? 0 : (now - lastGT) / 1000;
+  lastGT = now;
+  if (!POWER.paused && !globeHover) rotAngle += dt * 0.25;
+  if (!POWER.paused) drawGlobe(now / 1000);
+  if (globeHover && hoverEggArmed && now - hoverSince >= 3000) {
+    hoverEggArmed = false;                  // once per hover, and only 50% of the time
+    if (Math.random() < 0.5) showEgg();
+  }
+  requestAnimationFrame(globeFrame);
+})(performance.now());
+
+/* melt intensity breathes with the seconds */
+const meltMap = document.getElementById("meltMap");
+setInterval(() => {
+  const s = new Date().getSeconds();
+  meltMap.setAttribute("scale", 12 + Math.sin(s / 60 * Math.PI * 2) * 8 + force * 20);
+}, 100);
+
+/* ============================================================
+   2. THE TIME ITSELF
+   ============================================================ */
+const $ = (s) => document.querySelector(s);
+
+const ZONES = [
+  { id: "Asia/Shanghai",    label: "北京", en: "Beijing" },
+  { id: "Asia/Tokyo",       label: "东京", en: "Tokyo" },
+  { id: "Europe/London",    label: "伦敦", en: "London" },
+  { id: "America/New_York", label: "纽约", en: "New York" },
+  { id: "Australia/Sydney", label: "悉尼", en: "Sydney" },
+];
+const worldEl = $("#world");
+const worldRefs = ZONES.map((z) => {
+  const d = document.createElement("div");
+  d.className = "w";
+  d.innerHTML = `<span class="we">${z.en}</span><span class="wt">--:--</span>`;
+  worldEl.appendChild(d);
+  return { z, el: d.querySelector(".wt") };
+});
+
+/* easter egg display, shared by the hourly trigger and the globe-hover trigger */
+let eggTimer = null;
+let eggOn = false;
+function showEgg() {
+  const egg = $("#egg");
+  egg.classList.remove("show");
+  void egg.offsetWidth;              // restart the animation
+  egg.classList.add("show");
+  document.body.classList.add("eggmode");
+  eggOn = true;
+  clearTimeout(eggTimer);
+  eggTimer = setTimeout(() => {
+    egg.classList.remove("show");
+    document.body.classList.remove("eggmode");
+    eggOn = false;
+  }, 14000);
+}
+
+function tick() {
+  const p = localParts();
+  const hm = `${p.hour}:${p.minute}`;
+  $("#dC").textContent = hm;
+  $("#dR").textContent = hm;
+  $("#dB").textContent = hm;
+
+  /* merged local line: "FRIDAY · JULY 24, 2026" */
+  $("#dateEn").textContent =
+    `${p.weekday} · ${p.monthName} ${Number(p.day)}, ${p.year}`;
+
+  worldRefs.forEach(({ z, el }) => {
+    el.textContent = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit", minute: "2-digit", hour12: false, timeZone: z.id,
+    }).format(new Date());
+  });
+
+  /* hourly easter egg: during the first 15s of each hour the quote
+     surfaces in the center of the sea, then dissolves back.
+     Outside that window tick() leaves the egg alone, so the
+     globe-hover trigger can run its full 14s course. */
+  const intoHour = Number(p.minute) * 60 + Number(p.second);
+  if (intoHour < 15 && !eggOn) showEgg();
+}
+tick();
+setTimeout(() => { tick(); setInterval(tick, 1000); }, 1000 - (Date.now() % 1000));
+</script>
+</body>
+</html>
