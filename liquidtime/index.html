@@ -351,9 +351,33 @@ function pollPower() {
 }
 pollPower(); setInterval(pollPower, 15000);
 
+/* rAF scheduler with a timer fallback: ScreenSaverEngine's WKWebView may
+   throttle or freeze rAF entirely (observed after macOS upgrades), which
+   silently kills every animation driven by it. If no frame arrives for
+   more than a second, switch permanently to a 30 fps interval timer. */
+function runLoop(step) {
+  let last = -Infinity, rafId = 0, stalled = false;
+  const frame = (now) => {
+    if (stalled) return;              /* late rAF in timer mode: drop */
+    last = now;
+    step(now);
+    rafId = requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  setInterval(() => {
+    if (stalled) return;
+    const now = performance.now();
+    if (now - last > 1000) {
+      stalled = true;
+      cancelAnimationFrame(rafId);
+      setInterval(() => step(performance.now()), 33);
+    }
+  }, 1000);
+}
+
 let appliedPal = null;
 let t0 = performance.now();
-(function frame(now) {
+runLoop((now) => {
   const t = (now - t0) / 1000;
   force *= .94;
   pal = paletteFor(currentHour());
@@ -373,8 +397,7 @@ let t0 = performance.now();
     gl.uniform3fv(U.uA, cur.a); gl.uniform3fv(U.uB, cur.b); gl.uniform3fv(U.uC, cur.c);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
-  requestAnimationFrame(frame);
-})(t0);
+});
 
 /* ============================================================
    1.5 THE GLOBE — wireframe orthographic sphere, accent blue.
@@ -402,12 +425,19 @@ function sizeGlobe() {
 sizeGlobe(); addEventListener("resize", sizeGlobe);
 
 /* hover pauses the spin; after 3s of continuous hover there is a 50%
-   chance the hidden quote surfaces (hourly trigger stays untouched) */
+   chance the hidden quote surfaces (hourly trigger stays untouched).
+   A hover that stops moving for 10s counts as gone — otherwise a cursor
+   parked on the globe (e.g. where the screensaver found it) would pause
+   the spin forever. */
 let rotAngle = 0, lastGT = null;
-let globeHover = false, hoverSince = 0, hoverEggArmed = false;
+let globeHover = false, hoverSince = 0, hoverEggArmed = false, lastHoverMove = 0;
 gc.addEventListener("pointerenter", () => {
-  globeHover = true; hoverSince = performance.now(); hoverEggArmed = true;
+  globeHover = true;
+  hoverSince = performance.now();
+  lastHoverMove = hoverSince;
+  hoverEggArmed = true;
 });
+gc.addEventListener("pointermove", () => { lastHoverMove = performance.now(); });
 gc.addEventListener("pointerleave", () => { globeHover = false; hoverEggArmed = false; });
 
 function drawGlobe(t) {
@@ -463,17 +493,19 @@ function drawGlobe(t) {
   gtx.globalAlpha = 1;
 }
 /* the globe spins on its own loop, independent of the sea */
-(function globeFrame(now) {
+runLoop((now) => {
   const dt = lastGT == null ? 0 : (now - lastGT) / 1000;
   lastGT = now;
+  if (globeHover && now - lastHoverMove > 10000) {   // cursor parked on the globe
+    globeHover = false; hoverEggArmed = false;
+  }
   if (!POWER.paused && !globeHover) rotAngle += dt * 0.25;
   if (!POWER.paused) drawGlobe(now / 1000);
   if (globeHover && hoverEggArmed && now - hoverSince >= 3000) {
     hoverEggArmed = false;                  // once per hover, and only 50% of the time
     if (Math.random() < 0.5) showEgg();
   }
-  requestAnimationFrame(globeFrame);
-})(performance.now());
+});
 
 /* melt intensity breathes with the seconds */
 const meltMap = document.getElementById("meltMap");
