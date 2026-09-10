@@ -18,6 +18,29 @@
   /* ---------- the liquid field ---------- */
   #sea { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 
+  /* ---------- CSS fallback sea: compositor-driven liquid blobs, used when
+     the host webview starves rAF/timers (screensaver & wallpaper engines).
+     JS-driven pixels can never look smooth at 1 fps — the compositor can. -- */
+  #csssea { position: fixed; inset: 0; display: none; overflow: hidden;
+    background: var(--ca, #2E0B23); transition: background 3s ease; }
+  body.starved #csssea { display: block; }
+  body.starved #sea { display: none; }
+  .blob { position: absolute; width: 95vmax; height: 95vmax; border-radius: 50%;
+    filter: blur(8vmax); opacity: .68; will-change: transform; }
+  .blob.b1 { left: -30vmax; top: -35vmax;
+    background: radial-gradient(circle at 42% 42%, var(--cb, #751545), transparent 62%);
+    animation: drift1 39s ease-in-out infinite alternate; }
+  .blob.b2 { right: -35vmax; bottom: -40vmax; width: 105vmax; height: 105vmax; opacity: .4;
+    background: radial-gradient(circle at 58% 55%, var(--cc, #8BB8EE), transparent 58%);
+    animation: drift2 53s ease-in-out infinite alternate; }
+  .blob.b3 { left: 8vmax; bottom: -45vmax; width: 80vmax; height: 80vmax; opacity: .55;
+    background: radial-gradient(circle at 50% 45%, var(--cb, #751545), transparent 66%);
+    animation: drift3 47s ease-in-out infinite alternate; }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } 50% { transform: translate(14vmax, 9vmax) scale(1.22); } to { transform: translate(-6vmax, 16vmax) scale(.94); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1.1); } 50% { transform: translate(-16vmax, -8vmax) scale(.92); } to { transform: translate(5vmax, -15vmax) scale(1.24); } }
+  @keyframes drift3 { from { transform: translate(0,0) scale(.96); } 50% { transform: translate(9vmax, -13vmax) scale(1.18); } to { transform: translate(-12vmax, 5vmax) scale(1.02); } }
+  body.paused .blob { animation-play-state: paused; }
+
   /* ---------- stage: title up top, clock dead center, local block hugging the world strip ---------- */
   .stage {
     position: fixed; inset: 0;
@@ -70,7 +93,13 @@
     display: flex; align-items: center; justify-content: center;
     gap: 1.1rem;
   }
-  #globe { width: clamp(56px, 5.5vw, 76px); height: clamp(56px, 5.5vw, 76px); display: block; cursor: pointer; }
+  /* globe wrapper: live canvas + pre-rendered sprite strip for starved mode */
+  .globewrap { position: relative; width: clamp(56px, 5.5vw, 76px); height: clamp(56px, 5.5vw, 76px); cursor: pointer; }
+  #globe { width: 100%; height: 100%; display: block; }
+  #globesprite { position: absolute; inset: 0; display: none; background-repeat: no-repeat; }
+  body.starved #globe { visibility: hidden; }
+  body.starved #globesprite { display: block; }
+  @keyframes strip { from { background-position: 0% 0; } to { background-position: 100% 0; } }
   .local .lt { display: flex; flex-direction: column; gap: .42em; text-align: left; }
   .ldate {
     font-size: clamp(.78rem, 1.35vw, 1.05rem);
@@ -148,6 +177,9 @@
 
 <canvas id="sea"></canvas>
 
+<!-- compositor-driven fallback sea for throttled webviews -->
+<div id="csssea"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
 <!-- turbulence that makes the digits breathe like ink in water -->
 <svg width="0" height="0" style="position:absolute">
   <filter id="melt" x="-20%" y="-20%" width="140%" height="140%">
@@ -173,7 +205,7 @@
 
   <div class="bottom">
     <div class="local">
-      <canvas id="globe"></canvas>
+      <div class="globewrap"><canvas id="globe"></canvas><div id="globesprite"></div></div>
       <div class="lt">
         <div class="ldate" id="dateEn">—</div>
       </div>
@@ -347,37 +379,54 @@ function pollPower() {
   fetch("/power").then(r => r.json()).then(s => {
     POWER.paused = !!s.paused;
     document.getElementById("powersave").classList.toggle("on", POWER.paused);
+    document.body.classList.toggle("paused", POWER.paused);   // pauses CSS blobs too
   }).catch(() => {});   // opened as file:// or no server → never pause
 }
 pollPower(); setInterval(pollPower, 15000);
 
-/* rAF scheduler with a timer fallback: ScreenSaverEngine's WKWebView may
-   throttle or freeze rAF entirely (observed after macOS upgrades), which
-   silently kills every animation driven by it. If no frame arrives for
-   more than a second, switch permanently to a 30 fps interval timer. */
-function runLoop(step) {
-  let last = -Infinity, rafId = 0, stalled = false;
-  const frame = (now) => {
-    if (stalled) return;              /* late rAF in timer mode: drop */
-    last = now;
-    step(now);
-    rafId = requestAnimationFrame(frame);
-  };
-  requestAnimationFrame(frame);
-  setInterval(() => {
-    if (stalled) return;
-    const now = performance.now();
-    if (now - last > 1000) {
-      stalled = true;
-      cancelAnimationFrame(rafId);
-      setInterval(() => step(performance.now()), 33);
-    }
-  }, 1000);
+/* Unified frame driver. rAF leads; a 250ms watchdog timer takes over
+   whenever rAF starves (ScreenSaverEngine / wallpaper webviews throttle
+   or freeze rAF, and background JS timers get coalesced to ~1 Hz).
+   Delivered fps is measured continuously: when the host can only give us
+   a frame or two per second, JS-driven drawing can never look smooth, so
+   body.starved hands all continuous motion to the compositor — a CSS
+   blob sea and a pre-rendered sprite-strip globe — while JS keeps
+   ticking text, palette variables and interaction logic. When healthy
+   frame delivery returns, starved mode lifts automatically. */
+const LOOP = { last: -Infinity, starved: false, frames: [], recoveredAt: 0, steps: [] };
+function addStep(fn) { LOOP.steps.push(fn); }
+function drive(now) {
+  LOOP.last = now;
+  LOOP.frames.push(now);
+  while (LOOP.frames.length && now - LOOP.frames[0] > 3000) LOOP.frames.shift();
+  for (const fn of LOOP.steps) fn(now);
 }
+requestAnimationFrame(function raf(now) { drive(now); requestAnimationFrame(raf); });
+setInterval(() => {
+  const now = performance.now();
+  if (now - LOOP.last > 250) drive(now);
+}, 250);
+setInterval(() => {
+  const fps = LOOP.frames.length / 3;
+  if (!LOOP.starved && fps < 12) {
+    LOOP.starved = true;
+    document.body.classList.add("starved");
+  } else if (LOOP.starved) {
+    if (fps > 40) {
+      if (!LOOP.recoveredAt) LOOP.recoveredAt = performance.now();
+      if (performance.now() - LOOP.recoveredAt > 4000) {
+        LOOP.starved = false; LOOP.recoveredAt = 0;
+        document.body.classList.remove("starved");
+      }
+    } else LOOP.recoveredAt = 0;
+  }
+}, 3000);
 
 let appliedPal = null;
+let lastPalCss = "";
+const toCss = (v) => `rgb(${v.map(x => Math.round(Math.min(1, Math.max(0, x)) * 255)).join(",")})`;
 let t0 = performance.now();
-runLoop((now) => {
+addStep((now) => {
   const t = (now - t0) / 1000;
   force *= .94;
   pal = paletteFor(currentHour());
@@ -389,7 +438,16 @@ runLoop((now) => {
   }
   document.documentElement.style.setProperty("--dx", (2 + force*6).toFixed(2) + "px");
 
-  if (gl && !POWER.paused) {
+  /* keep the CSS fallback sea's palette in sync; its own transitions
+     smooth the drift even when JS only ticks once a second */
+  const ca = toCss(cur.a), cb = toCss(cur.b), cc = toCss(cur.c);
+  if (ca + cb + cc !== lastPalCss) {
+    lastPalCss = ca + cb + cc;
+    const st = document.documentElement.style;
+    st.setProperty("--ca", ca); st.setProperty("--cb", cb); st.setProperty("--cc", cc);
+  }
+
+  if (gl && !POWER.paused && !LOOP.starved) {
     gl.uniform2f(U.uRes, canvas.width, canvas.height);
     gl.uniform1f(U.uT, t);
     gl.uniform2f(U.uMouse, mx, my);
@@ -431,23 +489,29 @@ sizeGlobe(); addEventListener("resize", sizeGlobe);
    the spin forever. */
 let rotAngle = 0, lastGT = null;
 let globeHover = false, hoverSince = 0, hoverEggArmed = false, lastHoverMove = 0;
-gc.addEventListener("pointerenter", () => {
+const globeWrap = gc.parentElement;                 // .globewrap (canvas + sprite)
+const spriteEl = document.getElementById("globesprite");
+globeWrap.addEventListener("pointerenter", () => {
   globeHover = true;
   hoverSince = performance.now();
   lastHoverMove = hoverSince;
   hoverEggArmed = true;
+  spriteEl.style.animationPlayState = "paused";     // freeze the sprite too
 });
-gc.addEventListener("pointermove", () => { lastHoverMove = performance.now(); });
-gc.addEventListener("pointerleave", () => { globeHover = false; hoverEggArmed = false; });
+globeWrap.addEventListener("pointermove", () => { lastHoverMove = performance.now(); });
+globeWrap.addEventListener("pointerleave", () => {
+  globeHover = false; hoverEggArmed = false;
+  spriteEl.style.animationPlayState = "";
+});
 
-function drawGlobe(t) {
-  const W = gc.width, R = W * 0.42, cx = W / 2, cy = W / 2;
-  const rot = rotAngle;                     // accumulated spin (pauses on hover)
-  gtx.clearRect(0, 0, W, W);
-  gtx.lineWidth = Math.max(1, W / 150);
-  gtx.strokeStyle = GLOBE_BLUE;
-  gtx.shadowColor = GLOBE_BLUE;
-  gtx.shadowBlur = W * 0.04;
+/* parameterized painter: live canvas and sprite frames share the same art */
+function paintGlobe(ctx, W, rot, tSec) {
+  const R = W * 0.42, cx = W / 2, cy = W / 2;
+  ctx.clearRect(0, 0, W, W);
+  ctx.lineWidth = Math.max(1, W / 150);
+  ctx.strokeStyle = GLOBE_BLUE;
+  ctx.shadowColor = GLOBE_BLUE;
+  ctx.shadowBlur = W * 0.04;
 
   const proj = (lat, lon) => {
     const la = lat * Math.PI / 180, lo = lon * Math.PI / 180 + rot;
@@ -455,19 +519,19 @@ function drawGlobe(t) {
     return [cx + x * R, cy - y * R, z];
   };
   const line = (pts, alpha) => {
-    gtx.globalAlpha = alpha;
-    gtx.beginPath();
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
     let pen = false;
     for (const [x, y, z] of pts) {
-      if (z > -0.02) { pen ? gtx.lineTo(x, y) : gtx.moveTo(x, y); pen = true; }
+      if (z > -0.02) { pen ? ctx.lineTo(x, y) : ctx.moveTo(x, y); pen = true; }
       else pen = false;
     }
-    gtx.stroke();
+    ctx.stroke();
   };
 
   // rim
-  gtx.globalAlpha = .9;
-  gtx.beginPath(); gtx.arc(cx, cy, R, 0, Math.PI * 2); gtx.stroke();
+  ctx.globalAlpha = .9;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
 
   // parallels every 30°
   for (let lat = -60; lat <= 60; lat += 30) {
@@ -484,23 +548,44 @@ function drawGlobe(t) {
 
   // home marker — pulsing dot, drawn even slightly through the sphere
   const [hx, hy, hz] = proj(HOME[0], HOME[1]);
-  const pulse = 1 + Math.sin(t * 3) * .35;
-  gtx.globalAlpha = hz > -0.15 ? 1 : .25;
-  gtx.fillStyle = GLOBE_BLUE;
-  gtx.beginPath(); gtx.arc(hx, hy, W * 0.028 * pulse, 0, Math.PI * 2); gtx.fill();
-  gtx.globalAlpha = (hz > -0.15 ? .5 : .12);
-  gtx.beginPath(); gtx.arc(hx, hy, W * 0.07 * pulse, 0, Math.PI * 2); gtx.stroke();
-  gtx.globalAlpha = 1;
+  const pulse = 1 + Math.sin(tSec * 3) * .35;
+  ctx.globalAlpha = hz > -0.15 ? 1 : .25;
+  ctx.fillStyle = GLOBE_BLUE;
+  ctx.beginPath(); ctx.arc(hx, hy, W * 0.028 * pulse, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = (hz > -0.15 ? .5 : .12);
+  ctx.beginPath(); ctx.arc(hx, hy, W * 0.07 * pulse, 0, Math.PI * 2); ctx.stroke();
+  ctx.globalAlpha = 1;
 }
-/* the globe spins on its own loop, independent of the sea */
-runLoop((now) => {
+function drawGlobe(t) { paintGlobe(gtx, gc.width, rotAngle, t); }
+
+/* sprite-strip globe for starved mode: 96 pre-rendered frames of one full
+   revolution (marker pulse baked in, 3 pulses per loop), played back by a
+   CSS steps() animation — smooth on the compositor even when JS is
+   throttled to one tick per second. Speed matches the live spin (0.25 rad/s). */
+const SPRITE_N = 96, SPRITE_F = 160;
+(function buildGlobeSprite() {
+  const off = document.createElement("canvas");
+  off.width = SPRITE_N * SPRITE_F; off.height = SPRITE_F;
+  const octx = off.getContext("2d");
+  for (let i = 0; i < SPRITE_N; i++) {
+    octx.save(); octx.translate(i * SPRITE_F, 0);
+    paintGlobe(octx, SPRITE_F, (i / SPRITE_N) * Math.PI * 2, (i / SPRITE_N) * Math.PI * 2);
+    octx.restore();
+  }
+  spriteEl.style.backgroundImage = `url(${off.toDataURL()})`;
+  spriteEl.style.backgroundSize = `${SPRITE_N * 100}% 100%`;
+  spriteEl.style.animation = `strip ${(Math.PI * 2 / 0.25).toFixed(2)}s steps(${SPRITE_N - 1}) linear infinite`;
+})();
+
+/* the globe spins on the shared loop, independent of the sea */
+addStep((now) => {
   const dt = lastGT == null ? 0 : (now - lastGT) / 1000;
   lastGT = now;
   if (globeHover && now - lastHoverMove > 10000) {   // cursor parked on the globe
     globeHover = false; hoverEggArmed = false;
   }
   if (!POWER.paused && !globeHover) rotAngle += dt * 0.25;
-  if (!POWER.paused) drawGlobe(now / 1000);
+  if (!POWER.paused && !LOOP.starved) drawGlobe(now / 1000);
   if (globeHover && hoverEggArmed && now - hoverSince >= 3000) {
     hoverEggArmed = false;                  // once per hover, and only 50% of the time
     if (Math.random() < 0.5) showEgg();
