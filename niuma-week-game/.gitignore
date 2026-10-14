@@ -1,0 +1,26 @@
+# 本机设置、凭据与生成产物
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+__pycache__/
+*.py[cod]
+node_modules/
+.idea/
+.vscode/
+.cowork/
+.cowork.json
+
+# 内网部署绑定和会话期间的审查 / 截图 / 方案产物
+/deploy/
+/docs/
+/screenshots/
+/test-results/
+
+# 仅用于本机会话的浏览器辅助与一次性迁移工具
+/tools/test_ui.mjs
+/tools/fix_quotes.py
+# 视觉基线依赖本机浏览器与字体，首次运行 e2e 自动生成
+/tools/baseline/
