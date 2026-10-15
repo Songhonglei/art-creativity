@@ -6,6 +6,8 @@
 
 当前版本：**v3.15**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
 
+在线体验：[牛马求生记](https://niuma-week-game.vercel.app/)。由 Vercel 独立部署，关联本仓库 `main` 分支的 `niuma-week-game/` 目录，推送更新后自动发布。
+
 ## 本地运行
 
 无需安装前端依赖或构建。克隆聚合仓库后进入游戏目录：
