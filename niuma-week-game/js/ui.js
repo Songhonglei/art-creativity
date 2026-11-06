@@ -86,10 +86,10 @@ window.UI = (function () {
     return `<div class="bar"><div class="bar-fill" style="width:${Math.max(0, Math.min(100, pct))}%;background:${color || ""}"></div></div>`;
   }
 
-  function statColor(k, v) {
-    if (k === "mood") return v < 25 ? "var(--urgent)" : v < 50 ? "var(--warn)" : "var(--pass)";
-    if (k === "kpi") return v < 30 ? "var(--urgent)" : "var(--stat-kpi)";
-    return "var(--stat-neutral)";
+  function statColor(k, v, palette) {
+    const name = k === "mood" ? (v < 25 ? "urgent" : v < 50 ? "warn" : "pass")
+      : k === "kpi" ? (v < 30 ? "urgent" : "stat-kpi") : "stat-neutral";
+    return palette ? palette[name] : `var(--${name})`;
   }
 
   // ---------- 主状态与完整资料 ----------
@@ -1275,17 +1275,30 @@ window.UI = (function () {
     });
   }
 
+  // Canvas 不解析 CSS var()；每次导出读取当前主题的实际颜色。
+  function canvasPalette() {
+    const css = getComputedStyle(document.documentElement);
+    return Object.fromEntries([
+      "bg", "panel", "panel-2", "txt", "sub", "dim", "line", "track", "accent", "seal",
+      "urgent", "pass", "warn", "stripe", "quote-bg", "quote-text", "grade-b", "grade-c",
+      "on-grade", "stat-kpi", "stat-neutral", "review-ink", "review-ink2", "review-ink3",
+      "review-red", "review-amber", "review-sheet", "review-surface", "review-line"
+    ].map(name => [name, css.getPropertyValue(`--${name}`).trim()]));
+  }
+
   // 存图：与页面同构（红带 + 抬头 + 斜章 + 统计条 + 编号卡片）
   function drawReviewCard(st, s, moments) {
     const rc = RC(st.char.job);
     const cv = $("#review-canvas");
     const ctx = cv.getContext("2d");
     const W = cv.width, H = cv.height;
+    cv.dataset.theme = window.Theme.current();
     const FONT = '"PingFang SC", "Microsoft YaHei", sans-serif';
-    const INK = "#e9e6df", INK2 = "#a8a49b", INK3 = "#948f85";
-    const RED = "#e35b54", AMBER = "#d9a441";
-    const SHEET = "#1a1d23", CARD = "#20242b", LINE = "#2b2f37";
-    ctx.fillStyle = "#14161a"; ctx.fillRect(0, 0, W, H);
+    const palette = canvasPalette();
+    const INK = palette["review-ink"], INK2 = palette["review-ink2"], INK3 = palette["review-ink3"];
+    const RED = palette["review-red"], AMBER = palette["review-amber"];
+    const SHEET = palette["review-sheet"], CARD = palette["review-surface"], LINE = palette["review-line"];
+    ctx.fillStyle = palette.bg; ctx.fillRect(0, 0, W, H);
     // 纸面
     roundRect(ctx, 40, 34, W - 80, H - 68, 6); ctx.fillStyle = SHEET; ctx.fill();
     ctx.strokeStyle = LINE; ctx.lineWidth = 2; ctx.stroke();
@@ -1372,12 +1385,12 @@ window.UI = (function () {
   }
 
   // 分享卡上的评级块（老板只有形容词刻度；一线/中层用绩效分刻度）
-  function drawGradeBlock(ctx, st, ending, W, FONT, rrect) {
-    const gradeColor = { S: "#faad14", A: "#52c41a", B: "#69b1ff", C: "#bfbfbf", D: "#ff4d4f" }[ending.grade] || "#bfbfbf";
+  function drawGradeBlock(ctx, st, ending, W, FONT, rrect, palette) {
+    const gradeColor = { S: palette.warn, A: palette.pass, B: palette["grade-b"], C: palette["grade-c"], D: palette.urgent }[ending.grade] || palette["grade-c"];
     ctx.textAlign = "center";
     if (st.char.job === "boss") {
-      // 老板线「永不差评」：字母只是内部分档，最低档也得是暖色（C/D 不再映射成灰与红）
-      const bossColor = { S: "#faad14", A: "#e8c46a", B: "#d9a441", C: "#c99a3f", D: "#b98a34" }[ending.grade] || "#d9a441";
+      // 老板线各档保持主题暖色，最低档也不映射成灰与红。
+      const bossColor = palette.warn;
       const ws = fitFontSize(ctx, ending.bossWord || "", W - 120, 44, 28, "bold", FONT);
       ctx.fillStyle = bossColor; ctx.font = `bold ${ws}px ${FONT}`;
       ctx.fillText(ending.bossWord, W / 2, 436);
@@ -1385,17 +1398,17 @@ window.UI = (function () {
       let x = (W - totalW) / 2;
       Engine.BOSS_BANDS.forEach(b => {
         const on = b.grade === ending.grade;
-        ctx.fillStyle = on ? bossColor : "#20232c";
+        ctx.fillStyle = on ? bossColor : palette["panel-2"];
         rrect(ctx, x, 458, bw, 42, 8); ctx.fill();
-        ctx.fillStyle = on ? "#12141a" : "#5f6275";
+        ctx.fillStyle = on ? palette["on-grade"] : palette.dim;
         ctx.font = `bold 24px ${FONT}`;
         ctx.fillText(b.word, x + bw / 2, 487);
         x += bw + gap;
       });
-      ctx.fillStyle = "#8b8fa3"; ctx.font = `24px ${FONT}`;
+      ctx.fillStyle = palette.sub; ctx.font = `24px ${FONT}`;
       wrapText(ctx, ending.bossNote || "", W / 2, 532, W - 140, 30, 2);
       if (ending.bossSpin) {
-        ctx.fillStyle = "#5f6275"; ctx.font = `22px ${FONT}`;
+        ctx.fillStyle = palette.dim; ctx.font = `22px ${FONT}`;
         wrapText(ctx, ending.bossSpin, W / 2, 588, W - 140, 28, 2);
       }
       return;
@@ -1407,15 +1420,15 @@ window.UI = (function () {
     let x = (W - totalW) / 2;
     bands.forEach(b => {
       const on = b.grade === ending.grade;
-      ctx.fillStyle = on ? gradeColor : "#20232c";
+      ctx.fillStyle = on ? gradeColor : palette["panel-2"];
       rrect(ctx, x, 452, bw, 42, 8); ctx.fill();
-      ctx.fillStyle = on ? "#12141a" : "#5f6275";
+      ctx.fillStyle = on ? palette["on-grade"] : palette.dim;
       ctx.font = `bold 22px ${FONT}`;
       ctx.fillText(`${b.grade} ${b.label}`, x + bw / 2, 479);
       x += bw + gap;
     });
     if (st.char.job === "mid") {
-      ctx.fillStyle = ending.luck ? "#faad14" : "#5f6275"; ctx.font = `22px ${FONT}`;
+      ctx.fillStyle = ending.luck ? palette.warn : palette.dim; ctx.font = `22px ${FONT}`;
       const txt = ending.luck ? `🎲 绩效归因：${ending.luck.text}` : "🎲 绩效归因：本周没有意外，纯按表现核算。";
       wrapText(ctx, txt, W / 2, 528, W - 120, 28, 2);
     }
@@ -1438,34 +1451,36 @@ window.UI = (function () {
     const cv = $("#share-canvas");
     const ctx = cv.getContext("2d");
     const W = cv.width, H = cv.height;
+    const palette = canvasPalette();
+    cv.dataset.theme = window.Theme.current();
     const FONT = '"PingFang SC", "Microsoft YaHei", sans-serif';
     // 背景
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "#15171d"); g.addColorStop(.55, "#1b1e26"); g.addColorStop(1, "#111318");
+    g.addColorStop(0, palette.bg); g.addColorStop(.55, palette.panel); g.addColorStop(1, palette.bg);
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    // 顶部红头带
+    // 顶部主题色带
     const band = ctx.createLinearGradient(0, 0, W, 0);
-    band.addColorStop(0, "#ff5b5d"); band.addColorStop(.5, "#e04545"); band.addColorStop(1, "#7a2a2d");
+    band.addColorStop(0, palette.accent); band.addColorStop(.5, palette.seal); band.addColorStop(1, palette.stripe);
     ctx.fillStyle = band; ctx.fillRect(0, 0, W, 14);
 
     const isBoss = st.char.job === "boss";
     ctx.textAlign = "center";
-    ctx.fillStyle = "#7d8093"; ctx.font = `24px ${FONT}`;
+    ctx.fillStyle = palette.dim; ctx.font = `24px ${FONT}`;
     ctx.fillText(isBoss ? "卷 卷 科 技 · 本 周 经 营 情 况 通 报" : "卷 卷 科 技 · 一 周 生 存 鉴 定 报 告", W / 2, 66);
 
     // 工牌条
-    ctx.fillStyle = "#20232c";
+    ctx.fillStyle = palette["panel-2"];
     roundRect(ctx, 50, 92, W - 100, 96, 16); ctx.fill();
     ctx.textAlign = "left";
     ctx.font = `44px ${FONT}`;
     ctx.fillText(C().personas[st.char.persona].emoji, 74, 156);
-    ctx.fillStyle = "#eceef2"; ctx.font = `bold 34px ${FONT}`;
+    ctx.fillStyle = palette.txt; ctx.font = `bold 34px ${FONT}`;
     ctx.fillText(st.char.name, 140, 136);
     const cardLine = `${st.char.no} · ${C().jobs[st.char.job].name} · ${C().personas[st.char.persona].title}`;
     const cardLineSize = fitFontSize(ctx, cardLine, W - 200, 22, 15, "", FONT);
-    ctx.fillStyle = "#8b8fa3"; ctx.font = `${cardLineSize}px ${FONT}`;
+    ctx.fillStyle = palette.sub; ctx.font = `${cardLineSize}px ${FONT}`;
     ctx.fillText(cardLine, 140, 168);
-    ctx.fillStyle = "#52c41a";
+    ctx.fillStyle = palette.pass;
     ctx.beginPath(); ctx.arc(W - 82, 128, 7, 0, Math.PI * 2); ctx.fill();
 
     // HERO：巨大结局（名字按宽度自适应，长标题不再被左右裁切）
@@ -1474,56 +1489,56 @@ window.UI = (function () {
     ctx.fillText(ending.emoji, W / 2, 300);
     const nameSize = fitFontSize(ctx, ending.name, W - 90, 64, 30, "bold", FONT);
     cv.dataset.nameSize = String(nameSize);
-    ctx.fillStyle = "#ffffff"; ctx.font = `bold ${nameSize}px ${FONT}`;
+    ctx.fillStyle = palette.txt; ctx.font = `bold ${nameSize}px ${FONT}`;
     ctx.fillText(ending.name, W / 2, 384);
 
     // 评级块（老板 / 一线·中层 两套刻度）
-    drawGradeBlock(ctx, st, ending, W, FONT, roundRect);
+    drawGradeBlock(ctx, st, ending, W, FONT, roundRect, palette);
 
     // 分隔虚线
-    ctx.strokeStyle = "#2c2f3d"; ctx.lineWidth = 2; ctx.setLineDash([8, 8]);
+    ctx.strokeStyle = palette.line; ctx.lineWidth = 2; ctx.setLineDash([8, 8]);
     ctx.beginPath(); ctx.moveTo(60, 624); ctx.lineTo(W - 60, 624); ctx.stroke();
     ctx.setLineDash([]);
 
     // 金句块
-    ctx.fillStyle = "#20232c";
+    ctx.fillStyle = palette["quote-bg"];
     roundRect(ctx, 50, 640, W - 100, 106, 16); ctx.fill();
-    ctx.fillStyle = "#e04545";
+    ctx.fillStyle = palette.seal;
     roundRect(ctx, 50, 640, 8, 106, 4); ctx.fill();
     const line1 = ending.text.split("\n")[0];
-    ctx.fillStyle = "#dcdee8"; ctx.font = `29px ${FONT}`;
+    ctx.fillStyle = palette["quote-text"]; ctx.font = `29px ${FONT}`;
     wrapText(ctx, line1, W / 2 + 4, 682, W - 170, 40, 2);
 
     // 人设专属收尾（同一个结局，不同人设说法完全不同）
     if (ending.epilogue) {
-      ctx.fillStyle = "#20232c";
+      ctx.fillStyle = palette["quote-bg"];
       roundRect(ctx, 50, 758, W - 100, 130, 16); ctx.fill();
-      ctx.fillStyle = "#faad14";
+      ctx.fillStyle = palette.warn;
       roundRect(ctx, 50, 758, 8, 130, 4); ctx.fill();
       ctx.textAlign = "left";
       const pe = C().personas[st.char.persona];
-      ctx.fillStyle = "#faad14"; ctx.font = `22px ${FONT}`;
+      ctx.fillStyle = palette.warn; ctx.font = `22px ${FONT}`;
       ctx.fillText(pe.emoji + " " + pe.title + " · 专属收尾", 78, 792);
-      ctx.fillStyle = "#c9cad4"; ctx.font = `25px ${FONT}`;
+      ctx.fillStyle = palette["quote-text"]; ctx.font = `25px ${FONT}`;
       wrapText(ctx, ending.epilogue, 78, 828, W - 160, 30, 3);
       ctx.textAlign = "center";
     }
 
     // 体检报告
     ctx.textAlign = "left";
-    ctx.fillStyle = "#7d8093"; ctx.font = `22px ${FONT}`;
+    ctx.fillStyle = palette.dim; ctx.font = `22px ${FONT}`;
     ctx.fillText("本周体征", 60, 922);
     const L = statLabels(st.char.job);
     let y = 956;
     for (const k of ["mood", "kpi", "bond", "trust", "fish"]) {
       const v = Math.round(st.stats[k]);
-      ctx.fillStyle = "#9a9db0"; ctx.font = `26px ${FONT}`;
+      ctx.fillStyle = palette.sub; ctx.font = `26px ${FONT}`;
       ctx.fillText(L[k], 60, y);
-      ctx.fillStyle = "#2a2d3a";
+      ctx.fillStyle = palette.track;
       roundRect(ctx, 200, y - 18, 400, 18, 9); ctx.fill();
-      ctx.fillStyle = statColor(k, v);
+      ctx.fillStyle = statColor(k, v, palette);
       roundRect(ctx, 200, y - 18, Math.max(8, 400 * Math.max(0, Math.min(100, v)) / 100), 18, 9); ctx.fill();
-      ctx.fillStyle = "#ffffff"; ctx.font = `bold 26px ${FONT}`;
+      ctx.fillStyle = palette.txt; ctx.font = `bold 26px ${FONT}`;
       ctx.textAlign = "right"; ctx.fillText(String(v), W - 60, y); ctx.textAlign = "left";
       y += 42;
     }
@@ -1534,9 +1549,9 @@ window.UI = (function () {
     ctx.font = `24px ${FONT}`;
     badges.forEach(b => {
       const w = ctx.measureText(b).width + 34;
-      ctx.fillStyle = "#20232c";
+      ctx.fillStyle = palette["panel-2"];
       roundRect(ctx, bx, 1130, w, 44, 22); ctx.fill();
-      ctx.fillStyle = "#c9cad4";
+      ctx.fillStyle = palette.txt;
       ctx.fillText(b, bx + 17, 1160);
       bx += w + 12;
     });
@@ -1544,25 +1559,25 @@ window.UI = (function () {
     // 成就 emoji 行
     ctx.font = `28px ${FONT}`;
     const gotEmojis = Engine.achievementsFor(st).filter(a => st.achievements.includes(a.id)).map(a => a.emoji).slice(0, 12);
-    ctx.fillStyle = "#8b8fa3";
+    ctx.fillStyle = palette.sub;
     ctx.fillText(gotEmojis.length ? gotEmojis.join(" ") : "（本周没解锁成就，但活下来了）", 60, 1210);
 
     // 公章：纯属虚构
     ctx.save();
     ctx.translate(W - 118, H - 68); ctx.rotate(-.24);
-    ctx.strokeStyle = "rgba(224, 69, 69, .95)"; ctx.lineWidth = 4;
+    ctx.strokeStyle = palette.seal; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(0, 0, 58, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(0, 0, 48, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = "rgba(224, 69, 69, .95)";
+    ctx.fillStyle = palette.seal;
     ctx.textAlign = "center"; ctx.font = `bold 22px ${FONT}`;
     ctx.fillText("纯属", 0, -8); ctx.fillText("虚构", 0, 20);
     ctx.restore();
 
     // 页脚
     ctx.textAlign = "left";
-    ctx.fillStyle = "#5f6275"; ctx.font = `24px ${FONT}`;
+    ctx.fillStyle = palette.dim; ctx.font = `24px ${FONT}`;
     ctx.fillText(isBoss ? "牛马求生记 · 赢家不需要解释" : "牛马求生记 · 活过这一周，就是胜利", 60, H - 74);
-    ctx.fillStyle = "#3d404f"; ctx.font = `20px ${FONT}`;
+    ctx.fillStyle = palette.dim; ctx.font = `20px ${FONT}`;
     ctx.fillText(`${rc.docNo}${st.char.no}-W${st.day}`, 60, H - 40);
   }
 

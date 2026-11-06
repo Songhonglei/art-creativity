@@ -4,7 +4,7 @@
 
 > 本游戏纯属虚构。如有雷同，说明你也在上班。
 
-当前版本：**v3.16**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
+当前版本：**v3.17**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
 
 在线体验：[牛马求生记](https://niuma-week-game.vercel.app/)。由 Vercel 独立部署，关联本仓库 `main` 分支的 `niuma-week-game/` 目录，推送更新后自动发布。
 
@@ -30,7 +30,7 @@ python3 -m http.server 8080
 - **IM / OA 式界面**：移动端优先，聊天内部滚动、选项居中、背包浮层与道具卡片；限时题在打开抽屉或切入后台时暂停。
 - **四种外观主题**：深色、浅色、护眼、魔幻，可在首页「主题」或游戏内设置中切换；偏好独立保存，刷新或重新入职后保留。
 - **十二类基础结局与三十六个成就**：不同职级采用不同的绩效与评语体系，人设会改变结局文案。
-- **结局与周报分享**：生成图片，可预览、下载，在设备支持时调用系统分享。
+- **结局与周报分享**：生成跟随当前主题配色的图片，可预览、下载，在设备支持时调用系统分享。
 
 存档保存在当前浏览器的 `localStorage`。相同浏览器和域名下可以续玩；清理网站数据、换域名或换设备不会自动继承存档。
 
