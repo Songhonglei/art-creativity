@@ -5,6 +5,7 @@ window.App = (function () {
 
   function boot() {
     window.Engine.init();
+    document.getElementById("btn-theme").addEventListener("click", window.UI.showThemes);
     document.getElementById("btn-new").addEventListener("click", () => {
       window.UI.renderCreate();
       window.UI.showScreen("screen-create");

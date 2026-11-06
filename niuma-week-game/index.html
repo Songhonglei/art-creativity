@@ -11,7 +11,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="牛马求生记">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="css/style.css?v=3.15">
+<script src="js/theme.js?v=3.16"></script>
+<link rel="stylesheet" href="css/style.css?v=3.16">
+<link rel="stylesheet" href="css/themes.css?v=3.16">
 </head>
 <body>
 <div id="app">
@@ -38,6 +40,7 @@
         <button id="btn-last-ending" class="btn ghost big hidden">查看上周结局</button>
       </div>
       <p class="tips">10~15 分钟一局 · 周一开周会，周日见绩效<br>手机竖屏食用效果更佳</p>
+      <button id="btn-theme" class="theme-entry" aria-haspopup="dialog">🎨 主题</button>
     </div>
   </section>
 
@@ -90,23 +93,23 @@
 </div>
 
 <!-- 数据层 -->
-<script src="data/characters.js?v=3.15"></script>
-<script src="data/endings.js?v=3.15"></script>
-  <script src="data/persona_endings.js?v=3.15"></script>
-<script src="data/achievements.js?v=3.15"></script>
-<script src="data/events_general.js?v=3.15"></script>
-<script src="data/events_line_a.js?v=3.15"></script>
-<script src="data/events_line_b.js?v=3.15"></script>
-<script src="data/events_line_c.js?v=3.15"></script>
-<script src="data/events_boss.js?v=3.15"></script>
-  <script src="data/filler.js?v=3.15"></script>
+<script src="data/characters.js?v=3.16"></script>
+<script src="data/endings.js?v=3.16"></script>
+  <script src="data/persona_endings.js?v=3.16"></script>
+<script src="data/achievements.js?v=3.16"></script>
+<script src="data/events_general.js?v=3.16"></script>
+<script src="data/events_line_a.js?v=3.16"></script>
+<script src="data/events_line_b.js?v=3.16"></script>
+<script src="data/events_line_c.js?v=3.16"></script>
+<script src="data/events_boss.js?v=3.16"></script>
+  <script src="data/filler.js?v=3.16"></script>
 <!-- 逻辑层 -->
-<script src="js/state.js?v=3.15"></script>
-<script src="js/engine.js?v=3.15"></script>
-<script src="js/ui.js?v=3.15"></script>
-<script src="js/main.js?v=3.15"></script>
+<script src="js/state.js?v=3.16"></script>
+<script src="js/engine.js?v=3.16"></script>
+<script src="js/ui.js?v=3.16"></script>
+<script src="js/main.js?v=3.16"></script>
   <noscript>
-    <p style="padding:24px;color:#e04545;background:#15171d;font-size:14px;line-height:1.8">
+    <p style="padding:24px;color:var(--urgent);background:var(--panel);font-size:14px;line-height:1.8">
       这个游戏需要 JavaScript 才能运行。请在浏览器设置里开启后刷新页面。
     </p>
   </noscript>

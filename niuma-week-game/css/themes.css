@@ -1,0 +1,239 @@
+/* 默认深色沿用原色板；组件只引用语义色，四套外观共用布局与字体。 */
+:root {
+  color-scheme: dark;
+  --accent: #ff4d4f;
+  --on-primary: #fff;
+  --primary-fill: linear-gradient(180deg, #ff5b5d, #d9363e);
+  --primary-shadow: rgba(224, 69, 69, .3);
+  --track: #2a2d3a;
+  --selected-bg: #251a1c;
+  --hover-bg: #241d20;
+  --quote-bg: #2a2416;
+  --quote-text: #ffd9a0;
+  --topbar-bg: rgba(16, 17, 22, .94);
+  --overlay-bg: rgba(8, 9, 12, .68);
+  --danger-border: #743c41;
+  --danger-bg: #2a1517;
+  --danger-text: #ffb9b9;
+  --stripe: #7a2a2d;
+  --info-border: rgba(77, 159, 255, .45);
+  --info-bg: #182131;
+  --positive-bg: rgba(82, 196, 26, .1);
+  --negative-bg: rgba(255, 77, 79, .1);
+  --grade-b: #69b1ff;
+  --grade-c: #bfbfbf;
+  --on-grade: #12141a;
+  --stat-kpi: #1677ff;
+  --stat-neutral: #8c8ea0;
+  --chat-surface: #252a34;
+  --chat-border: #465062;
+  --pack-tint-start: #b4c7d6;
+  --pack-tint-end: #c8baa1;
+  --logo-fill: linear-gradient(174deg, #fff6d8 0%, #ffd166 30%, #ff8a3d 62%, #e04545 100%);
+  --logo-shadow: drop-shadow(0 3px 0 rgba(0, 0, 0, .5)) drop-shadow(0 0 18px rgba(255, 138, 61, .35));
+  --review-ink: #e9e6df;
+  --review-ink2: #a8a49b;
+  --review-ink3: #948f85;
+  --review-red: #e35b54;
+  --review-amber: #d9a441;
+  --review-sheet: #1a1d23;
+  --review-surface: #20242b;
+  --review-line: #2b2f37;
+  --page-art: none;
+}
+
+/* 浅色 · 灰白办公纸，消息区用蓝灰底分层。 */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2f4f7;
+  --panel: #ffffff;
+  --panel-2: #e9edf3;
+  --line: #d2d8e2;
+  --line-strong: #8a96a8;
+  --txt: #222b38;
+  --sub: #526074;
+  --dim: #586578;
+  --urgent: #b92e3c;
+  --seal: #b92e3c;
+  --pass: #267047;
+  --pie: #285dac;
+  --warn: #865b08;
+  --accent: #b92e3c;
+  --primary-fill: linear-gradient(180deg, #c83b48, #ac2735);
+  --primary-shadow: rgba(172, 39, 53, .18);
+  --track: #d9dfe8;
+  --selected-bg: #fcecef;
+  --hover-bg: #f8e5e8;
+  --quote-bg: #f7efd9;
+  --quote-text: #70521f;
+  --topbar-bg: rgba(242, 244, 247, .96);
+  --overlay-bg: rgba(25, 35, 49, .38);
+  --danger-border: #c57e85;
+  --danger-bg: #fbe9eb;
+  --danger-text: #a52533;
+  --stripe: #f0bfc5;
+  --info-border: #91add0;
+  --info-bg: #e8eff9;
+  --positive-bg: #e2f0e6;
+  --negative-bg: #fbe4e8;
+  --grade-b: #285dac;
+  --grade-c: #5d697c;
+  --on-grade: #ffffff;
+  --stat-kpi: #285dac;
+  --stat-neutral: #6d788b;
+  --chat-surface: #e1e8f1;
+  --chat-border: #9bacc1;
+  --pack-tint-start: #426a8a;
+  --pack-tint-end: #8c6534;
+  --logo-fill: linear-gradient(174deg, #8b5821, #ad352d 65%, #8e2934);
+  --logo-shadow: drop-shadow(0 2px 0 rgba(255, 255, 255, .9));
+  --review-ink: var(--txt);
+  --review-ink2: var(--sub);
+  --review-ink3: var(--dim);
+  --review-red: var(--seal);
+  --review-amber: var(--warn);
+  --review-sheet: var(--panel);
+  --review-surface: var(--panel-2);
+  --review-line: var(--line);
+}
+
+/* 护眼 · 暖绿纸与深绿墨，保留风险和收益的语义区别。 */
+:root[data-theme="eye"] {
+  color-scheme: light;
+  --bg: #e4eadc;
+  --panel: #f0f2e7;
+  --panel-2: #dce4d4;
+  --line: #bdcbb6;
+  --line-strong: #7c9075;
+  --txt: #29392e;
+  --sub: #4b614f;
+  --dim: #4c5d47;
+  --urgent: #a23233;
+  --seal: #a23233;
+  --pass: #2e663d;
+  --pie: #365f74;
+  --warn: #795412;
+  --accent: #456949;
+  --primary-fill: linear-gradient(180deg, #507453, #3c5e41);
+  --primary-shadow: rgba(60, 94, 65, .18);
+  --track: #c8d2c0;
+  --selected-bg: #d6e3cd;
+  --hover-bg: #d1dfc7;
+  --quote-bg: #ebe4ca;
+  --quote-text: #665020;
+  --topbar-bg: rgba(228, 234, 220, .96);
+  --overlay-bg: rgba(27, 42, 30, .4);
+  --danger-border: #b47a73;
+  --danger-bg: #f0dcd5;
+  --danger-text: #902b2d;
+  --stripe: #d7b2a4;
+  --info-border: #85a2a2;
+  --info-bg: #dce7e3;
+  --positive-bg: #d5e5cf;
+  --negative-bg: #efd9d3;
+  --grade-b: #365f74;
+  --grade-c: #52624e;
+  --on-grade: #f0f2e7;
+  --stat-kpi: #365f74;
+  --stat-neutral: #6a7f63;
+  --chat-surface: #ccd9c5;
+  --chat-border: #879d7f;
+  --pack-tint-start: #416a57;
+  --pack-tint-end: #856d37;
+  --logo-fill: linear-gradient(174deg, #6d602b, #3c6040 65%, #294930);
+  --logo-shadow: drop-shadow(0 2px 0 rgba(240, 242, 231, .8));
+  --review-ink: var(--txt);
+  --review-ink2: var(--sub);
+  --review-ink3: var(--dim);
+  --review-red: var(--seal);
+  --review-amber: var(--warn);
+  --review-sheet: var(--panel);
+  --review-surface: var(--panel-2);
+  --review-line: var(--line);
+}
+
+/* 魔幻 · 暗紫秘境与符文金；静态光晕，不增加持续动画。 */
+:root[data-theme="fantasy"] {
+  color-scheme: dark;
+  --bg: #171324;
+  --panel: #231d34;
+  --panel-2: #30263f;
+  --line: #4a3c5f;
+  --line-strong: #80698d;
+  --txt: #f1e8dc;
+  --sub: #c5b5ce;
+  --dim: #b5a4c0;
+  --urgent: #ff9b9d;
+  --seal: #e7af8d;
+  --pass: #9bd5a7;
+  --pie: #b9beff;
+  --warn: #e5c780;
+  --accent: #bfa0ed;
+  --on-primary: #21182f;
+  --primary-fill: linear-gradient(135deg, #d2b6f4, #b99bdf);
+  --primary-shadow: rgba(159, 121, 209, .22);
+  --track: #493957;
+  --selected-bg: #3b2e4d;
+  --hover-bg: #48355a;
+  --quote-bg: #382d30;
+  --quote-text: #edd3a1;
+  --topbar-bg: rgba(23, 19, 36, .96);
+  --overlay-bg: rgba(12, 7, 22, .76);
+  --danger-border: #a06b7b;
+  --danger-bg: #432838;
+  --danger-text: #ffbdba;
+  --stripe: #70504f;
+  --info-border: #7f76ab;
+  --info-bg: #302e4b;
+  --positive-bg: #283c37;
+  --negative-bg: #482d40;
+  --grade-b: #b9beff;
+  --grade-c: #c5b5ce;
+  --on-grade: #21182f;
+  --stat-kpi: #b9beff;
+  --stat-neutral: #ae98c4;
+  --chat-surface: #352942;
+  --chat-border: #8b7096;
+  --pack-tint-start: #d4b8ef;
+  --pack-tint-end: #e5c780;
+  --logo-fill: linear-gradient(174deg, #fff1c6, #e5c780 40%, #c4a1eb 80%);
+  --logo-shadow: drop-shadow(0 2px 0 #171324) drop-shadow(0 0 18px rgba(191, 160, 237, .25));
+  --review-ink: var(--txt);
+  --review-ink2: var(--sub);
+  --review-ink3: var(--dim);
+  --review-red: var(--seal);
+  --review-amber: var(--warn);
+  --review-sheet: var(--panel);
+  --review-surface: var(--panel-2);
+  --review-line: var(--line);
+  --page-art: radial-gradient(ellipse at 10% 0%, rgba(137, 97, 188, .14), transparent 55%);
+}
+
+body { background-image: var(--page-art); }
+.pick-card.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.theme-entry { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 10px; padding: 8px 16px; border: 1px solid var(--line-strong); border-radius: 24px; background: var(--panel); color: var(--sub); font-size: 13px; cursor: pointer; }
+.theme-entry:hover, .theme-entry:active { color: var(--txt); background: var(--panel-2); }
+.theme-picker { border: 0; padding: 0; margin-top: 20px; text-align: left; min-width: 0; }
+.theme-picker legend { padding: 0; margin-bottom: 10px; font-size: 14px; color: var(--sub); font-weight: 600; }
+.theme-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.theme-option { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 10px; border: 1px solid var(--line-strong); border-radius: var(--r-panel); background: var(--bg); cursor: pointer; }
+.theme-option.selected { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.theme-option:focus-within { outline: 2px solid var(--pie); outline-offset: 3px; }
+.theme-option input { position: absolute; right: 10px; bottom: 24px; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.theme-name { padding-right: 26px; color: var(--txt); font-weight: 700; font-size: 15px; }
+.theme-note { color: var(--sub); font-size: 12px; }
+.theme-sample { display: block; border: 1px solid var(--sample-line); border-radius: 5px; background: var(--sample-bg); color: var(--sample-text); padding: 7px 9px; margin-bottom: 6px; }
+.theme-sample-bar { display: flex; justify-content: space-between; font-size: 10px; line-height: 1.2; font-weight: 700; letter-spacing: 1px; }
+.theme-sample-bar > span { color: var(--sample-accent); font-size: 15px; }
+.theme-sample-lines { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding: 6px; border-radius: 3px; background: var(--sample-chat); }
+.theme-sample-lines i { display: block; width: 80%; height: 3px; background: var(--sample-text); opacity: .5; border-radius: 2px; }
+.theme-sample-lines i + i { width: 55%; }
+[data-theme-option="dark"] { --sample-bg: #181a20; --sample-chat: #252a34; --sample-line: #465062; --sample-text: #eceef2; --sample-accent: #ff4d4f; }
+[data-theme-option="light"] { --sample-bg: #fff; --sample-chat: #e1e8f1; --sample-line: #9bacc1; --sample-text: #222b38; --sample-accent: #b92e3c; }
+[data-theme-option="eye"] { --sample-bg: #f0f2e7; --sample-chat: #ccd9c5; --sample-line: #879d7f; --sample-text: #29392e; --sample-accent: #456949; }
+[data-theme-option="fantasy"] { --sample-bg: #231d34; --sample-chat: #352942; --sample-line: #8b7096; --sample-text: #f1e8dc; --sample-accent: #e5c780; }
+
+/* 新主题的日期转场使用实体卡片，避免浅色文字落在半透明遮罩上。 */
+:root:not([data-theme="dark"]) .overlay-card.transition .day-transition { background: var(--panel); border: 1px solid var(--line-strong); border-radius: 18px; padding: 28px 18px; }
+:root[data-theme="fantasy"] #screen-main #event-card .event-head { background-image: linear-gradient(110deg, transparent 65%, rgba(229, 199, 128, .07)); }
+:root[data-theme="light"] .dt-day, :root[data-theme="eye"] .dt-day { text-shadow: none; }

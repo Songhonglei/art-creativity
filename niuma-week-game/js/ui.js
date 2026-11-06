@@ -87,9 +87,9 @@ window.UI = (function () {
   }
 
   function statColor(k, v) {
-    if (k === "mood") return v < 25 ? "#ff4d4f" : v < 50 ? "#faad14" : "#52c41a";
-    if (k === "kpi") return v < 30 ? "#ff4d4f" : "#1677ff";
-    return "#8c8ea0";
+    if (k === "mood") return v < 25 ? "var(--urgent)" : v < 50 ? "var(--warn)" : "var(--pass)";
+    if (k === "kpi") return v < 30 ? "var(--urgent)" : "var(--stat-kpi)";
+    return "var(--stat-neutral)";
   }
 
   // ---------- 主状态与完整资料 ----------
@@ -139,8 +139,27 @@ window.UI = (function () {
     $("#side-toggle").onclick = () => openPack(st);
     renderSkillBar(st, renderedEvent);
   }
+  function themePickerHtml() {
+    return `<fieldset class="theme-picker"><legend>主题</legend><div class="theme-options">${window.Theme.options.map(theme => `
+      <label class="theme-option${window.Theme.current() === theme.id ? " selected" : ""}" data-theme-option="${theme.id}">
+        <input type="radio" name="theme" value="${theme.id}"${window.Theme.current() === theme.id ? " checked" : ""}>
+        <span class="theme-sample" aria-hidden="true"><span class="theme-sample-bar">OA <span>${theme.icon}</span></span><span class="theme-sample-lines"><i></i><i></i></span></span>
+        <span class="theme-name">${theme.name}</span><span class="theme-note">${theme.note}</span>
+      </label>`).join("")}</div></fieldset>`;
+  }
+  function bindThemePicker() {
+    $$('#overlay-card input[name="theme"]').forEach(input => input.addEventListener("change", () => {
+      if (!input.checked || !window.Theme.apply(input.value)) return;
+      $$(".theme-option").forEach(label => label.classList.toggle("selected", label.dataset.themeOption === input.value));
+    }));
+  }
+  function showThemes() {
+    overlay(`<h2 id="dialog-title">外观</h2>${themePickerHtml()}`, "themes", true);
+    bindThemePicker();
+  }
   function showSettings(onRestart) {
-    overlay(`<h2 id="dialog-title">设置</h2><div class="btn-col"><button id="btn-sound" class="btn ghost">${soundOn() ? "🔊 音效已开启" : "🔇 音效已关闭"}</button><button id="btn-restart" class="btn ghost">重新入职</button></div>`, "settings", true);
+    overlay(`<h2 id="dialog-title">设置</h2>${themePickerHtml()}<div class="btn-col"><button id="btn-sound" class="btn ghost">${soundOn() ? "🔊 音效已开启" : "🔇 音效已关闭"}</button><button id="btn-restart" class="btn ghost">重新入职</button></div>`, "settings", true);
+    bindThemePicker();
     $("#btn-sound").onclick = () => { toggleSound(); $("#btn-sound").textContent = soundOn() ? "🔊 音效已开启" : "🔇 音效已关闭"; };
     $("#btn-restart").onclick = onRestart;
   }
@@ -1750,6 +1769,6 @@ window.UI = (function () {
     showDayTransition, renderSkillBar, showReply, showDayReport, showEnding,
     renderCreate, refreshTitle, updateTopbar, statLabels, toggleSound, showReview,
     // fitFontSize 仅供自动化测试校准卡片排版（不在产品流程中直接调用）
-    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings
+    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings, showThemes
   };
 })();

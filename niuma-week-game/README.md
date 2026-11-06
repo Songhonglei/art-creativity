@@ -4,7 +4,7 @@
 
 > 本游戏纯属虚构。如有雷同，说明你也在上班。
 
-当前版本：**v3.15**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
+当前版本：**v3.16**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
 
 在线体验：[牛马求生记](https://niuma-week-game.vercel.app/)。由 Vercel 独立部署，关联本仓库 `main` 分支的 `niuma-week-game/` 目录，推送更新后自动发布。
 
@@ -28,6 +28,7 @@ python3 -m http.server 8080
 - **一周七天，周一至周六每天六个时段、周日两个时段**：每日 Boss、随机事件、两轮追问和跨天连锁，让前面的选择影响后续剧情。
 - **六项属性的取舍**：心态、KPI / 现金流、人缘 / 士气、信任、摸鱼 / 自由度和存款。主页面紧凑显示四项，完整数值在工牌中查看。
 - **IM / OA 式界面**：移动端优先，聊天内部滚动、选项居中、背包浮层与道具卡片；限时题在打开抽屉或切入后台时暂停。
+- **四种外观主题**：深色、浅色、护眼、魔幻，可在首页「主题」或游戏内设置中切换；偏好独立保存，刷新或重新入职后保留。
 - **十二类基础结局与三十六个成就**：不同职级采用不同的绩效与评语体系，人设会改变结局文案。
 - **结局与周报分享**：生成图片，可预览、下载，在设备支持时调用系统分享。
 
@@ -39,8 +40,9 @@ python3 -m http.server 8080
 niuma-week-game/
 ├── index.html          # 页面入口
 ├── manifest.json       # 添加到主屏幕的配置
-├── css/style.css       # 页面样式
+├── css/                # 页面样式与四种主题
 ├── js/
+│   ├── theme.js        # 主题初始化与偏好保存
 │   ├── state.js        # 存档与数据校验
 │   ├── engine.js       # 事件抽取、判定、属性、结局与成就
 │   ├── ui.js           # 页面、弹层、倒计时与分享图
@@ -60,6 +62,7 @@ niuma-week-game/
 ```bash
 python3 tools/validate_data.py
 node tools/test_game.js
+node tools/test_theme.js
 node tools/test_simulate.js
 node tools/simulate.js 1200 --seed=20261014
 ```
