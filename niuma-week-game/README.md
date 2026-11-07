@@ -4,7 +4,7 @@
 
 > 本游戏纯属虚构。如有雷同，说明你也在上班。
 
-当前版本：**v3.18**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
+当前版本：**v3.19**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
 
 在线体验：[牛马求生记](https://niuma-week-game.vercel.app/)。由 Vercel 独立部署，关联本仓库 `main` 分支的 `niuma-week-game/` 目录，推送更新后自动发布。
 
@@ -33,6 +33,8 @@ python3 -m http.server 8080
 - **关系回响**：替小卷担责后收到原始日志；公开质疑赖前辈后遇到共享记录消失。是否留痕会改变后续可选回应，新剧情占普通时段。
 - **跨局职场档案**：记录三条职级线的 33 类基础结局、36 个成就和最佳评级；首页或结局页进入。最近一次旧结局会自动导入，未解锁内容只展示线索。
 - **结局与周报分享**：生成跟随当前主题配色的图片，可预览、下载，在设备支持时调用系统分享。
+- **趣味目标**：每局提供两个，可全接、只接一个或忽略；从接受时开始计数。完成收集同名档案贴纸，提前离职也保留，不增加属性或影响评级。旧存档续玩时可选择，旧结局不补发。
+- **道具与技能反馈**：新道具在当次回复中提示入包；发动技能或使用道具会在聊天区显示实际变化、剩余次数或待命范围。
 
 存档保存在当前浏览器的 `localStorage`。相同浏览器和域名下可以续玩；清理网站数据、换域名或换设备不会自动继承存档。
 
@@ -44,7 +46,8 @@ niuma-week-game/
 ├── manifest.json       # 添加到主屏幕的配置
 ├── css/                # 页面样式与四种主题
 ├── js/
-│   ├── collection.js   # 跨局结局与成就档案
+│   ├── collection.js   # 跨局结局、成就与贴纸档案
+│   ├── missions.js     # 每局可选趣味目标
 │   ├── theme.js        # 主题初始化与偏好保存
 │   ├── state.js        # 存档与数据校验
 │   ├── engine.js       # 事件抽取、判定、属性、结局与成就
@@ -67,6 +70,7 @@ python3 tools/validate_data.py
 node tools/test_game.js
 node tools/test_theme.js
 node tools/test_collection.js
+node tools/test_missions.js
 node tools/test_simulate.js
 node tools/simulate.js 1200 --seed=20261014
 ```

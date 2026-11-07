@@ -14,7 +14,7 @@ window.App = (function () {
       window.UI.showScreen("screen-create");
     });
     document.getElementById("btn-continue").addEventListener("click", () => {
-      if (window.GameState.load()) { enterMain(); resumeTurn(); }
+      if (window.GameState.load()) { prepareMissions(() => { enterMain(); resumeTurn(); }); }
     });
     document.getElementById("btn-settings").addEventListener("click", () => {
       window.UI.showSettings(() => {
@@ -69,9 +69,24 @@ window.App = (function () {
 
   function newGame(cfg) {
     window.GameState.fresh(cfg);
-    enterMain();
-    // 周一开场：新的一周，进入状态
-    window.UI.showDayTransition(st(), "start", nextSlot);
+    prepareMissions(() => {
+      enterMain();
+      window.UI.showDayTransition(st(), "start", nextSlot);
+    });
+  }
+
+  function syncStickers() {
+    return window.Collection.collectStickers(st());
+  }
+  function prepareMissions(onReady) {
+    syncStickers();
+    window.GameState.save();
+    if (st().missions?.status !== "pending" || st().done) { onReady(); return; }
+    window.UI.showMissionOffer(st(), ids => {
+      window.Missions.accept(st(), ids);
+      window.GameState.save();
+      onReady();
+    });
   }
 
   function enterMain() { window.UI.showScreen("screen-main"); }
@@ -149,6 +164,8 @@ window.App = (function () {
       s.slotIdx++;
       s.turn = null;
     }
+    window.GameState.save(); // 先保存目标进度，刷新后可补记尚未写入档案的贴纸。
+    res.newStickers = syncStickers();
     if (s.done) settleWeek();  // 致命回复尚未关闭也要保存完整结局，刷新可回看。
     window.GameState.save();
     window.UI.renderSidebar(s);
@@ -224,7 +241,7 @@ window.App = (function () {
     window.GameState.save();
     window.UI.renderSidebar(s);
     if (s.done) { finishWeek(); return; }
-    miniToast(r.label + " " + r.text);
+    window.UI.showActionFeedback(s, { ...r, label: window.CHARACTERS.items[id].name, emoji: window.CHARACTERS.items[id].emoji, status: id === "report" ? "已待命" : "已使用" });
   }
 
   function useSkill(slot, ev) {
@@ -239,7 +256,7 @@ window.App = (function () {
           window.GameState.save();
           window.UI.renderSidebar(s);
           window.UI.renderSkillBar(s, ev);
-          miniToast(r.label + " " + r.text);
+          window.UI.showActionFeedback(s, { ...r, label: src.name, emoji: src.emoji, status: "已生效", remaining: s.skillUses[key] });
         }
         return;
       }
@@ -249,7 +266,8 @@ window.App = (function () {
         window.GameState.save();
         window.UI.renderSidebar(s);
         window.UI.renderSkillBar(s, ev);
-        miniToast(armKind === "forceJudge" ? `⏳ 【${src.name}】已待命：仅在本题及追问中救场，未救场不扣次数。` : `⏳ 【${src.name}】已待命：甩锅事件中自动生效。`);
+        window.UI.showActionFeedback(s, { label: src.name, emoji: src.emoji, status: "已待命",
+          text: armKind === "forceJudge" ? "仅在本题及追问中救场，未救场不扣次数。" : "遇到甩锅时自动生效，生效后扣除次数。", delta: {}, remaining: s.skillUses[key] });
       } else miniToast("已有待命技能，请先完成本次选择");
     }
   }

@@ -117,7 +117,7 @@ window.UI = (function () {
     overlay(`<h2 id="dialog-title">${persona.emoji} ${esc(st.char.name)} · 工牌</h2>
       <p class="sheet-description">${esc(st.char.no)} · ${dept.emoji} ${esc(dept.name)} · ${esc(job.name)} · ${esc(persona.title)}</p>
       <div class="stats">${statRows(st.stats, st.char.job)}<div class="statrow"><span class="statlabel">${L.money}</span><span class="statval money">${moneyAbs(st.stats.money, st.char.job)}</span></div><p class="sheet-description">${esc(moneyTitle(st))}</p></div>
-      ${counterHtml(st)}<p class="goal">🎯 本周目标：${esc(job.goal)}</p>
+      ${counterHtml(st)}<p class="goal">🎯 本周目标：${esc(job.goal)}</p>${missionProgressHtml(st)}
       <p class="sheet-description">${st.char.job === "boss" ? "自由度不压低董事会评分；高自由度仍关联充分授权结局。" : "摸鱼越高，基础绩效中的这一项越低；高摸鱼也关联躺平结局，存在取舍。"}</p>
       ${packHtml(st, true)}`, "profile", true);
     bindPack($("#overlay-card"), st);
@@ -126,6 +126,49 @@ window.UI = (function () {
     overlay(`<h2 id="dialog-title">${st.char.job === "boss" ? "💼 公文包 · 技能" : "🎒 背包 · 技能"}</h2>${packHtml(st, true)}`, "pack", true);
     $("#side-toggle").setAttribute("aria-expanded", "true");
     bindPack($("#overlay-card"), st);
+  }
+  function missionProgressHtml(st) {
+    const m = st.missions;
+    if (!m) return "";
+    if (m.status !== "accepted") return `<section class="mission-progress"><h3>趣味目标</h3><p class="sheet-description">${m.status === "ignored" ? "本局已忽略" : "尚未选择"}</p></section>`;
+    return `<section class="mission-progress"><h3>趣味目标</h3>${m.selected.map(id => {
+      const g = window.Missions.get(id), n = m.progress[id], done = n >= g.target;
+      return `<article class="mission-row${done ? " completed" : ""}"><span class="mission-emoji" aria-hidden="true">${g.emoji}</span><div><strong>${esc(g.name)}</strong><p>${esc(window.Missions.describe(st, id))}</p><progress value="${n}" max="${g.target}" aria-label="${esc(g.name)}进度"></progress></div><span class="mission-count">${done ? "✓ 达成" : `${n} / ${g.target}`}</span></article>`;
+    }).join("")}<p class="sheet-description">完成即收集同名贴纸；提前结束本局也保留。</p></section>`;
+  }
+  function showMissionOffer(st, onChoose) {
+    const skills = ["persona", "job"].map(slot => ({ slot, skill: (slot === "persona" ? C().personas[st.char.persona] : C().jobs[st.char.job]).skill })).filter(x => x.skill);
+    overlay(`<h2 id="dialog-title">🎯 这局顺手挑战</h2><p class="sheet-description">可接两个、只接一个，或忽略。完成收集同名贴纸，属性与评级照常。</p>
+      <fieldset class="mission-offers"><legend class="sr-only">选择本局趣味目标</legend>${st.missions.offered.map(id => {
+        const g = window.Missions.get(id);
+        return `<label class="mission-offer"><input type="checkbox" name="mission" value="${id}" aria-label="${esc(g.name)}" checked><span class="mission-emoji" aria-hidden="true">${g.emoji}</span><span><strong>${esc(g.name)}</strong><span class="mission-description">${esc(window.Missions.describe(st, id))}</span></span></label>`;
+      }).join("")}</fieldset>
+      <details class="mission-loadout"><summary>本局道具与技能</summary><div>${st.items.map(id => {
+        const it = C().items[id]; return `<p><strong>${it.emoji} ${esc(it.name)} · 已入包</strong><span>${esc(st.char.job === "boss" && it.descBoss || it.desc)}</span></p>`;
+      }).join("")}${skills.map(({ slot, skill: sk }) => `<p><strong>${sk.emoji} ${esc(sk.name)} · ${sk.trigger === "passive" ? "常驻" : `剩余 ${st.skillUses[slot]} 次`}</strong><span>${esc(sk.desc)}</span></p>`).join("")}</div></details>
+      <div class="mission-actions"><button id="mission-ignore" class="btn ghost">忽略本局目标</button><button id="mission-accept" class="btn primary">接受 2 个</button></div>`, "mission-sheet");
+    const checked = () => $$("#overlay-card input[name=mission]:checked").map(el => el.value);
+    $$("#overlay-card input[name=mission]").forEach(input => input.addEventListener("change", () => {
+      const count = checked().length, button = $("#mission-accept");
+      button.disabled = !count; button.textContent = count ? `接受 ${count} 个` : "请选择目标";
+    }));
+    const finish = ids => { closeOverlay(); onChoose(ids); };
+    $("#mission-ignore").onclick = () => finish([]);
+    $("#mission-accept").onclick = () => { const ids = checked(); if (ids.length) finish(ids); };
+    $("#mission-accept").focus({ preventScroll: true });
+  }
+  function feedbackCard(emoji, title, text) {
+    return `<div class="gain-card"><span class="gain-icon" aria-hidden="true">${emoji}</span><div><strong>${esc(title)}</strong><p>${esc(text)}</p></div></div>`;
+  }
+  function showActionFeedback(st, result) {
+    const body = $("#event-card .event-body");
+    if (!body) return;
+    const remaining = result.remaining == null ? "" : ` · 剩余 ${result.remaining} 次`;
+    const html = feedbackCard(result.emoji || "⚡", `${result.label} · ${result.status}${remaining}`, result.text);
+    const changes = Object.values(result.delta || {}).some(v => v !== 0) ? `<div class="deltas">${deltaChips(result.delta, st.char.job)}</div>` : "";
+    body.insertAdjacentHTML("beforeend", `<div class="action-feedback" role="status">${html}${changes}${resourceFeedback(st, result.delta)}</div>`);
+    const card = $("#event-card"), last = body.lastElementChild;
+    card.scrollTo({ top: card.scrollTop + last.getBoundingClientRect().top - card.getBoundingClientRect().top - 12, behavior: scrollBehavior() });
   }
   function renderSidebar(st) {
     updateTopbar(st);
@@ -544,7 +587,7 @@ window.UI = (function () {
     card.innerHTML = (dismissible ? `<div class="sheet-controls"><button class="sheet-handle" aria-label="下拉关闭弹层"></button><button class="sheet-close tb-btn" aria-label="关闭弹层">×</button></div>` : "") + html;
     card.style.transform = ""; card.style.opacity = "";
     card.setAttribute("tabindex", "-1");
-    if (card.querySelector("#dialog-title")) card.setAttribute("aria-labelledby", "dialog-title");
+    if (card.querySelector("#dialog-title")) { card.removeAttribute("aria-label"); card.setAttribute("aria-labelledby", "dialog-title"); }
     else { card.removeAttribute("aria-labelledby"); card.setAttribute("aria-label", cls === "report" ? "日报" : cls === "reply" ? "本次选择结果" : "日期转场"); }
     layer.classList.remove("hidden");
     $$(".screen").forEach(s => { s.inert = true; });
@@ -642,6 +685,14 @@ window.UI = (function () {
     let html = `<div class="reply-emoji">${res.judged === true ? "🎯" : res.judged === false ? "💥" : "💬"}</div>`;
     html += `<div class="reply-text">${esc(res.reply)}</div>`;
     (res.meta || []).forEach(m => { html += `<div class="meta-line">${esc(m)}</div>`; });
+    (res.newItems || []).forEach(id => {
+      const it = C().items[id];
+      if (it) html += feedbackCard(it.emoji, `${it.name} · 已入包`, window.App.state().char.job === "boss" && it.descBoss || it.desc);
+    });
+    (res.completedGoals || []).forEach(id => {
+      const g = window.Missions.get(id), isNew = (res.newStickers || []).includes(id);
+      html += feedbackCard(g.emoji, `目标达成 · ${g.name}`, isNew ? "新贴纸已记入职场档案。" : "本局目标完成，同名贴纸已收集过。" );
+    });
     html += `<div class="deltas">${deltaChips(res.delta, window.App.state().char.job)}</div>${resourceFeedback(window.App.state(), res.delta)}`;
     if (window.App.state().done) {
       html += `<button id="ov-btn" class="btn primary">……</button>`;
@@ -859,7 +910,7 @@ window.UI = (function () {
           </div>
         </div>
         <div class="ach-list">${achHtml}</div>
-        ${collectionHtml}
+        ${missionProgressHtml(st)}${collectionHtml}
         <canvas id="share-canvas" width="750" height="1320" class="share-canvas hidden" aria-hidden="true"></canvas>
         <div class="btn-row">
           <button id="btn-copy-text" class="btn ghost">复制发疯文案</button>
@@ -914,10 +965,14 @@ window.UI = (function () {
         const hint = persona ? `换成${persona.name}，试试属于这个人设的选择。` : "继续尝试不同的选择，完成后会记入档案。";
         return `<article class="collection-card${got ? " unlocked" : ""}"><span class="collection-icon" aria-hidden="true">${got ? a.emoji : "🔒"}</span><h3>${got ? esc(bossVersion && a.bossName || a.name) : "未解锁成就"}</h3><p>${got ? esc(bossVersion && a.bossDesc || a.desc) : esc(hint)}</p></article>`;
       }).join("")}</div>`;
+      const stickers = `<p class="sheet-description">完成自选趣味目标后收集；贴纸不会增加初始属性。</p><div class="collection-grid">${window.Missions.catalog().slice().sort((a, b) => Number(state.stickers.includes(b.id)) - Number(state.stickers.includes(a.id))).map(g => {
+        const got = state.stickers.includes(g.id);
+        return `<article class="collection-card${got ? " unlocked" : ""}"><span class="collection-icon" aria-hidden="true">${got ? g.emoji : "🔒"}</span><h3>${esc(g.name)}</h3><p>${got ? "贴纸已收集" : esc(g.desc)}</p></article>`;
+      }).join("")}</div>`;
       $("#screen-collection").innerHTML = `<div class="collection-page"><header class="collection-header"><h2>职场档案</h2><button id="collection-back" class="btn ghost">返回</button></header>
-        <div class="collection-tabs" role="group" aria-label="档案分类"><button class="btn ghost" data-collection-tab="endings" aria-pressed="${tab === "endings"}">结局 ${summary.endings} / ${summary.endingTotal}</button><button class="btn ghost" data-collection-tab="achievements" aria-pressed="${tab === "achievements"}">成就 ${summary.achievements} / ${summary.achievementTotal}</button></div>
-        ${!summary.endings && !summary.achievements ? '<p class="collection-empty">完成一局后，结局和成就会留在这里。</p>' : ""}
-        ${tab === "endings" ? endingGroups : achievements}</div>`;
+        <div class="collection-tabs" role="group" aria-label="档案分类"><button class="btn ghost" data-collection-tab="endings" aria-pressed="${tab === "endings"}">结局 ${summary.endings} / ${summary.endingTotal}</button><button class="btn ghost" data-collection-tab="achievements" aria-pressed="${tab === "achievements"}">成就 ${summary.achievements} / ${summary.achievementTotal}</button><button class="btn ghost" data-collection-tab="stickers" aria-pressed="${tab === "stickers"}">贴纸 ${summary.stickers} / ${summary.stickerTotal}</button></div>
+        ${!summary.endings && !summary.achievements && tab !== "stickers" ? '<p class="collection-empty">完成一局后，结局和成就会留在这里。</p>' : ""}
+        ${tab === "endings" ? endingGroups : tab === "achievements" ? achievements : stickers}</div>`;
       $("#collection-back").onclick = () => { showScreen(returnScreen); if (returnScreen === "screen-title") refreshTitle(); };
       $$("[data-collection-tab]").forEach(button => { button.onclick = () => { tab = button.dataset.collectionTab; render(true); }; });
       if (focusTab) $(`[data-collection-tab="${tab}"]`).focus({ preventScroll: true });
@@ -1827,6 +1882,7 @@ window.UI = (function () {
     showDayTransition, renderSkillBar, showReply, showDayReport, showEnding,
     renderCreate, refreshTitle, updateTopbar, statLabels, toggleSound, showReview,
     // fitFontSize 仅供自动化测试校准卡片排版（不在产品流程中直接调用）
-    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings, showThemes, showCollection
+    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings, showThemes, showCollection,
+    showMissionOffer, showActionFeedback
   };
 })();

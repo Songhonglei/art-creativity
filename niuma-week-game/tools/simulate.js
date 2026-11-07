@@ -11,7 +11,7 @@ const FILES = [
   'data/characters.js', 'data/endings.js', 'data/achievements.js',
   'data/events_general.js', 'data/events_line_a.js', 'data/events_line_b.js',
   'data/events_line_c.js', 'data/events_boss.js', 'data/events_relations.js', 'data/filler.js',
-  'js/state.js', 'js/engine.js'
+  'js/state.js', 'js/engine.js', 'js/missions.js'
 ];
 for (const f of FILES) {
   vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), sandbox, { filename: f });
@@ -65,6 +65,7 @@ const code = `
     window.GameState.fresh({ job, persona: plist[Math.floor(i / jobs.length) % plist.length], dept: 'tech', name: '测试' + i, no: 'JJ' + i });
     let weekFillers = 0; const weekSeen = {};
     const st = window.GameState.data;
+    window.Missions.accept(st, st.missions.offered.slice(0, Math.floor(i / jobs.length) % 3));
     let guard = 0;
     let step = 0;
     while (!st.done && guard < 400) {

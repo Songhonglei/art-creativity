@@ -13,7 +13,7 @@ function setup(blocked = false, initial = null) {
   const ctx = vm.createContext({ window: {}, localStorage });
   for (const name of ['data/characters.js', 'data/endings.js', 'data/achievements.js', 'data/events_general.js',
     'data/events_line_a.js', 'data/events_line_b.js', 'data/events_line_c.js', 'data/events_boss.js',
-    'data/events_relations.js', 'data/filler.js', 'js/state.js', 'js/engine.js', 'js/collection.js']) {
+    'data/events_relations.js', 'data/filler.js', 'js/state.js', 'js/engine.js', 'js/missions.js', 'js/collection.js']) {
     vm.runInContext(fs.readFileSync(path.join(ROOT, name), 'utf8'), ctx);
   }
   const { GameState: S, Engine: E, Collection: C } = ctx.window; E.init();

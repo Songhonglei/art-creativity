@@ -15,7 +15,7 @@ function game(job = 'mid', persona = 'shetou') {
   for (const file of [
     'data/characters.js', 'data/endings.js', 'data/achievements.js',
     'data/events_general.js', 'data/events_line_a.js', 'data/events_line_b.js',
-    'data/events_line_c.js', 'data/events_boss.js', 'data/events_relations.js', 'data/filler.js', 'js/state.js', 'js/engine.js'
+    'data/events_line_c.js', 'data/events_boss.js', 'data/events_relations.js', 'data/filler.js', 'js/state.js', 'js/engine.js', 'js/missions.js'
   ]) vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), ctx, { filename: file });
   const { Engine: E, GameState: S } = ctx.window;
   E.init(); S.fresh({ job, persona });

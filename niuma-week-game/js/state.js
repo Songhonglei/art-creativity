@@ -46,6 +46,7 @@ window.GameState = {
       journal: [],         // 本周决策流水（周报回顾）
       startTs: Date.now()
     };
+    this.data.missions = window.Missions ? window.Missions.offer(this.data) : null;
     this.save();
   },
 
@@ -86,6 +87,7 @@ window.GameState = {
       if (!Number.isInteger(expireDay) || expireDay < 1 || expireDay > 7 || (!forced && expireDay < x.fireDay)) return [];
       return [forced ? { id, expireDay } : { eventId: id, fireDay: x.fireDay, expireDay }];
     });
+    if (window.Missions && d.char && window.CHARACTERS.jobs[d.char.job]) d.missions = window.Missions.normalize(d);
     d.forced = queue(d.forced, true);
     d.scheduled = queue(d.scheduled, false);
     d.items = [...new Set((Array.isArray(d.items) ? d.items : []).filter(id => own(window.CHARACTERS.items, id)))];

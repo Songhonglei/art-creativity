@@ -307,6 +307,7 @@ window.Engine = (function () {
       endReason: st.done ? (st.flags.resigned ? (st.char.job === "boss" ? "exit" : "resign") : "exhausted") : null }, entry));
     if (st.journal.length > 80) st.journal.splice(0, st.journal.length - 80);
     checkAchievements(st);
+    return window.Missions ? window.Missions.update(st, st.journal[st.journal.length - 1]) : [];
   }
 
   function itemResult(st, itemId, result) {
@@ -487,7 +488,8 @@ window.Engine = (function () {
       for (const k in choice.npc) st.npc[k] = (st.npc[k] || 0) + choice.npc[k];
     }
     if (choice.flag) st.flags[choice.flag] = true;
-    if (choice.item && !st.items.includes(choice.item)) st.items.push(choice.item);
+    const newItems = [];
+    if (choice.item && !st.items.includes(choice.item)) { st.items.push(choice.item); newItems.push(choice.item); }
     if (choice.overtime === true) st.counters.overtimeStreak++;
     if (choice.overtime === false) st.counters.overtimeStreak = 0;
     // 硬刚成功判定：显式 isDui（不再拿 gang 兼职，避免「加了刚值却没算硬刚」的歧义）
@@ -515,7 +517,7 @@ window.Engine = (function () {
     }
 
     // ---- 决策流水（周报回顾用）：谁、哪天、哪个时段、选了什么、代价是什么 ----
-    recordChange(st, {
+    const completedGoals = recordChange(st, {
       day: st.day, slot: st.slotIdx,
       evId: ev.id, title: eventTitle(st, ev), series: ev.series, rarity: ev.rarity || "common",
       text: choice.text,
@@ -533,11 +535,12 @@ window.Engine = (function () {
       flags: choice.flag ? [choice.flag] : [],
       counters: choice.counter ? (Array.isArray(choice.counter) ? choice.counter : [choice.counter]) : [],
       npc: choice.npc ? Object.keys(choice.npc) : [],
+      newItems,
       passed: ((st.counters.potPassed || 0) - (potGangBefore.potPassed || 0)) > 0,   // 甩锅成功：锅被转手
       kill: !!st.done
     });
 
-    return { reply, judged, meta, delta, followup: choice.followup || null };
+    return { reply, judged, meta, delta, newItems, completedGoals, followup: choice.followup || null };
   }
 
   function endDay(st) {

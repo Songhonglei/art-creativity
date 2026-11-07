@@ -26,13 +26,15 @@ window.Collection = (function () {
     };
   }
   function normalize(value) {
-    const clean = { version: 1, endings: {}, achievements: [], achievementJobs: {}, lastRun: null };
+    const clean = { version: 1, endings: {}, achievements: [], stickers: [], achievementJobs: {}, lastRun: null };
     if (!value || typeof value !== "object") return clean;
     const keys = new Set(catalog().map(e => e.key));
     Object.entries(value.endings && typeof value.endings === "object" ? value.endings : {}).forEach(([key, grade]) => {
       if (keys.has(key) && GRADES.includes(grade)) clean.endings[key] = grade;
     });
     clean.achievements = cleanDelta(value).achievements;
+    const stickerIds = new Set(window.Missions ? window.Missions.catalog().map(g => g.id) : []);
+    clean.stickers = [...new Set((Array.isArray(value.stickers) ? value.stickers : []).filter(id => stickerIds.has(id)))];
     for (const id of clean.achievements) {
       const job = value.achievementJobs && value.achievementJobs[id];
       if (Object.prototype.hasOwnProperty.call(window.CHARACTERS.jobs, job)) clean.achievementJobs[id] = job;
@@ -53,6 +55,7 @@ window.Collection = (function () {
       if (!memory.endings[key] || GRADES.indexOf(grade) < GRADES.indexOf(memory.endings[key])) memory.endings[key] = grade;
     }
     memory.achievements = [...new Set(memory.achievements.concat(saved.achievements))];
+    memory.stickers = [...new Set(memory.stickers.concat(saved.stickers))];
     memory.achievementJobs = Object.assign({}, saved.achievementJobs, memory.achievementJobs);
     return normalize(memory);
   }
@@ -60,12 +63,19 @@ window.Collection = (function () {
     memory = normalize(value);
     try { localStorage.setItem(KEY, JSON.stringify(memory)); } catch (e) { /* 本页仍可查看，跨刷新保存不可用 */ }
   }
+  function collectStickers(st) {
+    const state = read(), completed = window.Missions ? window.Missions.completed(st) : [];
+    const added = completed.filter(id => !state.stickers.includes(id));
+    if (added.length) { state.stickers.push(...added); write(state); }
+    return added;
+  }
   function record(st, ending) {
     const empty = { endings: [], achievements: [] };
     const persona = st && st.char && window.CHARACTERS.personas[st.char.persona];
     if (!st || !st.done || !persona || persona.job !== st.char.job || !ending || !GRADES.includes(ending.grade)) return empty;
     const key = st.char.job + "|" + ending.id;
     if (!catalog().some(e => e.key === key)) return empty;
+    collectStickers(st);
     const state = read();
     const runKey = [st.startTs || 0, st.char.no, st.char.job, st.char.persona, ending.id].join(":").slice(0, 180);
     if (state.lastRun && state.lastRun.key === runKey) return state.lastRun.delta;
@@ -88,7 +98,8 @@ window.Collection = (function () {
   function summary() {
     const state = read(), entries = catalog();
     return { endings: Object.keys(state.endings).length, endingTotal: entries.length,
-      achievements: state.achievements.length, achievementTotal: window.ACHIEVEMENTS.length };
+      achievements: state.achievements.length, achievementTotal: window.ACHIEVEMENTS.length,
+      stickers: state.stickers.length, stickerTotal: window.Missions ? window.Missions.catalog().length : 0 };
   }
-  return { catalog, read, record, importLastEnding, summary, cleanDelta };
+  return { catalog, read, record, importLastEnding, summary, cleanDelta, collectStickers };
 })();
