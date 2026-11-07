@@ -18,7 +18,8 @@ const out = {
     lineA: sandbox.window.EV_LINE_A,
     lineB: sandbox.window.EV_LINE_B,
     lineC: sandbox.window.EV_LINE_C,
-    bosses: sandbox.window.EV_BOSSES
+    bosses: sandbox.window.EV_BOSSES,
+    relations: sandbox.window.EV_RELATIONS
   }
 };
 process.stdout.write(JSON.stringify(out));

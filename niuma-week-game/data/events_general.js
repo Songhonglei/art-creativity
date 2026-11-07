@@ -41,7 +41,7 @@ window.EV_GENERAL = [
     ],
     "choices": [
       { "text": "低头看手机，装作没看见", "effects": { "fish": 3, "mood": -2, "trust": -2 },
-        "reply": "电梯一路无声。贾总看了你三眼，你看了手机三眼，双赢。", "followup": {
+        "reply": "电梯一路无声。贾总看了你三眼，你看了手机三眼，双赢。", "followup": { "id": "fb_general_01",
           "lines": ["电梯到 18 楼，贾总忽然开口。", "贾总：「小王，你这煎饼……哪家买的？」"],
           "choices": [
             { "text": "楼下那家，五块一个", "effects": { "trust": 3, "mood": 2 },
@@ -68,7 +68,7 @@ window.EV_GENERAL = [
                 "她手里捏着一份还没交的排期表，你手里捏着刚买的咖啡。"],
       "choices": [
         { "text": "低头看手机，装作没看见", "effects": { "fish": 3, "mood": -2, "trust": -2 },
-          "followup": {
+          "followup": { "id": "fb_general_02",
             "lines": ["电梯到 18 楼，小卷忽然开口。", "小卷：「老板，您也这么早？」"],
             "choices": [
               { "text": "随口一句「睡不着」", "effects": { "trust": 3, "mood": 2 },
@@ -128,7 +128,7 @@ window.EV_GENERAL = [
     "lines": ["晨会站会，每个人 30 秒说进展。", "轮到你了。上一位的「进展」说了三分钟。"],
     "choices": [
       { "text": "标准三件套：在做，在做，还没做完", "effects": { "kpi": 2, "trust": 2, "mood": -3 },
-        "reply": "你用 10 个字汇报了 8 小时的人生。", "followup": {
+        "reply": "你用 10 个字汇报了 8 小时的人生。", "followup": { "id": "fb_general_03",
           "lines": ["领导在群里发了一句「汇报要具体到小时」，然后抬头看向你。", "全会议室 12 个人的目光，同时落在你身上。"],
           "choices": [
             { "text": "当场补一份小时级明细", "overtime": true, "effects": { "trust": 5, "kpi": 3, "mood": -7, "fish": -4 },
@@ -156,7 +156,7 @@ window.EV_GENERAL = [
       "choices": [
         { "text": "标准三件套：在做，在做，还没做完", "effects": { "kpi": 2, "trust": 2, "mood": -3 },
           "reply": "你说了三句正确的废话，全场点头如啄米。原来「废话」和「指示」的区别，是说话的人坐哪。",
-          "followup": {
+          "followup": { "id": "fb_general_04",
             "lines": ["你随口补了一句：「以后汇报要具体到小时。」",
                       "全会议室低头记笔记，贾总已经在群里新建了一个模板。"],
             "choices": [
@@ -221,7 +221,7 @@ window.EV_GENERAL = [
     "lines": ["【红色横幅】@所有人：今晚出个紧急汇报，明早要。", "距离下班还有 5 分钟。"],
     "choices": [
       { "text": "秒回「收到」", "timid": true, "effects": { "trust": 5, "mood": -8, "fish": -5 },
-        "reply": "回复速度 0.8 秒，全群第二快。第一是那个回「收到+」的卷王。", "followup": {
+        "reply": "回复速度 0.8 秒，全群第二快。第一是那个回「收到+」的卷王。", "followup": { "id": "fb_general_05",
           "lines": ["贾总的头像闪了一下，私聊来了。", "贾总：「那你今晚几点走？」"],
           "choices": [
             { "text": "等汇报出来再走", "overtime": true, "effects": { "trust": 6, "kpi": 4, "mood": -10 },
@@ -239,7 +239,7 @@ window.EV_GENERAL = [
         "reply": "已读不回的勇气，是用明天的早饭会议换的。" },
       { "text": "【发疯】回「收到，但我今晚有安排」", "gang": 1, "isDui": true,
         "effects": { "trust": -8, "mood": 10 },
-        "reply": "安小姐私聊你：「什么安排这么重要？」你：「生活。」", "followup": {
+        "reply": "安小姐私聊你：「什么安排这么重要？」你：「生活。」", "followup": { "id": "fb_general_06",
           "lines": ["安小姐的头像亮了。HR 的私聊，永远比老板的可怕。", "安小姐：「方便说下是什么安排吗？」"],
           "choices": [
             { "text": "老实说：家里有事", "effects": { "mood": 6, "trust": -4 },
@@ -261,7 +261,7 @@ window.EV_GENERAL = [
                 "距离你和投资人的饭局，还有 5 分钟。"],
       "choices": [
         { "text": "秒回「收到」", "timid": true, "effects": { "trust": 5, "mood": -8, "fish": -5 },
-          "followup": {
+          "followup": { "id": "fb_general_07",
             "lines": ["董事会秘书的头像闪了一下，私聊来了。", "秘书：「那您今晚几点能出这版？」"],
             "choices": [
               { "text": "等材料出来再走", "overtime": true, "effects": { "trust": 6, "kpi": 4, "mood": -10 },
@@ -276,7 +276,7 @@ window.EV_GENERAL = [
         { "text": "装没看见，先吃饭", "effects": { "fish": 5, "mood": 2, "trust": -5 },
           "reply": "二十分钟后，董事会的电话直接打进来了——这就是「@所有人」和「@你」的区别。" },
         { "text": "【发疯】回「收到，但我今晚有安排」", "gang": 1, "isDui": true, "effects": { "trust": -8, "mood": 10 },
-          "followup": {
+          "followup": { "id": "fb_general_08",
             "lines": ["贾总的头像亮了。下属的私聊，通常意味着他自己也快扛不住了。", "贾总：「老板，今晚的会……要不要我替您？」"],
             "choices": [
               { "text": "「不用，我自己来」", "effects": { "mood": 6, "trust": -4 },
@@ -395,7 +395,7 @@ window.EV_GENERAL = [
     "lines": ["你刚进茶水间，聊得火热的同事们突然安静了。", "话题似乎和「名单」两个字有关。"],
     "choices": [
       { "text": "假装找杯子，倒水就走", "gossip": 1, "effects": { "mood": -3 },
-        "reply": "你端着空杯子走出茶水间，像端着什么都没发生。", "followup": {
+        "reply": "你端着空杯子走出茶水间，像端着什么都没发生。", "followup": { "id": "fb_general_09",
           "lines": ["你刚要转身，赖前辈探进头来。", "赖前辈：「诶，你们刚聊什么聊得这么开心？」"],
           "choices": [
             { "text": "「没什么，聊打印机」", "effects": { "mood": 2, "fish": 2 },
@@ -425,7 +425,7 @@ window.EV_GENERAL = [
                 "话题似乎和「名单」两个字有关——而那份名单，是你签的。"],
       "choices": [
         { "text": "假装找杯子，倒水就走", "gossip": 1, "effects": { "mood": -3 },
-          "followup": {
+          "followup": { "id": "fb_general_10",
             "lines": ["你刚要转身，赖前辈探进头来。", "赖前辈：「老板，刚才那事儿……您听到了？」"],
             "choices": [
               { "text": "「没什么，聊打印机」", "effects": { "mood": 2, "fish": 2 },
@@ -482,7 +482,7 @@ window.EV_GENERAL = [
     "lines": ["余光里，贾总正朝你的工位走来，距离 8 米。", "你屏幕上是招聘软件。"],
     "choices": [
       { "item": "film", "text": "闪电切屏，假装工作", "timid": true, "effects": { "fish": 3, "trust": 3, "mood": -4 },
-        "reply": "切换速度 0.3 秒。你的反应速度，是被职场练出来的肌肉。第二天你在屏幕上贴了防窥膜，从此屏幕只对你一个人开放。", "followup": {
+        "reply": "切换速度 0.3 秒。你的反应速度，是被职场练出来的肌肉。第二天你在屏幕上贴了防窥膜，从此屏幕只对你一个人开放。", "followup": { "id": "fb_general_11",
           "lines": ["贾总没走，站在你旁边看了三秒。", "贾总：「你刚才那个表，是上周的吧？」"],
           "choices": [
             { "text": "「是，我马上更新」", "effects": { "trust": 4, "kpi": 2, "mood": -5 },
@@ -519,7 +519,7 @@ window.EV_GENERAL = [
                 "你屏幕上是招聘软件——「招人的那种」。他在门口探头：「老板，我们是不是该补个人？」"],
       "choices": [
         { "text": "闪电切屏，假装在看财报", "timid": true, "effects": { "fish": 3, "trust": 3, "mood": -4 },
-          "followup": {
+          "followup": { "id": "fb_general_12",
             "lines": ["贾总没走，站在你旁边看了三秒。", "贾总：「您刚才那个表，是上个月的吧？」"],
             "choices": [
               { "text": "「是，我马上更新」", "effects": { "trust": 4, "kpi": 2, "mood": -5 },
@@ -615,7 +615,7 @@ window.EV_GENERAL = [
     "lines": ["下午三点，群里发起奶茶拼单。", "这是今天最像人过的日子。"],
     "choices": [
       { "text": "发起拼单，亲自当团长", "effects": { "bond": 10, "mood": 4, "fish": -3, "money": -0.5 },
-        "reply": "你抱着 14 杯奶茶走回工位，像抱着团队凝聚力。", "followup": {
+        "reply": "你抱着 14 杯奶茶走回工位，像抱着团队凝聚力。", "followup": { "id": "fb_general_13",
           "lines": ["群里开始对账。", "你数了三遍：14 杯，转账 11 个人。"],
           "choices": [
             { "text": "自己垫上，群里不提", "effects": { "money": -0.5, "bond": 8, "mood": -5 },
@@ -642,7 +642,7 @@ window.EV_GENERAL = [
                 "你翻了两遍群记录：14 个人的单，没有你。"],
       "choices": [
         { "text": "直接下单全公司，备注不用还", "effects": { "bond": 10, "mood": 4, "fish": -3, "money": -0.5 },
-          "followup": {
+          "followup": { "id": "fb_general_14",
             "lines": ["群里开始刷屏。", "有人问：「这单谁付的？」下面一堆人回：「不知道。」"],
             "choices": [
               { "text": "不解释，让他们猜", "effects": { "money": -0.5, "bond": 8, "mood": -5 },
@@ -811,7 +811,7 @@ window.EV_GENERAL = [
     "lines": ["保洁王阿姨在擦你工位旁的桌子。", "她瞥了一眼你的屏幕：「小伙子，脸色比上周差了。」"],
     "choices": [
       { "text": "聊两句心里话", "counter": "wangTalks", "npc": { "wang": 15 }, "effects": { "mood": 8 },
-        "reply": "王阿姨边擦边听，末了说：「工作只是生活的一部分。」扫地僧，又渡一人。", "followup": {
+        "reply": "王阿姨边擦边听，末了说：「工作只是生活的一部分。」扫地僧，又渡一人。", "followup": { "id": "fb_general_15",
           "lines": ["王阿姨把抹布叠了叠，压低声音。", "王阿姨：「你打算在这儿干多久啊？」"],
           "choices": [
             { "text": "先干着看吧", "effects": { "mood": 4 },
@@ -839,7 +839,7 @@ window.EV_GENERAL = [
       "choices": [
         { "text": "聊两句心里话", "npc": { "wang": 15 }, "counter": "wangTalks", "effects": { "mood": 8 },
           "reply": "你把最近的事说了两句。她听完只说了一句：「钱的事我不懂，但你这几个月，没笑过。」",
-          "followup": {
+          "followup": { "id": "fb_general_16",
             "lines": ["王阿姨把抹布叠了叠，压低声音。", "王阿姨：「老板，你这摊子，打算干多久啊？」"],
             "choices": [
               { "text": "先干着看吧", "effects": { "mood": 4 },

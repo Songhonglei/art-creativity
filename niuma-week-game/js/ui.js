@@ -6,11 +6,13 @@ window.UI = (function () {
 
   // ---------- 音效 ----------
   let audioCtx = null;
-  function soundOn() { return localStorage.getItem("niuma_sound") !== "off"; }
+  let soundEnabled = true;
+  try { soundEnabled = localStorage.getItem("niuma_sound") !== "off"; } catch (e) { /* 使用内存默认值 */ }
+  function soundOn() { return soundEnabled; }
   function toggleSound() {
-    const v = localStorage.getItem("niuma_sound") === "off" ? "on" : "off";
-    localStorage.setItem("niuma_sound", v);
-    return v === "on";
+    soundEnabled = !soundOn();
+    try { localStorage.setItem("niuma_sound", soundEnabled ? "on" : "off"); } catch (e) { /* 禁用存储仍可切换本次页面 */ }
+    return soundEnabled;
   }
   function beep(freq, dur, delay, type) {
     if (!soundOn()) return;
@@ -184,7 +186,7 @@ window.UI = (function () {
     const usesTag = (sk, n) => (sk && sk.trigger === "passive") ? "" : `<span class="uses">×${n}</span>`;
     if (ps) html += `<div class="skill"><div class="skill-heading"><span aria-hidden="true">${ps.emoji}</span><strong>${esc(ps.name)}</strong> ${usesTag(ps, st.skillUses.persona)}</div><p class="skill-description">${esc(ps.desc)}</p></div>`;
     if (job.skill) html += `<div class="skill"><div class="skill-heading"><span aria-hidden="true">${job.skill.emoji}</span><strong>${esc(job.skill.name)}</strong> ${usesTag(job.skill, st.skillUses.job)}</div><p class="skill-description">${esc(job.skill.desc)}</p></div>`;
-    if (st.armed) html += `<div class="skill armed">⏳ 技能已待命，${T(st.char.job).armed}</div>`;
+    if (st.armed) html += `<div class="skill armed">⏳ 技能已待命，${st.armed.kind === "forceJudge" ? "仅在本题及追问中救场，未救场不扣次数" : T(st.char.job).armed}</div>`;
     html += `</div>`;
     if (descriptions && !replyPending && !st.done) {
       const skills = Engine.manualSkills(st, renderedEvent);
@@ -330,7 +332,9 @@ window.UI = (function () {
       const need = c.needItem ? ` <span class="need">需${C().items[c.needItem].name}</span>` : "";
       const gang = (c.gang || c.isDui) ? `<span class="tag gang">刚</span>` : "";
       const isCrazy = /发疯/.test(c.text);
-      ch += `<button class="choice${isCrazy ? " crazy" : ""}" data-i="${i}">${gang}<span class="choice-text">${esc(c.text)}</span>${need}</button>`;
+      const cost = Engine.choiceCost(c), affordable = Engine.canAfford(st, c);
+      const expense = cost ? `<span class="choice-cost">支出 ${moneyAbs(cost, st.char.job)}${affordable ? "" : " · 余额不足"}</span>` : "";
+      ch += `<button class="choice${isCrazy ? " crazy" : ""}" data-i="${i}"${affordable ? "" : " disabled"}>${gang}<span class="choice-text">${esc(c.text)}</span>${need}${expense}</button>`;
     });
     $("#choices").innerHTML = ch;
     $$("#choices .choice").forEach(btn => {
@@ -339,7 +343,7 @@ window.UI = (function () {
         window.App.choose(parseInt(btn.dataset.i, 10));
       });
     });
-    const first = $("#choices .choice");
+    const first = $("#choices .choice:not(:disabled)");
     if (first && document.activeElement === document.body) {
       try { first.focus({ preventScroll: true }); } catch (e) { /* 忽略 */ }
     }
@@ -817,6 +821,9 @@ window.UI = (function () {
     const line1 = ending.text.split("\n")[0];
     const eName = esc(ending.name), eText = esc(ending.text), eLine1 = esc(line1);
     const statsHtml = statRows(st.stats, st.char.job);
+    const collected = window.Collection.cleanDelta(options.collectionNew);
+    const newCount = collected.endings.length + collected.achievements.length;
+    const collectionHtml = `<div class="collection-result">${newCount ? `<strong>本局新收集</strong><span>${collected.endings.length} 个结局 · ${collected.achievements.length} 个成就</span>` : '<strong>本局已归档</strong>'}<button id="ending-collection" class="btn ghost">查看职场档案</button></div>`;
 
     let achHtml = "";
     Engine.achievementsFor(st).forEach(a => {
@@ -852,6 +859,7 @@ window.UI = (function () {
           </div>
         </div>
         <div class="ach-list">${achHtml}</div>
+        ${collectionHtml}
         <canvas id="share-canvas" width="750" height="1320" class="share-canvas hidden" aria-hidden="true"></canvas>
         <div class="btn-row">
           <button id="btn-copy-text" class="btn ghost">复制发疯文案</button>
@@ -879,11 +887,42 @@ window.UI = (function () {
       overlay(`<h2 id="dialog-title">${visible ? esc(a.name) : "隐藏成就"}</h2><p class="sheet-description">${visible ? esc(a.desc) : "隐藏成就 · 用这个人设打通属于他的结局"}</p>`, "info", true);
     }));
     $("#btn-review").addEventListener("click", () => showReview(st));
+    $("#ending-collection").addEventListener("click", () => showCollection("screen-ending", st.char.job));
     $("#btn-copy-text").addEventListener("click", () => copyText(endingCopyText(st, ending)));
     $("#btn-save-card").addEventListener("click", () => {
       drawShareCard(st, ending);
       showImagePreview($("#share-canvas").toDataURL("image/png"), `牛马求生记-${ending.name}.png`, "本周结局卡片");
     });
+  }
+
+  function showCollection(returnScreen = "screen-title", selectedJob = "staff") {
+    let tab = "endings";
+    const render = (focusTab = false) => {
+      const state = window.Collection.read(), summary = window.Collection.summary(), catalog = window.Collection.catalog();
+      const endingGroups = Object.entries(C().jobs).map(([job, info]) => {
+        const entries = catalog.filter(e => e.job === job).sort((a, b) => Number(!!state.endings[b.key]) - Number(!!state.endings[a.key]));
+        const seen = entries.filter(e => state.endings[e.key]).length;
+        return `<details class="collection-group"${job === selectedJob ? " open" : ""}><summary>${info.emoji} ${esc(info.name)}<span>${seen} / ${entries.length}</span></summary><div class="collection-grid">${entries.map(e => {
+          const grade = state.endings[e.key];
+          const rating = job === "boss" ? (Engine.BOSS_BANDS.find(b => b.grade === grade) || {}).word : grade;
+          return `<article class="collection-card${grade ? " unlocked" : ""}"><span class="collection-icon" aria-hidden="true">${grade ? e.emoji : "🔒"}</span><h3>${grade ? esc(e.name) : "未解锁结局"}</h3><p>${grade ? `最佳评级：${esc(rating || grade)}` : esc(e.hint)}</p></article>`;
+        }).join("")}</div></details>`;
+      }).join("");
+      const achievements = `<div class="collection-grid">${window.ACHIEVEMENTS.slice().sort((a, b) => Number(state.achievements.includes(b.id)) - Number(state.achievements.includes(a.id))).map(a => {
+        const got = state.achievements.includes(a.id), persona = a.persona && C().personas[a.persona];
+        const bossVersion = state.achievementJobs[a.id] === "boss";
+        const hint = persona ? `换成${persona.name}，试试属于这个人设的选择。` : "继续尝试不同的选择，完成后会记入档案。";
+        return `<article class="collection-card${got ? " unlocked" : ""}"><span class="collection-icon" aria-hidden="true">${got ? a.emoji : "🔒"}</span><h3>${got ? esc(bossVersion && a.bossName || a.name) : "未解锁成就"}</h3><p>${got ? esc(bossVersion && a.bossDesc || a.desc) : esc(hint)}</p></article>`;
+      }).join("")}</div>`;
+      $("#screen-collection").innerHTML = `<div class="collection-page"><header class="collection-header"><h2>职场档案</h2><button id="collection-back" class="btn ghost">返回</button></header>
+        <div class="collection-tabs" role="group" aria-label="档案分类"><button class="btn ghost" data-collection-tab="endings" aria-pressed="${tab === "endings"}">结局 ${summary.endings} / ${summary.endingTotal}</button><button class="btn ghost" data-collection-tab="achievements" aria-pressed="${tab === "achievements"}">成就 ${summary.achievements} / ${summary.achievementTotal}</button></div>
+        ${!summary.endings && !summary.achievements ? '<p class="collection-empty">完成一局后，结局和成就会留在这里。</p>' : ""}
+        ${tab === "endings" ? endingGroups : achievements}</div>`;
+      $("#collection-back").onclick = () => { showScreen(returnScreen); if (returnScreen === "screen-title") refreshTitle(); };
+      $$("[data-collection-tab]").forEach(button => { button.onclick = () => { tab = button.dataset.collectionTab; render(true); }; });
+      if (focusTab) $(`[data-collection-tab="${tab}"]`).focus({ preventScroll: true });
+    };
+    render(); showScreen("screen-collection");
   }
 
   function showImagePreview(url, filename, title) {
@@ -1071,6 +1110,8 @@ window.UI = (function () {
   }
 
   const CAPTIONS = {
+    resign: ["你主动交出了辞职信。这一局由你收尾，下一站去哪里，轮到你自己决定。"],
+    exit: ["你签下退出协议，主动套现离场。经营告一段落，接下来把时间还给自己。"],
     kill: ["就是这一笔。心态归零，本周提前收工——连工位上的绿萝都不知道该替谁难过。",
            "收官之笔：你把自己用完了。邮箱还在，人已经下班（永久）了。"],
     chain: ["这句话被记下了。第二天，账单准时送到你桌上。",
@@ -1147,7 +1188,9 @@ window.UI = (function () {
     const mood = d.mood || 0;
     let pool;
     const pick = (name, def) => (over && over[name]) ? over[name] : def;
-    if (j.kill) pool = CAPTIONS.kill;
+    if (j.endReason === "resign" || j.evId === "__item_resign") pool = CAPTIONS.resign;
+    else if (j.endReason === "exit" || j.evId === "__item_exit") pool = CAPTIONS.exit;
+    else if (j.kill) pool = CAPTIONS.kill;
     else if (j.chain) pool = CAPTIONS.chain;
     else if (j.flags && j.flags.length) pool = CAPTIONS.flag;
     else if (j.cdelta && j.cdelta.pot > 0) pool = CAPTIONS.pot;
@@ -1784,6 +1827,6 @@ window.UI = (function () {
     showDayTransition, renderSkillBar, showReply, showDayReport, showEnding,
     renderCreate, refreshTitle, updateTopbar, statLabels, toggleSound, showReview,
     // fitFontSize 仅供自动化测试校准卡片排版（不在产品流程中直接调用）
-    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings, showThemes
+    showErrorBanner, hideErrorBanner, fitFontSize, confirmAction, showSettings, showThemes, showCollection
   };
 })();

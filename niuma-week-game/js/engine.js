@@ -10,7 +10,7 @@ window.Engine = (function () {
   let ALL = [], BY_ID = {};
 
   function init() {
-    ALL = [].concat(window.EV_GENERAL, window.EV_LINE_A, window.EV_LINE_B, window.EV_LINE_C, window.EV_BOSSES);
+    ALL = [].concat(window.EV_GENERAL, window.EV_LINE_A, window.EV_LINE_B, window.EV_LINE_C, window.EV_BOSSES, window.EV_RELATIONS || []);
     BY_ID = {};
     ALL.concat(window.EV_FILLER || []).forEach(e => { BY_ID[e.id] = e; });
   }
@@ -163,6 +163,7 @@ window.Engine = (function () {
   function filterChoices(st, choices) {
     return (choices || []).filter(c => {
       if (c.needItem && !st.items.includes(c.needItem)) return false;
+      if (!condOk(c.cond, st)) return false;
       if (c.hidden) {
         const hs = Array.isArray(c.hidden) ? c.hidden : [c.hidden];
         if (!hs.includes(st.char.persona)) return false;
@@ -170,6 +171,9 @@ window.Engine = (function () {
       return true;
     });
   }
+
+  function choiceCost(choice) { return Math.max(0, -((choice.effects || {}).money || 0)); }
+  function canAfford(st, choice) { return st.stats.money + 1e-9 >= choiceCost(choice); }
 
   // 事件标题：允许职级变体覆盖（老板线的标题常常需要换人称）
   function eventTitle(st, ev) {
@@ -194,7 +198,7 @@ window.Engine = (function () {
     return slot ? { kind: st.armed, slot } : null;
   }
 
-  function armSkill(st, skillId, slot) {
+  function armSkill(st, skillId, slot, ev) {
     if (st.armed) return false;
     const key = slot || ["persona", "job"].find(k => {
       const src = (k === "job" ? jobOf(st) : personaOf(st)).skill;
@@ -204,9 +208,14 @@ window.Engine = (function () {
     const src = (key === "job" ? jobOf(st) : personaOf(st)).skill;
     if (!src || src.arm !== skillId || st.skillUses[key] <= 0) return false;
     st.armed = { kind: skillId, slot: key };
+    if (skillId === "forceJudge") st.armed.eventId = (ev && ev.id) || (st.turn && st.turn.eventId) || null;
     recordChange(st, { kind: "skill", evId: "__skill_" + src.id,
       title: "【技能】" + src.name, text: "发动【" + src.name + "】（待命）", series: "story", delta: {} });
     return true;
+  }
+
+  function closeEvent(st, eventId) {
+    if (st.armed && st.armed.kind === "forceJudge" && (!st.armed.eventId || st.armed.eventId === eventId)) st.armed = null;
   }
 
   function personaOf(st) { return window.CHARACTERS.personas[st.char.persona] || {}; }
@@ -294,7 +303,8 @@ window.Engine = (function () {
     if (!Array.isArray(st.journal)) st.journal = [];
     st.journal.push(Object.assign({ day: st.day, slot: st.slotIdx, kind: "choice", rarity: "common",
       judged: null, isDui: false, overtime: false, timid: false, round: 0, auto: false,
-      cdelta: {}, chain: null, flags: [], counters: [], npc: [], passed: false, kill: !!st.done }, entry));
+      cdelta: {}, chain: null, flags: [], counters: [], npc: [], passed: false, kill: !!st.done,
+      endReason: st.done ? (st.flags.resigned ? (st.char.job === "boss" ? "exit" : "resign") : "exhausted") : null }, entry));
     if (st.journal.length > 80) st.journal.splice(0, st.journal.length - 80);
     checkAchievements(st);
   }
@@ -308,6 +318,12 @@ window.Engine = (function () {
   }
 
   function resolveChoice(st, ev, choice) {
+    if (!canAfford(st, choice)) return { blocked: true, reply: "余额不足", judged: null, meta: [], delta: {}, followup: null };
+    const pending = armedSkill(st);
+    if (pending && pending.kind === "forceJudge") {
+      if (!pending.eventId && ev.series === "blame") pending.eventId = ev.id;
+      if (pending.eventId !== ev.id) st.armed = null;
+    }
     const before = JSON.parse(JSON.stringify(st.stats));
     const potGangBefore = { pot: st.pot, gang: st.gang, gossip: st.gossip, potPassed: st.counters.potPassed };
     const meta = [];
@@ -525,6 +541,7 @@ window.Engine = (function () {
   }
 
   function endDay(st) {
+    if (st.armed && st.armed.kind === "forceJudge") st.armed = null;
     // 周三活下来
     if (st.day === 3) st.flags.surviveWed = true;
     // 睡一觉，心态小幅回血（牛马也要喘口气）
@@ -796,7 +813,7 @@ window.Engine = (function () {
     init, byId, pickEvent, resolveChoice, endDay, computeEnding,
     applyPersonaEnding,
     checkAchievements, finalAchievements, achievementsFor, useItem, useManualAny, armSkill,
-    manualSkills, visibleChoices, filterChoices, eventLines, eventTitle, variantOf, personaOf, jobOf,
+    manualSkills, visibleChoices, filterChoices, choiceCost, canAfford, closeEvent, eventLines, eventTitle, variantOf, personaOf, jobOf,
     perfScore, finalGrade, GRADE_BANDS, BOSS_BANDS, MID_LUCK, rollMidLuck,   // perfScore/MID_LUCK 供平衡调试
     slotsThisDay, isDailyBoss,
     SLOT_KEYS, SLOT_LABELS, DAY_NAMES

@@ -10,7 +10,7 @@ vm.createContext(sandbox);
 const FILES = [
   'data/characters.js', 'data/endings.js', 'data/achievements.js',
   'data/events_general.js', 'data/events_line_a.js', 'data/events_line_b.js',
-  'data/events_line_c.js', 'data/events_boss.js', 'data/filler.js',
+  'data/events_line_c.js', 'data/events_boss.js', 'data/events_relations.js', 'data/filler.js',
   'js/state.js', 'js/engine.js'
 ];
 for (const f of FILES) {
@@ -104,7 +104,7 @@ const code = `
       // 一题答完再出下一题：追问轮次同样随机作答
       let fb = null, rounds = 0;
       while (!st.done) {
-        const pool = fb ? E.filterChoices(st, fb.choices) : E.visibleChoices(st, ev);
+        const pool = (fb ? E.filterChoices(st, fb.choices) : E.visibleChoices(st, ev)).filter(c => E.canAfford(st, c));
         if (!pool.length) { errors.push('nochoices:' + ev.id); break; }
         // 人设专属（hidden）分支必须真的被走到：否则签名结局这类内容永远测不出来
         const gated = pool.filter(c => c.hidden);
@@ -116,6 +116,7 @@ const code = `
         break;
       }
       if (st.done) break;
+      E.closeEvent(st, ev.id);
       st.slotIdx++;
     }
     if (guard >= 400 && !st.done) errors.push('回合数超过保护上限:' + job + '/' + st.char.persona);

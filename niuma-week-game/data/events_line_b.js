@@ -33,7 +33,7 @@ window.EV_LINE_B = [
     "choices": [
       { "text": "硬着头皮压给团队，加三天班", "chain": { "id": "ev_mid_chain_promise", "afterDays": 2 }, "overtime": true,
         "effects": { "kpi": 6, "bond": -10, "mood": -8 },
-        "reply": "你把活分下去时加了三个「辛苦」。团队回复「收到」的速度，比平时慢了两分钟。", "followup": {
+        "reply": "你把活分下去时加了三个「辛苦」。团队回复「收到」的速度，比平时慢了两分钟。", "followup": { "id": "fb_line_b_01",
           "lines": ["散会后，小王跟到茶水间，压低声音。", "小王：「哥，这活……到底是谁加的？」"],
           "choices": [
             { "text": "「客户临时加的」", "effects": { "bond": 3, "trust": -2, "mood": -3 },
@@ -72,7 +72,7 @@ window.EV_LINE_B = [
           "successEffects": { "trust": 5, "bond": 8 },
           "successReply": "时间线甩出，锅当空转体三周半，回到运营部。你的团队在群里刷了一排「哥稳」。",
           "failEffects": { "mood": -8, "pot": 1 },
-          "failReply": "对方总监开口：「先解决问题，再谈责任。」责任，被一个「先」字压住了。" }, "followup": {
+          "failReply": "对方总监开口：「先解决问题，再谈责任。」责任，被一个「先」字压住了。" }, "followup": { "id": "fb_line_b_02",
           "lines": ["贾总私聊你。老板的私聊只有两种意思：夸你，或者让你背。", "贾总：「运营那边有点情绪，你处理一下。」"],
           "choices": [
             { "text": "去运营部当面喝杯茶，把话说圆", "effects": { "trust": 6, "bond": -4, "mood": -5 },
@@ -170,7 +170,7 @@ window.EV_LINE_B = [
     ],
     "choices": [
       { "text": "自费下午茶＋宣布「周五六点跑」", "effects": { "money": -1, "bond": 12, "mood": 6 },
-        "reply": "奶茶下桌，灯准时熄。小卷说这是她入职以来最开心的一天。成本：一个月工资。", "followup": {
+        "reply": "奶茶下桌，灯准时熄。小卷说这是她入职以来最开心的一天。成本：一个月工资。", "followup": { "id": "fb_line_b_03",
           "lines": ["奶茶喝完，小卷举手问了一个要命的问题。", "小卷：「哥，周五六点跑……以后每周都算数吗？」"],
           "choices": [
             { "text": "「算，我定成组规」", "chain": { "id": "ev_mid_chain_promise", "afterDays": 1 }, "flag": "fridayRule", "effects": { "bond": 10, "trust": -4, "mood": 4 },
@@ -247,7 +247,7 @@ window.EV_LINE_B = [
     ],
     "choices": [
       { "item": "coffee", "text": "下楼走一圈，买杯咖啡", "effects": { "mood": 8, "fish": 4, "money": -0.5 },
-        "reply": "你绕着公司走了一圈，看完了一整条街的猫。回来接着当火腿。另一杯你没喝，塞进抽屉，留给下午三点的自己。", "followup": {
+        "reply": "你绕着公司走了一圈，看完了一整条街的猫。回来接着当火腿。另一杯你没喝，塞进抽屉，留给下午三点的自己。", "followup": { "id": "fb_line_b_04",
           "lines": ["工位还没坐热，贾总的消息就来了。", "贾总：「听人说你刚才下楼了？管理层要稳。」"],
           "choices": [
             { "text": "「去楼下买咖啡，顺便想方案」", "effects": { "trust": 4, "mood": -4 },

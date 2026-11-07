@@ -4,7 +4,7 @@
 
 > 本游戏纯属虚构。如有雷同，说明你也在上班。
 
-当前版本：**v3.17**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
+当前版本：**v3.18**。源码收录于 [Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity) 的 `niuma-week-game/`，各项目相互独立。
 
 在线体验：[牛马求生记](https://niuma-week-game.vercel.app/)。由 Vercel 独立部署，关联本仓库 `main` 分支的 `niuma-week-game/` 目录，推送更新后自动发布。
 
@@ -30,6 +30,8 @@ python3 -m http.server 8080
 - **IM / OA 式界面**：移动端优先，聊天内部滚动、选项居中、背包浮层与道具卡片；限时题在打开抽屉或切入后台时暂停。
 - **四种外观主题**：深色、浅色、护眼、魔幻，可在首页「主题」或游戏内设置中切换；偏好独立保存，刷新或重新入职后保留。
 - **十二类基础结局与三十六个成就**：不同职级采用不同的绩效与评语体系，人设会改变结局文案。
+- **关系回响**：替小卷担责后收到原始日志；公开质疑赖前辈后遇到共享记录消失。是否留痕会改变后续可选回应，新剧情占普通时段。
+- **跨局职场档案**：记录三条职级线的 33 类基础结局、36 个成就和最佳评级；首页或结局页进入。最近一次旧结局会自动导入，未解锁内容只展示线索。
 - **结局与周报分享**：生成跟随当前主题配色的图片，可预览、下载，在设备支持时调用系统分享。
 
 存档保存在当前浏览器的 `localStorage`。相同浏览器和域名下可以续玩；清理网站数据、换域名或换设备不会自动继承存档。
@@ -42,6 +44,7 @@ niuma-week-game/
 ├── manifest.json       # 添加到主屏幕的配置
 ├── css/                # 页面样式与四种主题
 ├── js/
+│   ├── collection.js   # 跨局结局与成就档案
 │   ├── theme.js        # 主题初始化与偏好保存
 │   ├── state.js        # 存档与数据校验
 │   ├── engine.js       # 事件抽取、判定、属性、结局与成就
@@ -63,6 +66,7 @@ niuma-week-game/
 python3 tools/validate_data.py
 node tools/test_game.js
 node tools/test_theme.js
+node tools/test_collection.js
 node tools/test_simulate.js
 node tools/simulate.js 1200 --seed=20261014
 ```
@@ -79,7 +83,10 @@ node tools/e2e.js
 
 在 `data/` 对应事件池中添加事件；常用字段为 `id`、`title`、`lines`、`choices`、`days`、`slots` 和 `cond`。选项支持属性效果、概率判定、道具门槛、追问和跨天连锁。
 
-- 三条职级线共用事件时，用 `variants` 适配身份文案。
+- 三条职级线共用事件时，用 `variants` 适配身份文案。关系剧情位于 `data/events_relations.js`。
+- 追问必须配置唯一且稳定的 `id`，修改正文或调整选项时保留原 ID。续玩只保存 ID，效果从当前配置读取。
+- 选项金额统一配置在 `effects.money`；直接支出需足额余额，判定失败的损失最低扣至零。
+- 选项可通过 `cond.flag` / `cond.npcGte` 解锁，至少保留一个不依赖存款或隐藏条件的回答。
 - 证据类判定使用 `judge.evidence`；排程事件使用 `scheduledOnly` 或 `scheduledOnlyJobs`。
 - 金额效果以“月薪”为单位，与剧情中的工资口径保持一致。
 - 增改内容后运行数据校验和规则回归。

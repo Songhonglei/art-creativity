@@ -17,6 +17,7 @@ SCENES = {"im", "ticket", "chat", "boss"}
 STAT_KEYS = {"mood", "kpi", "bond", "trust", "fish", "money"}
 EFFECT_COUNTER_KEYS = {"pot", "gang", "gossip"}
 COUNTERS = {"fishToilet", "piesHeard", "duiWins", "wangTalks", "overtimeStreak", "piesDrawn", "potPassed"}
+FOLLOWUP_IDS = set()
 
 def load_via_node():
     node = shutil.which("node")
@@ -86,6 +87,18 @@ def check_hidden_reachable(where, ch, pool, errs, cond=None):
 def check_choice(where, ch, ids, errs, pool=None, cond=None, npcs=None):
     if not isinstance(ch.get("text"), str):
         errs.append(f"{where}: choice 缺 text")
+    if "money" in ch:
+        errs.append(f"{where}: money 应放在 effects 内")
+    if "cond" in ch:
+        gates = ch["cond"]
+        if not isinstance(gates, dict) or any(k not in {"flag", "npcGte"} for k in gates):
+            errs.append(f"{where}: 选项 cond 只支持 flag / npcGte")
+        elif "flag" in gates and not isinstance(gates["flag"], str):
+            errs.append(f"{where}: cond.flag 应为字符串")
+        if isinstance(gates, dict) and "npcGte" in gates:
+            values = gates["npcGte"]
+            if not isinstance(values, dict) or any((npcs is not None and k not in npcs) or not isinstance(v, int) or isinstance(v, bool) for k, v in values.items()):
+                errs.append(f"{where}: cond.npcGte 应引用已知 NPC，阈值应为整数")
     if "hidden" in ch:
         h = ch["hidden"]
         ok = h in PERSONAS or (isinstance(h, list) and set(h) <= PERSONAS)
@@ -135,12 +148,21 @@ def check_choice(where, ch, ids, errs, pool=None, cond=None, npcs=None):
         if not isinstance(fb, dict):
             errs.append(f"{fw}: 应为对象")
         else:
+            fid = fb.get("id")
+            if not isinstance(fid, str) or not re.fullmatch(r"fb_[a-z0-9_]+", fid):
+                errs.append(f"{fw}: 缺少合法的稳定追问 id")
+            elif fid in FOLLOWUP_IDS:
+                errs.append(f"{fw}: 追问 id 重复 {fid}")
+            else:
+                FOLLOWUP_IDS.add(fid)
             if not isinstance(fb.get("lines"), list) or not (1 <= len(fb["lines"]) <= 4):
                 errs.append(f"{fw}: lines 异常")
             fch = fb.get("choices")
             if not fch or not (2 <= len(fch) <= 4):
                 errs.append(f"{fw}: 选项数异常 {len(fch) if fch else 0}")
             else:
+                if not any((c.get("effects") or {}).get("money", 0) >= 0 and not c.get("hidden") and not c.get("needItem") and not c.get("cond") for c in fch):
+                    errs.append(f"{fw}: 缺少不依赖存款、道具或隐藏条件的兜底选项")
                 for i, c in enumerate(fch):
                     check_choice(f"{fw}.c{i}", c, ids, errs, pool, cond, npcs)
                     check_hidden_reachable(f"{fw}.c{i}", c, pool, errs, cond)
@@ -200,7 +222,7 @@ def check_event(e, ids, errs, npcs=None):
             for i, ch in enumerate(var["choices"]):
                 check_choice(f"{where}.variants.{job}.c{i}", ch, ids, errs, job, None, npcs)
                 check_hidden_reachable(f"{where}.variants.{job}.c{i}", ch, job, errs, None)
-    else:
+    if e.get("choices") or "variants" not in e:
         chs = e.get("choices")
         if not chs or not (2 <= len(chs) <= 4):
             errs.append(f"{where}: 选项数异常 {len(chs) if chs else 0}")

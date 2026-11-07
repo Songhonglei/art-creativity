@@ -99,7 +99,7 @@ window.CHARACTERS = {
       desc: "开会拍桌子是你的管理风格，团队的战栗是你的 KPI 润滑剂。",
       mods: { kpi: 12, mood: -10, bond: -15 },
       skill: { id: "slam", name: "拍桌子", emoji: "👊",
-        desc: "甩锅事件中发动：当场拍桌，本次判定必定成功（每局2次）",
+        desc: "甩锅事件中发动：本题及追问的下一次失败判定改为成功；离开本题失效，未救场不扣次数（每局2次）",
         uses: 2, trigger: "manual_blame", arm: "forceJudge" },
       rules: { rebel: true }
     },
@@ -183,6 +183,6 @@ window.CHARACTERS = {
     recorder: { name: "录音笔", emoji: "🎤", desc: "被动：「掏证据」类判定必成功" },
     resign: { name: "辞职信", emoji: "📄", desc: "底牌：随时打出，直接裸辞" },
     exit: { name: "退出协议", emoji: "📜", desc: "底牌：把股份卖给下一位梦想家，套现离场" },
-    report: { name: "体检报告", emoji: "🩺", desc: "被动：免除一次强制加班或团建", descBoss: "被动：下一次熬夜的心态损失减半" }
+    report: { name: "体检报告", emoji: "🩺", desc: "主动使用：下一次加班事件的心态损失减半（一次）", descBoss: "主动使用：下一次熬夜事件的心态损失减半（一次）" }
   }
 };

@@ -995,3 +995,33 @@ button { user-select: none; -webkit-user-select: none; }
 .skill-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; font-size: 17px; line-height: 1.5; }
 .skill-heading strong { font-weight: 700; }
 .skill-heading .uses { margin-left: auto; font-size: 13px; }
+
+/* 档案沿用 OA 字体与主题变量；收集内容单独成页，保持主界面紧凑。 */
+.choice-cost { display: block; margin-top: 5px; font-size: 12px; color: var(--sub); }
+.choice:disabled { cursor: default; background: var(--bg); border-style: dashed; color: var(--sub); }
+.choice:disabled .choice-cost { color: var(--urgent); }
+.collection-page { max-width: 760px; margin: 0 auto; }
+.collection-header { position: sticky; top: var(--safe-t); z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; background: var(--bg); }
+.collection-header h2 { font-size: 22px; }
+.collection-header .btn { min-height: 48px; padding: 10px 18px; }
+.collection-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 10px 0 20px; }
+.collection-tabs .btn { padding: 10px 8px; font-size: 14px; letter-spacing: 0; min-height: 48px; }
+.collection-tabs [aria-pressed="true"] { background: var(--selected-bg); border-color: var(--accent); }
+.collection-group { margin: 14px 0; border: 1px solid var(--line); border-radius: var(--r-panel); background: var(--panel); }
+.collection-group summary { display: flex; align-items: center; gap: 8px; padding: 15px 14px; min-height: 52px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.collection-group summary::after { content: "▾"; color: var(--dim); }
+.collection-group[open] summary::after { content: "▴"; }
+.collection-group summary span { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--sub); font-weight: 400; }
+.collection-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.collection-group .collection-grid { padding: 0 12px 14px; }
+.collection-card { min-width: 0; padding: 14px 12px; background: var(--bg); border: 1px dashed var(--line-strong); border-radius: var(--r-ctl); }
+.collection-card.unlocked { border-style: solid; background: var(--panel-2); }
+.collection-icon { display: inline-block; font-size: 24px; margin-bottom: 8px; }
+.collection-card h3 { font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
+.collection-card p { font-size: 13px; line-height: 1.8; color: var(--sub); margin-top: 7px; overflow-wrap: anywhere; }
+.collection-empty { font-size: 14px; color: var(--sub); margin: 16px 0; }
+.collection-result { margin-top: 18px; padding: 14px; border: 1px solid var(--line-strong); border-radius: var(--r-panel); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.collection-result strong { font-size: 16px; }
+.collection-result > span { font-size: 13px; color: var(--sub); }
+.collection-result .btn { margin-top: 4px; min-height: 48px; font-size: 14px; }
+@media (min-width: 768px) { .collection-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

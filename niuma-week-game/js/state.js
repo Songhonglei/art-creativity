@@ -50,12 +50,21 @@ window.GameState = {
   },
 
   save() {
-    try { localStorage.setItem(this.SAVE_KEY, JSON.stringify(this.data)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(this.SAVE_KEY, JSON.stringify(this.snapshot(this.data))); } catch (e) { /* ignore */ }
+  },
+
+  snapshot(d) {
+    if (!d || !d.turn) return d;
+    const t = d.turn;
+    return Object.assign({}, d, { turn: {
+      eventId: t.eventId, round: t.round,
+      followupId: t.followupId || (t.pendingFollowup && t.pendingFollowup.id) || null
+    } });
   },
 
   events() {
     return [].concat(window.EV_GENERAL || [], window.EV_LINE_A || [], window.EV_LINE_B || [],
-      window.EV_LINE_C || [], window.EV_BOSSES || [], window.EV_FILLER || []);
+      window.EV_LINE_C || [], window.EV_BOSSES || [], window.EV_RELATIONS || [], window.EV_FILLER || []);
   },
 
   // 可修复的旧档字段先清理；角色、时间、属性等核心字段交给 valid 拒绝非法值。
@@ -92,11 +101,17 @@ window.GameState = {
     const persona = window.CHARACTERS.personas[d.char && d.char.persona];
     const job = window.CHARACTERS.jobs[d.char && d.char.job];
     if (d.armed) {
+      const valueArmed = d.armed;
       const kind = typeof d.armed === "string" ? d.armed : d.armed.kind;
       const slots = typeof d.armed === "string" ? ["persona", "job"] : [d.armed.slot];
       const slot = slots.find(k => (k === "persona" || k === "job") &&
         (k === "persona" ? persona : job)?.skill?.arm === kind && d.skillUses[k] > 0);
       d.armed = slot ? { kind, slot } : null;
+      if (d.armed && kind === "forceJudge") {
+        const eventId = (record(valueArmed) && valueArmed.eventId) || (d.turn && d.turn.eventId);
+        if (d.turn && eventId === d.turn.eventId && events.get(eventId)?.series === "blame") d.armed.eventId = eventId;
+        else d.armed = null;
+      }
     }
     const knownAchievements = new Set((window.ACHIEVEMENTS || []).map(a => a.id));
     d.achievements = [...new Set((Array.isArray(d.achievements) ? d.achievements : []).filter(id => knownAchievements.has(id)))];
@@ -125,20 +140,49 @@ window.GameState = {
       for (const key of ["evId", "title", "text", "series", "rarity"]) out[key] = typeof j[key] === "string" ? j[key] : "";
       return out;
     }).slice(-80);
-    // 追问只接受当前职级配置中真实存在的内容，绝不执行存档自带的任意 effects。
-    if (record(d.turn) && d.turn.pendingFollowup) {
+    // 首轮没有追问，不能让旧档中夹带的追问对象进入恢复流程。
+    if (record(d.turn) && d.turn.round === 0) {
+      d.turn = { eventId: d.turn.eventId, round: 0, followupId: null, pendingFollowup: null };
+    }
+    // 新档只保存稳定标识，从可信配置恢复效果；旧快照按父选项或逻辑形状迁移。
+    if (record(d.turn) && d.turn.round > 0) {
       const ev = events.get(d.turn.eventId);
       const variant = ev && ev.variants && (ev.variants[d.char.job] || ev.variants.staff);
       const candidates = [];
       const scan = (choices, depth) => (choices || []).forEach(ch => {
         if (!ch.followup || depth > 2) return;
-        candidates.push(ch.followup); scan(ch.followup.choices, depth + 1);
+        candidates.push({ node: ch.followup, depth, parent: ch.text }); scan(ch.followup.choices, depth + 1);
       });
       scan((variant && variant.choices) || (ev && ev.choices), 1);
-      const saved = JSON.stringify(d.turn.pendingFollowup);
-      const canonical = candidates.find(fb => JSON.stringify(fb) === saved);
+      const atRound = candidates.filter(x => x.depth === d.turn.round);
+      const saved = d.turn.pendingFollowup;
+      const id = d.turn.followupId || (record(saved) && saved.id);
+      let canonical = id ? atRound.find(x => x.node.id === id) : null;
+      if (!id && record(saved)) {
+        const parent = d.journal.slice().reverse().find(j => j.evId === d.turn.eventId && j.round === d.turn.round - 1);
+        const matched = parent && atRound.filter(x => x.parent === parent.text);
+        if (matched && matched.length === 1) canonical = matched[0];
+        if (!canonical) {
+          // 忽略展示文案和新增 id；旧版顶层 money 与修正后的 effects.money 等价。
+          const logic = value => {
+            if (Array.isArray(value)) return value.map(logic);
+            if (!record(value)) return value;
+            const copy = Object.assign({}, value);
+            if (Object.prototype.hasOwnProperty.call(copy, "text") && copy.money !== undefined) {
+              copy.effects = Object.assign({}, copy.effects, { money: copy.money }); delete copy.money;
+            }
+            return Object.fromEntries(Object.keys(copy).sort()
+              .filter(k => !["lines", "text", "reply", "successReply", "failReply"].includes(k) && !(k === "id" && copy.choices))
+              .map(k => [k, logic(copy[k])]));
+          };
+          const key = JSON.stringify(logic(saved));
+          const matches = atRound.filter(x => JSON.stringify(logic(x.node)) === key);
+          if (matches.length === 1) canonical = matches[0];
+        }
+      }
       if (!canonical) return null;
-      d.turn.pendingFollowup = JSON.parse(JSON.stringify(canonical));
+      d.turn.followupId = canonical.node.id;
+      d.turn.pendingFollowup = JSON.parse(JSON.stringify(canonical.node));
     }
     return d;
   },
@@ -199,9 +243,9 @@ window.GameState = {
   },
 
   // ---- 结局记录：打完一周后额外存一份，刷新/重开也能回看结局与分享卡 ----
-  saveLastEnding(st, ending) {
+  saveLastEnding(st, ending, collectionNew) {
     try {
-      localStorage.setItem(this.LAST_KEY, JSON.stringify({ st, ending, savedAt: Date.now() }));
+      localStorage.setItem(this.LAST_KEY, JSON.stringify({ st: this.snapshot(st), ending, collectionNew, savedAt: Date.now() }));
     } catch (e) { /* 忽略配额等异常 */ }
   },
 

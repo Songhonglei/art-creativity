@@ -7,7 +7,7 @@ window.EV_LINE_A = [
     "choices": [
       { "text": "鼓掌，眼睛里进了一点福报", "counter": "piesHeard",
         "effects": { "trust": 6, "mood": -10 },
-        "reply": "你鼓掌的手是热的，心是凉的。福报，先记账上。", "followup": {
+        "reply": "你鼓掌的手是热的，心是凉的。福报，先记账上。", "followup": { "id": "fb_line_a_01",
           "lines": ["散会时贾总拍了下你的肩。", "贾总：「很好，明天给我一份『福报落地计划』。」"],
           "choices": [
             { "text": "今晚就写出来", "flag": "promisedReport", "overtime": true, "chain": { "id": "ev_flag_overpromise", "afterDays": 1 },
@@ -51,7 +51,7 @@ window.EV_LINE_A = [
     "lines": ["周会上，贾总指着你的方案：「这做的什么东西？」", "「我这么骂你，是为你好。别的人，我懒得说。」"],
     "choices": [
       { "text": "低头认错，脸皮当铠甲", "effects": { "mood": -15, "trust": 5 },
-        "reply": "你说「收到」的声音很稳，手在桌子底下抖。铠甲，是会生锈的。", "followup": {
+        "reply": "你说「收到」的声音很稳，手在桌子底下抖。铠甲，是会生锈的。", "followup": { "id": "fb_line_a_02",
           "lines": ["骂完三分钟，贾总语气一转。", "贾总：「……行了，晚上一起吃个饭？」"],
           "choices": [
             { "text": "去，全程听他讲创业史", "chain": { "id": "ev_chain_pua_remember", "afterDays": 1 }, "effects": { "trust": 6, "mood": -8, "bond": 3 },
@@ -83,7 +83,7 @@ window.EV_LINE_A = [
     "lines": ["大群里，赖前辈发了份《项目总结》，获得领导点赞。", "里面 80% 是你干的活，署名只有他。"],
     "choices": [
       { "text": "算了，牛不跟人争", "effects": { "mood": -12, "bond": 2 },
-        "reply": "你在心里给自己发了个奖。奖杯是空气的，但心态是真的碎。", "followup": {
+        "reply": "你在心里给自己发了个奖。奖杯是空气的，但心态是真的碎。", "followup": { "id": "fb_line_a_03",
           "lines": ["走廊上，赖前辈追了上来。", "赖前辈：「刚才那事儿，我可没抢啊。」"],
           "choices": [
             { "text": "「我知道，是流程的问题」", "effects": { "bond": 4, "mood": 2 },
@@ -97,7 +97,8 @@ window.EV_LINE_A = [
             { "text": "「要不我问问家里，能不能打个招呼」", "hidden": "jin", "effects": { "trust": 5, "mood": 5, "gossip": 1 }, "reply": "第二天那份功劳的邮件被补发了一遍，你的名字在第一个。没人问为什么。" }
           ]
         } },
-      { "text": "群里礼貌补充：「我补充几点分工」", "gang": 1, "isDui": true,
+      { "text": "群里礼貌补充：「我补充几点分工」", "gang": 1, "isDui": true, "flag": "laiChallenged",
+        "chain": { "id": "ev_rel_lai_deleted", "afterDays": 1 },
         "judge": { "base": 0.6,
           "successEffects": { "bond": 6, "trust": 4 },
           "successReply": "你礼貌而致命地列出了分工表。赖前辈的表情管理，崩了一角。",
@@ -151,7 +152,7 @@ window.EV_LINE_A = [
     "lines": ["线上出 bug，群里炸了。", "领导第一句：「这是谁写的代码？」——署名是你。"],
     "choices": [
       { "text": "先修后说", "effects": { "kpi": 4, "mood": -8, "trust": 3 },
-        "reply": "你两小时修复上线。等甩锅大会开始时，路修好了，锅追不上你。", "followup": {
+        "reply": "你两小时修复上线。等甩锅大会开始时，路修好了，锅追不上你。", "followup": { "id": "fb_line_a_04",
           "lines": ["复盘会照常召开，会议主题措辞严谨：", "「本次线上问题的归因与改进」。"],
           "choices": [
             { "text": "主动认领「流程待完善」", "pot": 1, "effects": { "trust": 4, "mood": -6 },
@@ -200,7 +201,7 @@ window.EV_LINE_A = [
     "lines": ["金爸爸发来 5 条微信语音，每条 60 秒。", "第 4 条的要点是：第 1-3 条作废，以第 5 条为准。"],
     "choices": [
       { "text": "认真听完，逐条转文字", "effects": { "kpi": 4, "mood": -10, "fish": -6 },
-        "reply": "40 分钟后，你获得了一份 2000 字的需求，和轻微的耳鸣。", "followup": {
+        "reply": "40 分钟后，你获得了一份 2000 字的需求，和轻微的耳鸣。", "followup": { "id": "fb_line_a_05",
           "lines": ["金爸爸：「对了，还有几点补充。」", "又是 3 条 60 秒语音。"],
           "choices": [
             { "text": "继续听，听到麻木", "effects": { "kpi": 5, "mood": -8 },
@@ -210,7 +211,7 @@ window.EV_LINE_A = [
                 "successReply": "金爸爸在电话里说了 4 分钟，效率比 8 条语音高十倍。他最后说：「早该打电话的。」",
                 "failEffects": { "mood": -8, "trust": -4 },
                 "failReply": "金爸爸：「我在开会。」电话挂了，语音又来了两条。" } },
-            { "text": "转文字后写摘要发回去确认", "effects": { "kpi": 4, "mood": -3, "trust": 3 },
+            { "text": "转文字后写摘要发回去确认", "flag": "recordsBackedUp", "effects": { "kpi": 4, "mood": -3, "trust": 3 },
               "reply": "你把 8 条语音变成 12 行文字，金爸爸回：「对，就是这样。」——史上第一次需求对上了。" }
           ,
             { "text": "把八条语音整理成需求文档", "hidden": "cai", "chain": { "id": "ev_chain_change_delete", "afterDays": 1 }, "effects": { "kpi": 5, "mood": -6 }, "reply": "文档交出去，第二天就被改了三处。你终于理解为什么大家都不爱写文档。" }
@@ -231,12 +232,12 @@ window.EV_LINE_A = [
     "lines": ["晚上 10 点，金爸爸：验收前我们再对一下。", "「这个方向，能不能全部推翻重来？明天要。」"],
     "choices": [
       { "text": "通宵改", "effects": { "mood": -20, "kpi": 10, "trust": 8 },
-        "reply": "凌晨 4 点，你交出一版新的。金爸爸：「嗯，还是第一版好。」", "followup": {
+        "reply": "凌晨 4 点，你交出一版新的。金爸爸：「嗯，还是第一版好。」", "followup": { "id": "fb_line_a_06",
           "lines": ["早上 9 点，贾总把你叫进小会议室。", "贾总：「客户还是要第一版。那你昨晚干的那些……算什么？」"],
           "choices": [
             { "text": "「算我们项目的过山车」", "effects": { "mood": 6, "trust": 2 },
               "reply": "贾总被逗笑了：「你还挺会说话。」——用一句玩笑保住自己的精神状态，是牛马的高级技能。" },
-            { "text": "「算加班成本，请记工时」", "money": 0.5, "effects": { "kpi": 2, "trust": -4, "mood": 3 },
+            { "text": "「算加班成本，请记工时」", "effects": { "money": 0.5, "kpi": 2, "trust": -4, "mood": 3 },
               "reply": "贾总看了你两秒：「记上吧。」工时记上了，你的名字也记上了——两种记法，你选了贵的那种。" },
             { "hidden": "zhen", "text": "【发疯】「算我给您表演的行为艺术」", "gang": 1, "isDui": true,
               "effects": { "mood": 11, "trust": -6, "bond": 5 },
@@ -410,7 +411,7 @@ window.EV_LINE_A = [
     "lines": ["17:55，你已经在收拾包了。", "@所有人：今晚 8 点线上会议，对齐一下。"],
     "choices": [
       { "text": "掐点上线，静音吃瓜", "effects": { "fish": 8, "mood": 2, "trust": -4 },
-        "reply": "会上说了 40 分钟，核心结论：明天再对齐。", "followup": {
+        "reply": "会上说了 40 分钟，核心结论：明天再对齐。", "followup": { "id": "fb_line_a_07",
           "lines": ["会议刚散，领导私聊弹出来。", "领导：「你今天没发言，是不认同吗？」"],
           "choices": [
             { "text": "「在听，怕打断节奏」", "effects": { "trust": 4, "mood": -3 },

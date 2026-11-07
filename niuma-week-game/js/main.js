@@ -2,10 +2,13 @@
 window.App = (function () {
   const st = () => window.GameState.data;
   let currentEvent = null;
+  let lastCollectionNew = null;
 
   function boot() {
     window.Engine.init();
+    window.Collection.importLastEnding();
     document.getElementById("btn-theme").addEventListener("click", window.UI.showThemes);
+    document.getElementById("btn-collection").addEventListener("click", () => window.UI.showCollection("screen-title"));
     document.getElementById("btn-new").addEventListener("click", () => {
       window.UI.renderCreate();
       window.UI.showScreen("screen-create");
@@ -127,6 +130,7 @@ window.App = (function () {
     // 回合幂等：结算后立刻清空当前选项表，任何重复点击/超时回调都取不到选项 → 直接返回
     const ch = activeChoices[i];
     if (!ch) return;
+    if (!window.Engine.canAfford(s, ch)) { miniToast("余额不足，请选择其他回复"); return; }
     activeChoices = [];
     const res = window.Engine.resolveChoice(s, currentEvent, ch);
     // 决策流水补记：这是第几轮追问、是否超时自动作答
@@ -138,8 +142,9 @@ window.App = (function () {
     if (pendingFollowup && round >= 2) pendingFollowup = null;
     if (pendingFollowup) {
       // 还有追问：时段先不推进，把追问轮次写进存档
-      s.turn = { eventId: currentEvent.id, round: round + 1, pendingFollowup: pendingFollowup };
+      s.turn = { eventId: currentEvent.id, round: round + 1, followupId: pendingFollowup.id, pendingFollowup: pendingFollowup };
     } else {
+      window.Engine.closeEvent(s, currentEvent.id);
       // 本时段作答完毕：立刻推进并落盘（刷新不会重放同一时段）
       s.slotIdx++;
       s.turn = null;
@@ -152,8 +157,9 @@ window.App = (function () {
 
   function timeout() {
     if (!activeChoices.length) return;        // 已作答完毕：倒计时回调直接失效
-    let idx = activeChoices.findIndex(c => c.timid);
-    if (idx < 0) idx = 0;
+    let idx = activeChoices.findIndex(c => c.timid && window.Engine.canAfford(st(), c));
+    if (idx < 0) idx = activeChoices.findIndex(c => window.Engine.canAfford(st(), c));
+    if (idx < 0) return;
     autoPick = true;                          // 周报里标成「超时未答，系统替你怂了」
     choose(idx);
   }
@@ -201,6 +207,7 @@ window.App = (function () {
   // 兜底：事件没有任何可见选项时，直接进入下一时段，避免流程锁死
   function skip() {
     const s = st();
+    if (currentEvent) window.Engine.closeEvent(s, currentEvent.id);
     s.slotIdx++;
     s.turn = null;
     pendingFollowup = null;
@@ -237,13 +244,13 @@ window.App = (function () {
         return;
       }
       const armKind = (src && src.arm) || "silent";
-      const ok = window.Engine.armSkill(s, armKind, slot);
+      const ok = window.Engine.armSkill(s, armKind, slot, ev);
       if (ok) {
         window.GameState.save();
         window.UI.renderSidebar(s);
         window.UI.renderSkillBar(s, ev);
-        miniToast(`⏳ 【${src.name}】已待命：下一个甩锅事件中自动生效。`);
-      }
+        miniToast(armKind === "forceJudge" ? `⏳ 【${src.name}】已待命：仅在本题及追问中救场，未救场不扣次数。` : `⏳ 【${src.name}】已待命：甩锅事件中自动生效。`);
+      } else miniToast("已有待命技能，请先完成本次选择");
     }
   }
 
@@ -256,7 +263,7 @@ window.App = (function () {
   function showLastEnding() {
     const rec = window.GameState.loadLastEnding();
     if (!rec) { window.App.miniToast("没有找到结局记录"); return; }
-    window.UI.showEnding(rec.st, rec.ending, { readOnly: true });
+    window.UI.showEnding(rec.st, rec.ending, { readOnly: true, collectionNew: rec.collectionNew });
   }
 
   function settleWeek() {
@@ -285,16 +292,19 @@ window.App = (function () {
     // 人设层：签名结局换整套文案 + 追加该人设的专属收尾台词
     ending = window.Engine.applyPersonaEnding(s, ending);
     window.Engine.finalAchievements(s);
+    const collectionNew = window.Collection.record(s, ending);
+    lastCollectionNew = collectionNew;
     window.GameState.save();
     // 额外存一份「结局快照」：即使 done 存档不可续玩，也让结局页可以回看
-    window.GameState.saveLastEnding(JSON.parse(JSON.stringify(s)), ending);
+    window.GameState.saveLastEnding(JSON.parse(JSON.stringify(s)), ending, collectionNew);
     return ending;
   }
 
   function finishWeek() {
     activeChoices = [];
     pendingFollowup = null;
-    window.UI.showEnding(st(), settleWeek());
+    const ending = settleWeek();
+    window.UI.showEnding(st(), ending, { collectionNew: lastCollectionNew });
   }
 
   function miniToast(text) {
