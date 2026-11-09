@@ -3,7 +3,7 @@ h1,h2,h3,h4,.brand,.brand-wordmark,.game-wordmark,.brand-type,.brand-name,.loadi
 
 :root{--gold:#e8c76a;--cream:#dfe6fa;--ink:#0a0f22}
 .nightwatch-start{position:absolute;inset:100px 7% 50px;z-index:25;display:grid;grid-template-columns:1.1fr 1fr;color:#c9d6f5;box-shadow:0 30px 100px #04060fcc;transform:rotate(-.7deg)}
-.nightwatch-page,.nightwatch-notes{background:#10162c;padding:36px 42px;position:relative}
+.nightwatch-page,.nightwatch-notes{background:#10162c;padding:36px 42px;position:relative;min-height:0;overflow-y:auto}
 .nightwatch-page{border-right:1px solid rgba(120,150,230,.18);background:linear-gradient(90deg,#10162c 94%,#1a2244)}
 .nightwatch-tab{font-size:11px;letter-spacing:.24em;border-bottom:2px solid #7fa8ff;padding:0 0 10px;color:#9fb0dd}
 .nightwatch-start h1{font:700 clamp(44px,5.6vw,88px)/.9 'NightTitle','Barlow Condensed';text-transform:uppercase;margin:27px 0 15px;color:#8fb8ff;text-shadow:0 0 34px #3a5bbf66}
