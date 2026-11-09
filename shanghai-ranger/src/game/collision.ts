@@ -3,8 +3,13 @@ import type { Point } from './types';
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.z - b.z);
 
-export interface CircleCollider extends Point { radius: number }
-export interface BoxCollider extends Point { halfWidth: number; halfDepth: number }
+export interface CircleCollider extends Point { radius: number; minY?: number; maxY?: number }
+export interface BoxCollider extends Point { halfWidth: number; halfDepth: number; minY?: number; maxY?: number }
+
+export function rotatedBoxBounds(halfWidth: number, halfDepth: number, rotation: number) {
+  const c = Math.abs(Math.cos(rotation)), s = Math.abs(Math.sin(rotation));
+  return { halfWidth: c * halfWidth + s * halfDepth, halfDepth: s * halfWidth + c * halfDepth };
+}
 
 const point = (x: number, z: number): Point => ({ x, z });
 
@@ -72,25 +77,6 @@ export function hasLineOfSight(from: Point, to: Point, boxes: BoxCollider[], pad
   return !boxes.some(box => segmentHitsBox(from, to, box, padding));
 }
 
-/** Return the nearest safe camera distance before a building blocks the player-to-camera segment. */
-export function cameraClearDistance(target: Point, desired: Point, distance: number, boxes: BoxCollider[]) {
-  let fraction = 1;
-  for (const box of boxes) {
-    // Low counters and street furniture are below the camera and should not snap it forward.
-    if (box.halfWidth < 2 || box.halfDepth < 2) continue;
-    const minX = box.x - box.halfWidth - .18, maxX = box.x + box.halfWidth + .18;
-    const minZ = box.z - box.halfDepth - .18, maxZ = box.z + box.halfDepth + .18;
-    const dx = desired.x - target.x, dz = desired.z - target.z;
-    let enter = 0, exit = 1;
-    for (const [origin, delta, min, max] of [[target.x, dx, minX, maxX], [target.z, dz, minZ, maxZ]]) {
-      if (Math.abs(delta) < 1e-7) { if (origin < min || origin > max) { enter = 2; break; } continue; }
-      const a = (min - origin) / delta, b = (max - origin) / delta;
-      enter = Math.max(enter, Math.min(a, b)); exit = Math.min(exit, Math.max(a, b));
-    }
-    if (enter <= exit && exit > .02 && enter < 1) fraction = Math.min(fraction, Math.max(.08, enter - .025));
-  }
-  return Math.max(1.35, distance * fraction);
-}
 
 function pathClear(from: Point, to: Point, circles: CircleCollider[], boxes: BoxCollider[], radius: number) {
   for (const box of boxes) if (segmentHitsBox(from, to, box, radius)) return false;

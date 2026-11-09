@@ -224,7 +224,7 @@ export class World {
             : kind === 'campus' ? 12 + (i % 2) * 3 : Math.max(17, sourceHeight);
       const surface = (kind === 'skyscraper' ? 0 : kind === 'campus' || kind === 'lane' ? 3 : i % 3) as 0 | 1 | 2 | 3;
       appendUrbanBuilding(buckets, { x, z, y: groundHeight(x, z) - .5, halfWidth: w, halfDepth: w, height: h, kind, variant: i % 4, surface });
-      simulation.boxColliders.push({ x, z, halfWidth: w * 1.06, halfDepth: w * 1.06 });
+      simulation.boxColliders.push({ x, z, halfWidth: w * 1.06, halfDepth: w * 1.06, minY: groundHeight(x, z) - .5, maxY: groundHeight(x, z) + h + 3 });
     });
     for (const surface of Object.keys(buckets) as UrbanSurface[]) {
       const geos = buckets[surface];
@@ -248,21 +248,21 @@ export class World {
     const small = new THREE.Mesh(new THREE.SphereGeometry(1.9, 16, 12), pearl); small.position.y = 23; pearlTower.add(small);
     for (let i = 0; i < 6; i++) { const s = new THREE.Mesh(new THREE.SphereGeometry(.42, 8, 6), pearlGlow); const a = i / 6 * Math.PI * 2; s.position.set(Math.cos(a) * 2.1, 10.5, Math.sin(a) * 2.1); pearlTower.add(s); }
     const base = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 3.6, 2.6, 10), steel); base.position.y = 1.3; pearlTower.add(base);
-    simulation.colliders.push({ x: 40, z: -30, radius: 3.6 });
+    simulation.colliders.push({ x: 40, z: -30, radius: 3.6, minY: groundHeight(40, -30), maxY: groundHeight(40, -30) + 31 });
     // 上海中心 Shanghai Tower (stacked twisting tiers).
     const tower = new THREE.Group(); tower.position.set(55, groundHeight(55, -48), -48); lujiazui.add(tower);
     for (let i = 0; i < 7; i++) { const r = 2.6 - i * .3; const tier = new THREE.Mesh(new THREE.CylinderGeometry(r - .25, r, 6.4, 12), steel); tier.position.y = 3.2 + i * 6.3; tier.rotation.y = i * .32; tier.castShadow = true; tower.add(tier); }
     const spire = new THREE.Mesh(new THREE.CylinderGeometry(.08, .3, 4, 6), steel); spire.position.y = 48; tower.add(spire);
-    simulation.colliders.push({ x: 55, z: -48, radius: 2.8 });
+    simulation.colliders.push({ x: 55, z: -48, radius: 2.8, minY: groundHeight(55, -48), maxY: groundHeight(55, -48) + 50 });
     // 环球金融中心 SWFC (twin pillars + crown).
     const swfc = new THREE.Group(); swfc.position.set(43, groundHeight(43, -66), -66); lujiazui.add(swfc);
     for (const sx of [-1.5, 1.5]) { const pillar = new THREE.Mesh(new THREE.BoxGeometry(2.2, 30, 4.4), steel); pillar.position.set(sx, 15, 0); pillar.castShadow = true; swfc.add(pillar); }
     const crown = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.4, 4.4), steel); crown.position.y = 31.5; swfc.add(crown);
-    simulation.boxColliders.push({ x: 43, z: -66, halfWidth: 2.6, halfDepth: 2.2 });
+    simulation.boxColliders.push({ x: 43, z: -66, halfWidth: 2.6, halfDepth: 2.2, minY: groundHeight(43, -66), maxY: groundHeight(43, -66) + 33.2 });
     // 金茂大厦 Jin Mao (setback pagoda tiers).
     const jinmao = new THREE.Group(); jinmao.position.set(60, groundHeight(60, -34), -34); lujiazui.add(jinmao);
     for (let i = 0; i < 6; i++) { const w = 5 - i * .68; const tier = new THREE.Mesh(new THREE.BoxGeometry(w, 5.4, w), steel); tier.position.y = 2.7 + i * 5.3; tier.castShadow = true; jinmao.add(tier); }
-    simulation.boxColliders.push({ x: 60, z: -34, halfWidth: 2.5, halfDepth: 2.5 });
+    simulation.boxColliders.push({ x: 60, z: -34, halfWidth: 2.5, halfDepth: 2.5, minY: groundHeight(60, -34), maxY: groundHeight(60, -34) + 32 });
     [pearlTower, tower, swfc, jinmao].forEach(group => batchRigidParts(group));
     // 外滩万国建筑群 The Bund — colonial row on the west bank.
     const bund = new THREE.Group(); this.root.add(bund);
@@ -279,7 +279,7 @@ export class World {
         for (let floor = 3.2; floor < h - 1; floor += 3.2) box(bund, bundTrim, [13.5 + side * 3.1, y + floor, z], [.16, .14, 8.15]);
       }
       const pediment = new THREE.Mesh(new THREE.CylinderGeometry(0, 3.4, 1.8, 4), bundTrim); pediment.position.set(13.5, y + h + .9, z); pediment.rotation.y = Math.PI / 4; bund.add(pediment);
-      simulation.boxColliders.push({ x: 13.5, z, halfWidth: 3.25, halfDepth: 4.22 });
+      simulation.boxColliders.push({ x: 13.5, z, halfWidth: 3.25, halfDepth: 4.22, minY: y, maxY: y + h + 1.8 });
     }
     batchRigidParts(bund);
     // 外白渡桥 Waibaidu Bridge — steel truss arches over the river.
@@ -302,7 +302,7 @@ export class World {
       box(house, m.dark, [0, 1.1, 2.32], [1.2, 2.2, .12]);
       box(house, new THREE.MeshStandardMaterial({ color: '#d9b96c', emissive: '#ffca6a', emissiveIntensity: .7 }), [-1.6, 2.6, 2.32], [.8, 1, .1]);
       box(house, new THREE.MeshStandardMaterial({ color: '#d9b96c', emissive: '#ffca6a', emissiveIntensity: .7 }), [1.6, 2.6, 2.32], [.8, 1, .1]);
-      simulation.boxColliders.push({ x, z, halfWidth: 2.7, halfDepth: 2.3 });
+      simulation.boxColliders.push({ x, z, halfWidth: 2.7, halfDepth: 2.3, minY: groundHeight(x, z), maxY: groundHeight(x, z) + 6 });
     }
     // Neon signboards along the pedestrian street, each with a glowing glyph.
     const neon = [
@@ -323,7 +323,7 @@ export class World {
       const pole = new THREE.Mesh(new THREE.CylinderGeometry(.09, .12, 5.4, 6), steel);
       const x = -8 + i * 6.5, z = -8 + (i % 2) * 22;
       pole.position.set(x, groundHeight(x, z) + 2.7, z); this.root.add(pole);
-      simulation.colliders.push({ x, z, radius: .14 });
+      simulation.colliders.push({ x, z, radius: .14, minY: groundHeight(x, z), maxY: groundHeight(x, z) + 5.4 });
       const tex = glyphTexture(n.c, n.glyph);
       const frameMat = new THREE.MeshStandardMaterial({ color: '#141828', roughness: .6, metalness: .35 });
       const faceMat = new THREE.MeshBasicMaterial({ map: tex });
@@ -348,7 +348,7 @@ export class World {
       const h = .5 + this.rng() * .5, r = .22 + this.rng() * .18;
       const g = new THREE.CylinderGeometry(r * .8, r, h, 7);
       g.translate(x, groundHeight(x, z) + h / 2 - .06, z); geos.push(g);
-      simulation.colliders.push({ x, z, radius: r + .05 });
+      simulation.colliders.push({ x, z, radius: r + .05, minY: groundHeight(x, z) - .06, maxY: groundHeight(x, z) + h });
     }
     const mesh = new THREE.Mesh(mergeGeometries(geos)!, mat); mesh.castShadow = true; mesh.receiveShadow = true; this.root.add(mesh); geos.forEach(g => g.dispose());
   }
@@ -446,7 +446,7 @@ export class World {
       arm.translate(x - side * .5, y + 4.35, z); poleGeos.push(arm);
       const head = new THREE.SphereGeometry(.17, 8, 6); head.translate(x - side, y + 4.55, z); headGeos.push(head);
       glowPos.push(x - side, y + 4.55, z);
-      simulation.colliders.push({ x, z, radius: .24 });
+      simulation.colliders.push({ x, z, radius: .24, minY: y, maxY: y + 4.72 });
     }
     const poles = new THREE.Mesh(mergeGeometries(poleGeos)!, poleMat); poles.castShadow = true; this.root.add(poles);
     const heads = new THREE.Mesh(mergeGeometries(headGeos)!, headMat); this.root.add(heads);
@@ -507,7 +507,7 @@ export class World {
     const stallMat = new THREE.MeshStandardMaterial({ color: '#5c4a52', roughness: .9 });
     const counter = box(camp, stallMat, [0, .75, 0], [3.4, 1.5, 1.4]);
     void counter;
-    simulation.boxColliders.push({ x: -18, z: 29, halfWidth: 1.7, halfDepth: .7 });
+    simulation.boxColliders.push({ x: -18, z: 29, halfWidth: 1.7, halfDepth: .7, minY: groundHeight(-18, 29), maxY: groundHeight(-18, 29) + 1.5 });
     // Striped awning on poles.
     const awningMat = new THREE.MeshStandardMaterial({ color: '#a44848', roughness: .85, side: THREE.DoubleSide });
     const awning = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.2, 4, 1), awningMat);

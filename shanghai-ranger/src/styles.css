@@ -311,3 +311,36 @@ button,.touch-joystick{-webkit-tap-highlight-color:transparent}
 .modal-panel .save-warning,.result-panel .save-warning{position:static;transform:none;width:auto;margin:16px 22px}.result-panel .save-warning{margin:18px 0;text-align:left}
 
 .modal-panel .save-warning{position:sticky;top:0;z-index:1}
+
+/* Camera actions stay directly accessible without covering the right thumb's look area. */
+.camera-tools{position:absolute;right:38px;top:47%;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.camera-tools>button{width:48px;height:48px;border:1px solid rgba(178,203,210,.4);border-radius:50%;background:rgba(12,29,44,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#e5e5ca;touch-action:none;-webkit-user-select:none;user-select:none}
+.camera-tools>button>span{font-size:9px;margin-top:2px}
+.camera-tools>small{display:none}
+.camera-tools>button:focus{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:800px),(pointer:coarse){
+  .camera-tools{right:12px;right:calc(12px + var(--safe-area-inset-right,env(safe-area-inset-right,0px)));top:46%}
+  .camera-tools>small{display:block;margin-top:7px;font-size:9px;color:#d7ddd1;writing-mode:vertical-rl;letter-spacing:1px;text-shadow:0 1px 3px #07101e}
+  .mobile-controls{left:14px;left:calc(14px + var(--safe-area-inset-left,env(safe-area-inset-left,0px)));right:14px;right:calc(14px + var(--safe-area-inset-right,env(safe-area-inset-right,0px)));bottom:18px;bottom:calc(18px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
+  .touch-actions{gap:0}.touch-actions>button+button{margin-left:6px}
+}
+@media(orientation:landscape) and (max-height:600px){
+  .camera-tools{top:47%;right:12px;right:calc(12px + var(--safe-area-inset-right,env(safe-area-inset-right,0px)))}
+  .camera-tools>small{display:none}
+  .mobile-controls{bottom:10px;bottom:calc(10px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
+}
+
+@media(max-width:800px) and (max-height:660px){.camera-tools>small{display:none}}
+@media(max-width:560px) and (orientation:portrait){
+  .topbar{height:72px;height:calc(72px + var(--safe-area-inset-top,env(safe-area-inset-top,0px)));padding-top:0;padding-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px))}
+  .hunter-status{top:88px;top:calc(88px + var(--safe-area-inset-top,env(safe-area-inset-top,0px)))}
+  .weather-widget{top:89px;top:calc(89px + var(--safe-area-inset-top,env(safe-area-inset-top,0px)))}
+  .quest-tracker{top:181px;top:calc(181px + var(--safe-area-inset-top,env(safe-area-inset-top,0px)))}
+  .monster-status{top:184px;top:calc(184px + var(--safe-area-inset-top,env(safe-area-inset-top,0px)));width:calc(100% - 32px)}
+  .monster-status>div>span{min-width:0;flex:1}.monster-status strong{font-size:18px;line-height:1.2}.monster-status small{font-size:9px;letter-spacing:.3px}.monster-status>p{font-size:10px}
+}
+@media(max-width:560px) and (max-height:700px) and (orientation:portrait){
+  .quest-tracker .quest-difficulty,.quest-tracker .quest-steps,.quest-tracker .quest-details{display:none}
+  .quest-tracker{width:auto;padding:6px 9px}.map-hud{width:96px;bottom:146px}.minimap-button{width:90px;height:90px}.map-heading,.map-caption{display:none}
+  .equipment-hud{bottom:146px}
+}

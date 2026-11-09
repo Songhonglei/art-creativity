@@ -106,8 +106,8 @@ function SettingsContent({ settings, setSettings, open, engine, s }: { settings:
 }
 
 function HelpContent() {
-  const controls: [string, string][] = [['W A S D', '在街区里移动'], ['SHIFT', '疾跑 · 消耗体力'], ['拖动', '转动镜头'], ['滚轮', '调整镜头距离'], ['点击 / J', '攻击 · 可三连'], ['右键 / K', '重击 · 耗体力更多伤害更高'], ['空格', '闪避 · 短暂无敌'], ['Q', '锁定目标'], ['E', '查看 / 拿取 / 制伏 / 坐下'], ['R / 1', '喝杯奶茶回血'], ['C', '释放宠物主动技'], ['M', '打开街区地图'], ['F / G', '强化所 / 夜巡手册']];
-  return <div className="help-content"><div className="help-intro"><Emblem /><div><h3>看清路数，再出手。</h3><p>跟着金色光点找线索。读懂祸害的动作，抓住收势的间隙一击制胜。</p></div></div><div className="controls-grid">{controls.map(([key, label]) => <div key={key}><Key>{key}</Key><span>{label}</span></div>)}</div><div className="help-tip"><Heart size={19} /><p><strong>耐心是侠客的老朋友。</strong> 停下攻击和疾跑，体力就会恢复。闪过冲撞，等它收势时再用重击狠狠招呼。</p></div><p className="muted">触屏设备使用左下摇杆移动、右下按钮出招。拖动场景转动镜头。打开菜单会暂停夜巡。</p></div>;
+  const controls: [string, string][] = [['W A S D', '在街区里移动'], ['SHIFT', '疾跑 · 消耗体力'], ['拖动', '围绕角色环顾与俯仰'], ['滚轮', '调整镜头距离'], ['V', '镜头归位到角色身后'], ['点击 / J', '攻击 · 可三连'], ['右键 / K', '重击 · 耗体力更多伤害更高'], ['空格', '闪避 · 短暂无敌'], ['Q', '锁定目标'], ['E', '查看 / 拿取 / 制伏 / 坐下'], ['R / 1', '喝杯奶茶回血'], ['C', '释放宠物主动技'], ['M', '打开街区地图'], ['F / G', '强化所 / 夜巡手册']];
+  return <div className="help-content"><div className="help-intro"><Emblem /><div><h3>看清路数，再出手。</h3><p>跟着金色光点找线索。读懂祸害的动作，抓住收势的间隙一击制胜。</p></div></div><div className="controls-grid">{controls.map(([key, label]) => <div key={key}><Key>{key}</Key><span>{label}</span></div>)}</div><div className="help-tip"><Heart size={19} /><p><strong>耐心是侠客的老朋友。</strong> 停下攻击和疾跑，体力就会恢复。闪过冲撞，等它收势时再用重击狠狠招呼。</p></div><p className="muted">手机左手摇杆移动，右手拖动空白场景环顾；双指在场景中张合缩放，右下按钮出招。锁定时可手动环顾，松手稍候跟回目标。打开菜单会暂停夜巡。</p></div>;
 }
 
 export function ResultOverlay({ s, retry, forge, continueHunt, saveWarning }: { saveWarning?: ReactNode; s: Snapshot; retry: () => void; forge: () => void; continueHunt: () => void }) {

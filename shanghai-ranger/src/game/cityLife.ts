@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { box, ellipsoid, groundHeight, riverX, batchRigidParts, canvasTexture } from './materials';
 import type { Simulation } from './simulation';
+import { rotatedBoxBounds } from './collision';
 import type { CityFeature, CityFeatureKind } from './types';
 
 const mat = (color: string, roughness = .8, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -31,7 +32,7 @@ function convenienceStore(root: THREE.Group, simulation: Simulation, x: number, 
   const inside = new THREE.PointLight('#b8ffe4', 3.5, 7, 2); inside.position.set(0, 2, 2.1); group.add(inside);
   for (let i = 0; i < 3; i++) box(group, mat(['#e59c55', '#70a6c8', '#b95f64'][i]), [-1.6 + i * .35, .35, 2.15], [.28, .7, .35]);
   batchRigidParts(group);
-  simulation.boxColliders.push({ x, z, halfWidth: rotation ? 1.8 : 2.55, halfDepth: rotation ? 2.55 : 1.8 });
+  simulation.boxColliders.push({ x, z, ...rotatedBoxBounds(2.55, 1.8, rotation), minY: groundHeight(x, z), maxY: groundHeight(x, z) + 4.1 });
 }
 
 function taxi(root: THREE.Group, simulation: Simulation, x: number, z: number, rotation = 0) {
@@ -54,7 +55,7 @@ function taxi(root: THREE.Group, simulation: Simulation, x: number, z: number, r
   const topper = new THREE.Mesh(new THREE.PlaneGeometry(.62, .2), sign('TAXI', '#17231f', '#f5d86e')); topper.position.set(0, 1.56, .02); group.add(topper);
   for (let i = 0; i < 7; i++) box(group, i % 2 ? dark : mat('#eee6d2'), [-.77 + i * .25, .82, 1.895], [.22, .11, .025]);
   batchRigidParts(group);
-  simulation.boxColliders.push({ x, z, halfWidth: rotation ? 2.05 : 1.1, halfDepth: rotation ? 1.1 : 2.05 });
+  simulation.boxColliders.push({ x, z, ...rotatedBoxBounds(1.1, 2.05, rotation), minY: groundHeight(x, z), maxY: groundHeight(x, z) + 1.7 });
 }
 
 function drunkenYouth(root: THREE.Group, simulation: Simulation, x: number, z: number) {
@@ -84,7 +85,7 @@ function park(root: THREE.Group, simulation: Simulation) {
     const tx = x + dx, tz = z + dz, ty = groundHeight(tx, tz);
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.18, .28, 3.3, 7), bark); trunk.position.set(tx, ty + 1.65, tz); group.add(trunk);
     for (let k = 0; k < 3; k++) ellipsoid(group, leafMaterials[(i + k) % 3], [tx + (k - 1) * .55, ty + 3.5 + (k % 2) * .45, tz], [1.15, 1, 1.05]);
-    simulation.colliders.push({ x: tx, z: tz, radius: .45 });
+    simulation.colliders.push({ x: tx, z: tz, radius: .45, minY: ty, maxY: ty + 3.3 });
   });
   for (const dx of [-4, 4]) {
     box(group, mat('#8b6648'), [x + dx, y + .52, z + 2.2], [2.2, .14, .55]);

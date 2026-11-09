@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ArrowRight, BookOpen, CaretRight, Check, CircleNotch, Compass, Crosshair, Diamond, Feather, Flask, Footprints, HandCoins, Heart, MapTrifold, MoonStars, MouseLeftClick, PawPrint, Skull, Star, Sword, Wrench, Wind, CloudFog, CloudRain } from '@phosphor-icons/react';
 import { MonsterGlyph } from './Emblem';
 import { WorldMap } from './WorldMap';
@@ -19,8 +19,18 @@ function CompassStrip({ heading }: { heading: number }) {
   })}</div><b>◆</b></div>;
 }
 
-function TouchJoystick({ engine }: { engine: Engine | null }) {
+function TouchJoystick({ engine, paused }: { engine: Engine | null; paused: boolean }) {
   const base = useRef<HTMLDivElement>(null), knob = useRef<HTMLSpanElement>(null), active = useRef<number | null>(null);
+  useEffect(() => {
+    const clear = () => {
+      const id = active.current; active.current = null; engine?.setTouch(0, 0);
+      if (id !== null && base.current?.hasPointerCapture?.(id)) base.current.releasePointerCapture(id);
+      if (knob.current) knob.current.style.transform = 'translate(-50%, -50%)';
+    };
+    if (paused) clear();
+    window.addEventListener('blur', clear); window.addEventListener('resize', clear); document.addEventListener('visibilitychange', clear);
+    return () => { clear(); window.removeEventListener('blur', clear); window.removeEventListener('resize', clear); document.removeEventListener('visibilitychange', clear); };
+  }, [engine, paused]);
   const move = (e: React.PointerEvent<HTMLDivElement>) => {
     if (active.current !== e.pointerId || !base.current) return;
     const rect = base.current.getBoundingClientRect(), max = rect.width * .31;
@@ -33,17 +43,18 @@ function TouchJoystick({ engine }: { engine: Engine | null }) {
   const end = (e: React.PointerEvent<HTMLDivElement>) => {
     if (active.current !== e.pointerId) return;
     active.current = null; engine?.setTouch(0, 0);
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
     if (knob.current) knob.current.style.transform = 'translate(-50%, -50%)';
   };
   return <div ref={base} className="touch-move touch-joystick" role="group" aria-label="移动摇杆，拖动摇杆移动，推至边缘疾跑"
-    onPointerDown={e => { e.preventDefault(); active.current = e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); move(e); }}
-    onPointerMove={move} onPointerUp={end} onPointerCancel={end}>
+    onPointerDown={e => { e.preventDefault(); if (paused || active.current !== null) return; active.current = e.pointerId; e.currentTarget.setPointerCapture?.(e.pointerId); move(e); }}
+    onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}>
     <span className="joystick-ring" /><span ref={knob} className="joystick-knob"><Compass size={22} weight="light" /></span>
     <small>移动 · 推满疾跑</small>
   </div>;
 }
 
-export function Hud({ s, engine, open }: { s: Snapshot; engine: Engine | null; open: (m: ModalName) => void }) {
+export function Hud({ s, engine, open, paused }: { s: Snapshot; engine: Engine | null; open: (m: ModalName) => void; paused: boolean }) {
   const phase = s.questPhase, slain = phase === 'harvest' || phase === 'complete';
   const WeatherIcon = s.weather === '晴夜' ? MoonStars : s.weather === '雾霾' ? CloudFog : CloudRain;
   const weaponName = WEAPONS.find(weapon => weapon.id === s.progress.weapon)?.name ?? '城市战术棍';
@@ -105,7 +116,8 @@ export function Hud({ s, engine, open }: { s: Snapshot; engine: Engine | null; o
       <div className="item-caption"><span>奶茶</span><small>回血续命</small></div>
     </section>
 
-    <div className="bottom-controls"><span><Key>W A S D</Key>移动</span><span><Key>SHIFT</Key>疾跑</span><span><Key><MouseLeftClick size={12} /></Key>攻击</span><span><Key>SPACE</Key>闪避</span><span><Key>E</Key>交互</span><span><Key>C</Key>宠物技</span><button onClick={() => open('help')}><Key>H</Key>全部操作<ArrowRight size={12} /></button></div>
+    <div className="bottom-controls"><span><Key>W A S D</Key>移动</span><span><Key>拖动</Key>环顾</span><span><Key><MouseLeftClick size={12} /></Key>攻击</span><span><Key>SPACE</Key>闪避</span><span><Key>E</Key>交互</span><button onClick={() => open('help')}><Key>H</Key>全部操作<ArrowRight size={12} /></button></div>
+    <div className="camera-tools"><button onClick={() => engine?.resetCamera()} aria-label="镜头归位" title="镜头归位 (V)" disabled={paused}><Compass size={18} /><span>归位</span></button><small>拖动环顾 · 双指缩放</small></div>
     <span className="expedition-code">沪上夜巡 <i /> 001 — SH</span>
 
     {s.interact && <button className="interact-prompt" onClick={() => engine?.action('interact')}><Key>E</Key><span><strong>{s.interact.label}</strong><small>{s.interact.detail}</small></span><CaretRight size={18} /></button>}
@@ -114,7 +126,7 @@ export function Hud({ s, engine, open }: { s: Snapshot; engine: Engine | null; o
     {s.combo > 1 && s.combat && s.attacking && <div className="combo-indicator"><span>{s.combo}</span> 连击 <CircleNotch size={13} /></div>}
     {s.health / s.maxHealth < .3 && !s.dead && <div className="low-health" aria-hidden="true" />}
     <div className={`mobile-controls ${s.interact ? 'has-interact' : ''}`}>
-      <TouchJoystick engine={engine} />
+      <TouchJoystick engine={engine} paused={paused} />
       <div className="touch-actions">
         {s.interact && <button className="touch-interact" onClick={() => engine?.action('interact')} aria-label={`交互：${s.interact.label}`}><HandCoins size={20} /><span>交互</span></button>}
         <button onClick={() => engine?.action('dodge')} aria-label="闪避"><Wind size={21} /><span>闪避</span></button>
