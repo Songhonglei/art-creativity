@@ -3,8 +3,18 @@
 # 用法：bash scripts/build-tool.sh [输出zip路径]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-OUT="${1:-$(pwd)/output/沪上夜行侠-小红书小工具.zip}"
-BUILDER_DIR="${MINITOOL_BUILDER_DIR:-/app/.agents/skills/xiaohongshu-minitool/builder}"
+OUT="${1:-$(pwd)/output/沪上游侠-小红书小工具.zip}"
+BUILDER_DIR="${MINITOOL_BUILDER_DIR:-}"
+if [[ -z "$BUILDER_DIR" ]]; then
+  for candidate in \
+    "$HOME/.codex/skills/webapp-building-pro/modules/xiaohongshu-minitool/builder" \
+    "$HOME/.agents/skills/webapp-building-pro/modules/xiaohongshu-minitool/builder" \
+    /app/.agents/skills/xiaohongshu-minitool/builder; do
+    if [[ -f "$candidate/scripts/write_manifest.mjs" && -f "$candidate/scripts/audit_artifact.mjs" ]]; then
+      BUILDER_DIR="$candidate"; break
+    fi
+  done
+fi
 for script in write_manifest.mjs audit_artifact.mjs; do
   if [[ ! -f "$BUILDER_DIR/scripts/$script" ]]; then
     echo "缺少 Mini Tool builder：${script}。请将 MINITOOL_BUILDER_DIR 设为 builder 目录后重试。" >&2
@@ -14,7 +24,7 @@ done
 mkdir -p "$(dirname "$OUT")"
 
 # 1) IIFE 经典脚本构建（Chrome 61 / ES2017）。临时目录避免某些挂载盘丢失新产物。
-TMP_DIST="${TMPDIR:-/tmp}/shanghai-night-watch-tool-$$"
+TMP_DIST="${TMPDIR:-/tmp}/shanghai-ranger-tool-$$"
 rm -rf "$TMP_DIST"
 npx vite build --config vite.config.tool.ts --outDir "$TMP_DIST" --emptyOutDir
 rm -rf dist-tool && mkdir -p dist-tool
@@ -29,7 +39,7 @@ for item in source.rglob('*'):
         shutil.copyfile(item, destination)
 PY
 rm -rf "$TMP_DIST"
-if [[ ! -s dist-tool/app.js || ! -s dist-tool/shanghai-night-watch.css ]]; then
+if [[ ! -s dist-tool/app.js || ! -s dist-tool/shanghai-ranger.css ]]; then
   echo "离线构建缺少 app.js 或样式文件，停止打包。" >&2
   exit 1
 fi
@@ -41,6 +51,16 @@ mkdir -p dist-tool/fonts dist-tool/original-font
 cp public/fonts/*.woff2 dist-tool/fonts/
 cp public/original-font/*.woff2 dist-tool/original-font/
 cp scripts/tool-index.html dist-tool/index.html
+python3 - <<'PY'
+import json
+from pathlib import Path
+licenses = {}
+for path in sorted(Path('public').rglob('*.txt')):
+    licenses[str(path.relative_to('public'))] = path.read_text()
+Path('dist-tool/fonts/licenses.json').write_text(json.dumps(licenses, ensure_ascii=False, indent=2) + '\n')
+for path in Path('dist-tool').rglob('.DS_Store'):
+    path.unlink()
+PY
 
 # 3) 高消耗能力标记（本项目无 Worker / 离屏渲染 / WASM / 游戏引擎，判 false）
 node "$BUILDER_DIR/scripts/write_manifest.mjs" ./dist-tool false

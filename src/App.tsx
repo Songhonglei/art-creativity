@@ -63,7 +63,7 @@ export default function App() {
     <div className="scene-container" ref={sceneRef} />
     <div className="cinematic-shade" />
     <header className="topbar">
-      <button className="brand" onClick={() => setModal(null)} aria-label="返回夜巡"><Emblem /><span><small>沪上</small><strong>夜行侠</strong><span className="brand-tagline">SHANGHAI NIGHT WATCH</span></span></button>
+      <button className="brand" onClick={() => setModal(null)} aria-label="返回夜巡"><Emblem /><span><small>沪上</small><strong>游侠</strong><span className="brand-tagline">SHANGHAI RANGER</span></span></button>
       <nav className="main-nav" aria-label="游戏导航">
         <button className={!modal ? 'active' : ''} onClick={() => setModal(null)} aria-label="夜巡"><Compass size={16} /><span>夜巡</span></button>
         <button className={modal === 'map' ? 'active' : ''} onClick={() => open('map')} aria-label="街区地图"><MapTrifold size={16} /><span>街区地图</span><Key>M</Key></button>
@@ -77,7 +77,7 @@ export default function App() {
     {ready && welcome && !modal && !result && <section className="nightwatch-start">
       <div className="nightwatch-page">
         <span className="nightwatch-tab">夜巡档案 / 01</span>
-        <h1>沪上<br />夜行侠</h1>
+        <h1>沪上<br />游侠</h1>
         <p className="nightwatch-deck">霓虹与梧桐之间的都市侠客传说。</p>
         <div className="nightwatch-specimen"><SkylineArt /><small>上海 · 外滩 — 陆家嘴 天际线</small></div>
         <div className="nightwatch-seal">夜巡<br />档</div>
@@ -99,7 +99,7 @@ export default function App() {
     <button className="help-corner" onClick={() => open('help')} aria-label="玩法说明"><Question size={17} /></button>
     {modal && <Modal key={modal} modal={modal} s={snapshot} engine={engineRef.current} settings={settings} setSettings={setSettings} saveWarning={saveWarning} close={() => setModal(null)} open={open} />}
     {result && !modal && <ResultOverlay s={snapshot} saveWarning={saveWarning} retry={reset} forge={() => { setDismissedResult(true); setModal('forge'); }} continueHunt={() => setDismissedResult(true)} />}
-    {!ready && !error && <div className="loading-screen"><div className="loading-brand"><Emblem /><span className="eyebrow">沪上夜行侠</span><h1>夜巡</h1><p>一座等你守护的夜色街区。</p><div className="loading-track"><span style={{ transform: `scaleX(${loading / 100})` }} /></div><div className="loading-caption"><span>正在进入上海夜色街区</span><span>{loading}%</span></div><small>江湖路远，一碗馄饨热。</small></div></div>}
+    {!ready && !error && <div className="loading-screen"><div className="loading-brand"><Emblem /><span className="eyebrow">沪上游侠</span><h1>夜巡</h1><p>一座等你守护的夜色街区。</p><div className="loading-track"><span style={{ transform: `scaleX(${loading / 100})` }} /></div><div className="loading-caption"><span>正在进入上海夜色街区</span><span>{loading}%</span></div><small>江湖路远，一碗馄饨热。</small></div></div>}
     {error && <div className="loading-screen"><div className="error-content"><Emblem /><h2>夜巡还需片刻。</h2><p>{error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载<ArrowRight size={17} /></button><small>请使用支持 WebGL 2 的浏览器进入3D街区。</small></div></div>}
     {!modal && !result && saveWarning}
     <div className="sr-only" aria-live="polite">{snapshot.questPhase === 'complete' ? snapshot.saveStatus === 'saved' ? '本轮夜巡完成，奖励已入账并自动存档。' : '本轮夜巡完成，奖励已结算，进度尚未保存。' : snapshot.dead ? '你倒下了，宠物把你拖回了大排档。可以重新开始。' : ''}</div>

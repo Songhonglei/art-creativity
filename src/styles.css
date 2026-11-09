@@ -38,7 +38,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;vertical-align
 @media(pointer:coarse){.touch-move{grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px)}.touch-actions button{min-width:44px;min-height:44px}.touch-actions button:nth-child(2){min-width:56px;min-height:56px}}
 @media(max-width:560px){.topbar{gap:8px;padding:0 12px}.main-nav{gap:3px}.main-nav>button{min-width:34px;justify-content:center}.top-actions{gap:3px}.top-actions>button{width:30px;height:40px}.top-actions>.fullscreen-button{display:none}.mobile-controls{bottom:28px;left:18px;right:18px}.touch-move{grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px)}.touch-actions{gap:8px}.touch-actions button{width:44px;height:44px}.touch-actions button:nth-child(2){width:56px;height:56px}}
 
-/* ===== 沪上夜行侠 · 新增组件 ===== */
+/* ===== 沪上游侠 · 新增组件 ===== */
 .target-card{display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px 15px;border:1px solid rgba(140,170,255,.28);background:rgba(20,32,66,.35);color:#c9d6f5;font-size:12px}
 .target-card svg{color:#e8c76a;flex-shrink:0}
 .target-card strong{color:#f2e6bd;font-weight:600}

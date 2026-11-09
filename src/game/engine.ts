@@ -62,7 +62,7 @@ export class Engine {
     this.renderer.setPixelRatio(pixelRatio(settings, this.softwareRenderer));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace; this.renderer.toneMapping = THREE.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.28;
     this.renderer.shadowMap.enabled = !this.softwareRenderer && settings.quality === 'high'; this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.renderer.domElement.setAttribute('aria-label', '沪上夜行侠：上海夜色街区。W A S D 移动，点击或 J 攻击，空格键闪避。');
+    this.renderer.domElement.setAttribute('aria-label', '沪上游侠：上海夜色街区。W A S D 移动，点击或 J 攻击，空格键闪避。');
     this.renderer.domElement.tabIndex = 0; container.appendChild(this.renderer.domElement);
     this.camera = new THREE.PerspectiveCamera(54, 1, .1, 600);
     const manager = new THREE.LoadingManager();
@@ -115,7 +115,7 @@ export class Engine {
       freeze: () => { this.simulation.paused = true; },
     }) });
 
-    queueMicrotask(() => { if (!this.disposed) { this.loading = false; callbacks.progress(100); callbacks.ready(); } });
+    void Promise.resolve().then(() => { if (!this.disposed) { this.loading = false; callbacks.progress(100); callbacks.ready(); } });
     this.raf = requestAnimationFrame(this.loop);
   }
   private resize = () => {
