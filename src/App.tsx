@@ -19,12 +19,17 @@ export default function App() {
   const [snapshot, setSnapshot] = useState<Snapshot>(() => new Simulation().snapshot());
   const [modal, setModal] = useState<ModalName | null>(null), [ready, setReady] = useState(false), [error, setError] = useState('');
   const [loading, setLoading] = useState(8), [settings, setSettings] = useState<Settings>(loadSettings);
+  const [settingsSaved, setSettingsSaved] = useState(true);
   const [welcome, setWelcome] = useState(true), [dismissedResult, setDismissedResult] = useState(false);
   const [compactHud, setCompactHud] = useState(false);
   const [pet, setPet] = useState<Pet>(snapshot.progress.pet);
   const settingsRef = useRef(settings); settingsRef.current = settings; modalRef.current = modal;
   const open = useCallback((name: ModalName) => setModal(current => current === name ? null : name), []);
   const shortcut = useCallback((key: Shortcut) => { if (key === 'escape') setModal(current => current ? null : 'settings'); else open(key); }, [open]);
+  const persistSettings = useCallback((value: Settings) => {
+    try { localStorage.setItem('nightwatch-settings', JSON.stringify(value)); setSettingsSaved(true); }
+    catch { setSettingsSaved(false); }
+  }, []);
   useEffect(() => {
     if (!sceneRef.current) return;
     let engine: Engine | undefined;
@@ -39,8 +44,20 @@ export default function App() {
   useEffect(() => { if (snapshot.questPhase === 'tracking') setDismissedResult(false); }, [snapshot.questPhase]);
   useEffect(() => { setPet(snapshot.progress.pet); }, [snapshot.progress.pet]);
   useEffect(() => { engineRef.current?.setPaused(Boolean(modal) || welcome || result || !ready); }, [modal, welcome, result, ready]);
-  useEffect(() => { engineRef.current?.setSettings(settings); try { localStorage.setItem('nightwatch-settings', JSON.stringify(settings)); } catch { /* Settings remain available for this session. */ } }, [settings]);
+  useEffect(() => { engineRef.current?.setSettings(settings); persistSettings(settings); }, [settings, persistSettings]);
+  const progressFailed = snapshot.saveStatus === 'failed';
+  const retrySave = () => {
+    const focused = document.activeElement;
+    if (progressFailed) { engineRef.current?.simulation.retrySave(); engineRef.current?.publish(); }
+    if (!settingsSaved) persistSettings(settings);
+    requestAnimationFrame(() => {
+      if (focused && !focused.isConnected && document.activeElement === document.body) {
+        document.querySelector<HTMLButtonElement>('[role="dialog"] button')?.focus();
+      }
+    });
+  };
   const reset = () => { setDismissedResult(false); setModal(null); engineRef.current?.reset(); };
+  const saveWarning = (progressFailed || !settingsSaved) && <aside className="save-warning" role="alert"><div><strong>{progressFailed ? settingsSaved ? '进度未保存' : '进度和设置未保存' : '设置未保存'}</strong><p>{progressFailed ? '进度仅本次有效，刷新后会丢失未保存的成长。' : '当前设置仅本次有效，刷新后会恢复原设置。'}</p><small>请检查浏览器存储权限或可用空间，再重试。</small></div><button onClick={retrySave}>重试保存</button></aside>;
   const currentTarget = ROSTER[snapshot.progress.hunts % ROSTER.length];
   return <main className={`game-shell ${ready ? 'is-ready' : ''} ${settings.reducedMotion ? 'reduced-motion' : ''} ${compactHud ? 'hud-compact' : ''}`}>
     <div className="scene-container" ref={sceneRef} />
@@ -80,10 +97,11 @@ export default function App() {
     </section>}
 
     <button className="help-corner" onClick={() => open('help')} aria-label="玩法说明"><Question size={17} /></button>
-    {modal && <Modal key={modal} modal={modal} s={snapshot} engine={engineRef.current} settings={settings} setSettings={setSettings} close={() => setModal(null)} open={open} />}
-    {result && !modal && <ResultOverlay s={snapshot} retry={reset} forge={() => { setDismissedResult(true); setModal('forge'); }} continueHunt={() => setDismissedResult(true)} />}
+    {modal && <Modal key={modal} modal={modal} s={snapshot} engine={engineRef.current} settings={settings} setSettings={setSettings} saveWarning={saveWarning} close={() => setModal(null)} open={open} />}
+    {result && !modal && <ResultOverlay s={snapshot} saveWarning={saveWarning} retry={reset} forge={() => { setDismissedResult(true); setModal('forge'); }} continueHunt={() => setDismissedResult(true)} />}
     {!ready && !error && <div className="loading-screen"><div className="loading-brand"><Emblem /><span className="eyebrow">沪上夜行侠</span><h1>夜巡</h1><p>一座等你守护的夜色街区。</p><div className="loading-track"><span style={{ transform: `scaleX(${loading / 100})` }} /></div><div className="loading-caption"><span>正在进入上海夜色街区</span><span>{loading}%</span></div><small>江湖路远，一碗馄饨热。</small></div></div>}
     {error && <div className="loading-screen"><div className="error-content"><Emblem /><h2>夜巡还需片刻。</h2><p>{error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载<ArrowRight size={17} /></button><small>请使用支持 WebGL 2 的浏览器进入3D街区。</small></div></div>}
-    <div className="sr-only" aria-live="polite">{snapshot.questPhase === 'complete' ? '本轮夜巡完成，奖励已入账并自动存档。' : snapshot.dead ? '你倒下了，宠物把你拖回了大排档。可以重新开始。' : ''}</div>
+    {!modal && !result && saveWarning}
+    <div className="sr-only" aria-live="polite">{snapshot.questPhase === 'complete' ? snapshot.saveStatus === 'saved' ? '本轮夜巡完成，奖励已入账并自动存档。' : '本轮夜巡完成，奖励已结算，进度尚未保存。' : snapshot.dead ? '你倒下了，宠物把你拖回了大排档。可以重新开始。' : ''}</div>
   </main>;
 }

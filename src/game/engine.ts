@@ -55,7 +55,7 @@ export class Engine {
   constructor(container: HTMLDivElement, settings: Settings, callbacks: EngineCallbacks) {
     this.container = container; this.callbacks = callbacks; this.settings = settings;
     let saved: string | null = null; try { saved = localStorage.getItem(SAVE_KEY); } catch { /* Storage may be unavailable. */ }
-    this.simulation = new Simulation(readProgress(saved), e => this.onEvent(e), p => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(p)); } catch { /* A patrol remains playable without storage. */ } });
+    this.simulation = new Simulation(readProgress(saved), e => this.onEvent(e), p => localStorage.setItem(SAVE_KEY, JSON.stringify(p)));
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     const gl = this.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
     this.softwareRenderer = Boolean(debug && /swiftshader|llvmpipe|software/i.test(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)));

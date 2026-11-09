@@ -104,6 +104,7 @@ export class Simulation {
   boxColliders: BoxCollider[] = [];
   potions = 5; time = 0; weather: Weather = '晴夜'; weatherTime = 0; tracked = 0;
   questPhase: Snapshot['questPhase'] = 'tracking'; dead = false; locked = false; paused = false; combat = false;
+  saveStatus: Snapshot['saveStatus'] = 'idle';
   attackCooldown = 0; healingCooldown = 0; petCooldown = 0; notifications: Notification[] = [];
   private noticeId = 0;
   private noticeTimes = new Map<number, number>();
@@ -116,12 +117,17 @@ export class Simulation {
 
   constructor(progress?: Progress, event: (e: GameEvent) => void = () => { }, save: (p: Progress) => void = () => { }) {
     this.progress = progress ? clone(progress) : clone(DEFAULT_PROGRESS);
-    this.event = event; this.save = save;
+    this.event = event;
+    this.save = progress => {
+      try { save(progress); this.saveStatus = 'saved'; }
+      catch { this.saveStatus = 'failed'; }
+    };
     this.player.health = this.maxHealth;
     this.setMonsterForHunt(this.progress.hunts);
     this.resetResources();
     for (let slot = 0; slot < STREET_SLOTS; slot++) this.resetStreetEnemy(slot, true);
   }
+  retrySave() { this.save(this.progress); return this.saveStatus === 'saved'; }
   get maxHealth() { return 100 + (this.progress.level - 1) * 18; }
   get rosterEntry() { return ROSTER[this.progress.hunts % ROSTER.length]; }
   get monsterName() { return this.rosterEntry.name; }
@@ -565,6 +571,7 @@ export class Simulation {
       action: this.monster.action, enraged: this.monster.enraged, elite: this.elite, street: false,
     } : null;
     return {
+      saveStatus: this.saveStatus,
       health: this.player.health, maxHealth: this.maxHealth, stamina: this.player.stamina, potions: this.potions,
       monsterHealth: this.monster.health, monsterMaxHealth: this.monster.maxHealth, monsterAction: this.monster.action,
       monsterDistance: distance(this.player, this.monster), monsterName: this.monsterName, monsterTitle: this.monsterTitle, monsterEnraged: this.monster.enraged,
