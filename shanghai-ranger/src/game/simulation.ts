@@ -240,14 +240,14 @@ export class Simulation {
     if (!this.mainCombat && this.targetRevealed && dist < 13) {
       this.mainCombat = true; this.questPhase = 'hunting';
       this.notify('目标现身', `${this.monsterTitle}盯上了你。看清前摇，侧身闪避！`, 'warning');
-      m.action = 'stalk'; m.timer = 1.7; this.event({ type: 'roar', kind: m.kind });
+      m.action = 'stalk'; m.timer = 1.7; this.event({ type: 'roar', kind: m.kind, x: m.x, z: m.z });
     }
     if (!this.mainCombat) {
       if (m.timer < 0) { m.action = m.action === 'idle' ? 'stalk' : 'idle'; m.timer = m.action === 'idle' ? 6 : 3; }
       return;
     }
     if (m.health < m.maxHealth * (this.elite ? .55 : .4) && !m.enraged) {
-      m.enraged = true; this.notify(this.elite ? '精英目标暴怒' : '它急眼了', '动作明显变快，等它收势的间隙再反击。', 'warning'); this.event({ type: 'roar', kind: m.kind });
+      m.enraged = true; this.notify(this.elite ? '精英目标暴怒' : '它急眼了', '动作明显变快，等它收势的间隙再反击。', 'warning'); this.event({ type: 'roar', kind: m.kind, x: m.x, z: m.z });
     }
     const enrage = m.enraged ? 1.22 : 1, rain = this.weather === '暴雨' ? behavior === 'vehicle' ? 1.18 : 1.05 : 1;
     switch (m.action) {
@@ -264,7 +264,7 @@ export class Simulation {
         if (m.timer <= 0 && dist < (behavior === 'vehicle' ? 22 : 14)) {
           if (behavior === 'bruiser' && m.attackCount % 3 === 2) { m.action = 'guard'; m.timer = 1.35; m.attackCount++; break; }
           m.action = 'windup'; m.timer = (behavior === 'skirmisher' ? .95 : behavior === 'vehicle' ? 1.4 : behavior === 'elite' ? .85 : 1.1) * (m.enraged ? .82 : 1);
-          this.monsterHit = false; m.attackCount++; this.event({ type: 'roar', kind: m.kind });
+          this.monsterHit = false; m.attackCount++; this.event({ type: 'roar', kind: m.kind, x: m.x, z: m.z });
         }
         break;
       }
@@ -350,7 +350,7 @@ export class Simulation {
         }
         if (m.timer <= 0 && dist < (behavior === 'vehicle' ? 11 : 6)) {
           m.action = 'windup'; m.timer = behavior === 'vehicle' ? 1.25 : behavior === 'skirmisher' ? .85 : 1;
-          m.attackDone = false; m.attackCount++; this.event({ type: 'roar', kind: m.kind });
+          m.attackDone = false; m.attackCount++; this.event({ type: 'roar', kind: m.kind, x: m.x, z: m.z });
         }
       } else if (m.action === 'windup') {
         m.facing += angleDelta(m.facing, toPlayer) * Math.min(1, dt * (behavior === 'vehicle' ? .8 : 1.8));
