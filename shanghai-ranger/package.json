@@ -1,0 +1,32 @@
+{
+  "name": "shanghai-night-watch",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "description": "沪上夜行侠：上海都市背景的第三人称 3D 夜巡游戏。",
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.0"
+  },
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.3",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.11"
+  }
+}
