@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { Simulation, SAVE_KEY, readProgress, angleDelta, clamp } from './simulation';
+import { Simulation, SAVE_KEY, readProgress, clamp } from './simulation';
 import { groundHeight, makeMaterials, canvasTexture } from './materials';
 import type { Materials } from './materials';
 import { createMonster, createHunter, createPet } from './creatures';
 import { World } from './world';
-import { followPet, resolveCircle, cameraClearDistance } from './collision';
+import { followPet, resolveCircle } from './collision';
+import { CAMERA, CameraGesture, orbitPosition, cameraSafeFraction } from './camera';
 import { GameAudio } from './audio';
 import type { GameEvent, MonsterKind, Pet, Settings, Skin, Snapshot } from './types';
 
@@ -22,7 +23,13 @@ export class Engine {
   scene = new THREE.Scene();
   audio = new GameAudio();
   settings: Settings;
-  yaw = -.07; pitch = .07; cameraDistance = 8.2;
+  private orbit = new CameraGesture();
+  get yaw() { return this.orbit.yaw; }
+  set yaw(value: number) { this.orbit.yaw = value; }
+  get pitch() { return this.orbit.pitch; }
+  set pitch(value: number) { this.orbit.pitch = clamp(value, CAMERA.minPitch, CAMERA.maxPitch); }
+  get cameraDistance() { return this.orbit.distance; }
+  set cameraDistance(value: number) { this.orbit.distance = clamp(value, CAMERA.minDistance, CAMERA.maxDistance); }
   private world: World;
   private hunter: ReturnType<typeof createHunter>;
   private hunters = new Map<Skin, ReturnType<typeof createHunter>>();
@@ -35,7 +42,6 @@ export class Engine {
   private companions = new Map<Pet, THREE.Group>();
   private keys = new Set<string>();
   private touch = { x: 0, z: 0, sprint: false };
-  private pointer = { dragging: false, x: 0, y: 0, moved: false };
   private container: HTMLDivElement;
   private callbacks: EngineCallbacks;
   private disposed = false;
@@ -62,7 +68,7 @@ export class Engine {
     this.renderer.setPixelRatio(pixelRatio(settings, this.softwareRenderer));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace; this.renderer.toneMapping = THREE.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.28;
     this.renderer.shadowMap.enabled = !this.softwareRenderer && settings.quality === 'high'; this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.renderer.domElement.setAttribute('aria-label', '沪上游侠：上海夜色街区。W A S D 移动，点击或 J 攻击，空格键闪避。');
+    this.renderer.domElement.setAttribute('aria-label', '沪上游侠：拖动场景环顾，滚轮或双指缩放。W A S D 或左下摇杆移动，点击或 J 攻击，空格键闪避，V 镜头归位。');
     this.renderer.domElement.tabIndex = 0; container.appendChild(this.renderer.domElement);
     this.camera = new THREE.PerspectiveCamera(54, 1, .1, 600);
     const manager = new THREE.LoadingManager();
@@ -103,7 +109,7 @@ export class Engine {
       cityFeature: this.world.nearestCityFeature(this.simulation.player),
       appearance: { skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
       street: this.simulation.streetEnemies.map(enemy => ({ ...enemy })),
-      camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, targetDistance: this.camera.position.distanceTo(this.target) },
+      camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, yaw: this.yaw, pitch: this.pitch, distance: this.cameraDistance, contacts: this.orbit.count, target: this.target.clone(), targetDistance: this.camera.position.distanceTo(this.target), safeFraction: cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight) },
       render: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures },
       placePlayer: (x: number, z: number) => { this.simulation.player.x = x; this.simulation.player.z = z; this.world.updateStreaming(this.simulation.player, true); },
       placePet: (x: number, z: number) => { this.companion.position.x = x; this.companion.position.z = z; },
@@ -120,6 +126,7 @@ export class Engine {
   }
   private resize = () => {
     const w = this.container.clientWidth, h = this.container.clientHeight; if (!w || !h) return;
+    this.releaseCameraPointers(); this.touch = { x: 0, z: 0, sprint: false };
     this.renderer.setSize(w, h); this.camera.aspect = w / h;
     this.camera.fov = w / h < .7 ? 65 : w / h > 1.65 && h < 600 ? 57 : 52;
     this.camera.updateProjectionMatrix();
@@ -128,6 +135,7 @@ export class Engine {
     window.addEventListener('keydown', this.keyDown); window.addEventListener('keyup', this.keyUp);
     window.addEventListener('blur', this.blur); document.addEventListener('visibilitychange', this.visibility);
     this.renderer.domElement.addEventListener('pointerdown', this.pointerDown); window.addEventListener('pointermove', this.pointerMove); window.addEventListener('pointerup', this.pointerUp);
+    window.addEventListener('pointercancel', this.pointerCancel); this.renderer.domElement.addEventListener('lostpointercapture', this.pointerCancel);
     this.renderer.domElement.addEventListener('contextmenu', this.contextMenu); this.renderer.domElement.addEventListener('wheel', this.wheel, { passive: false });
     this.renderer.domElement.addEventListener('webglcontextlost', this.contextLost);
   }
@@ -140,23 +148,47 @@ export class Engine {
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
     this.audio.unlock(); this.keys.add(e.code);
     if (e.repeat) return;
-    switch (e.code) { case 'Space': this.simulation.dodge(); break; case 'KeyJ': this.simulation.attack(); break; case 'KeyK': this.simulation.attack(true); break; case 'KeyE': this.simulation.interact(); break; case 'KeyR': case 'Digit1': this.simulation.heal(); break; case 'KeyQ': this.simulation.toggleLock(); break; case 'KeyC': this.simulation.petSkill(); break; }
+    switch (e.code) { case 'Space': this.simulation.dodge(); break; case 'KeyJ': this.simulation.attack(); break; case 'KeyK': this.simulation.attack(true); break; case 'KeyE': this.simulation.interact(); break; case 'KeyR': case 'Digit1': this.simulation.heal(); break; case 'KeyQ': this.simulation.toggleLock(); break; case 'KeyC': this.simulation.petSkill(); break; case 'KeyV': this.resetCamera(); break; }
     this.publish();
   };
   private keyUp = (e: KeyboardEvent) => { this.keys.delete(e.code); };
-  private blur = () => { this.keys.clear(); this.touch = { x: 0, z: 0, sprint: false }; this.pointer.dragging = false; };
+  private releaseCameraPointers() {
+    this.orbit.cancel();
+    for (const id of this.capturedPointers) {
+      if (this.renderer.domElement.hasPointerCapture?.(id)) this.renderer.domElement.releasePointerCapture(id);
+    }
+    this.capturedPointers.clear();
+  }
+  private capturedPointers = new Set<number>();
+  private blur = () => { this.keys.clear(); this.touch = { x: 0, z: 0, sprint: false }; this.releaseCameraPointers(); };
   private visibility = () => { this.blur(); this.lastTime = 0; };
-  private pointerDown = (e: PointerEvent) => { if (this.simulation.paused) return; this.audio.unlock(); this.pointer = { dragging: true, x: e.clientX, y: e.clientY, moved: false }; if (e.button === 2) this.simulation.attack(true); };
-  private pointerMove = (e: PointerEvent) => {
-    if (!this.pointer.dragging || this.simulation.paused) return;
-    const dx = e.clientX - this.pointer.x, dy = e.clientY - this.pointer.y;
-    if (Math.abs(dx) + Math.abs(dy) > 2) this.pointer.moved = true;
-    if (this.pointer.moved) { this.yaw -= dx * .004 * this.settings.sensitivity; this.pitch = clamp(this.pitch + dy * .0024 * this.settings.sensitivity, -.05, .72); }
-    this.pointer.x = e.clientX; this.pointer.y = e.clientY;
+  private pointerDown = (e: PointerEvent) => {
+    if (this.simulation.paused) return;
+    if (!this.orbit.begin({ id: e.pointerId, x: e.clientX, y: e.clientY, type: e.pointerType, button: e.button })) return;
+    e.preventDefault(); this.audio.unlock();
+    // Window listeners remain the fallback on WebViews without pointer capture.
+    try { this.renderer.domElement.setPointerCapture?.(e.pointerId); this.capturedPointers.add(e.pointerId); } catch { /* The contact may already have ended. */ }
   };
-  private pointerUp = (e: PointerEvent) => { if (this.pointer.dragging && !this.pointer.moved && e.button === 0 && !this.simulation.paused) this.simulation.attack(); this.pointer.dragging = false; };
+  private pointerMove = (e: PointerEvent) => {
+    if (this.simulation.paused) return;
+    this.orbit.move(e.pointerId, e.clientX, e.clientY, this.settings.sensitivity, Math.min(this.container.clientWidth, this.container.clientHeight));
+  };
+  private finishPointer(e: PointerEvent, cancelled: boolean) {
+    // Include the last coordinates even if the browser coalesced the final move.
+    if (!cancelled && !this.simulation.paused) this.pointerMove(e);
+    const action = this.orbit.end(e.pointerId, cancelled || this.simulation.paused);
+    this.capturedPointers.delete(e.pointerId);
+    if (this.renderer.domElement.hasPointerCapture?.(e.pointerId)) this.renderer.domElement.releasePointerCapture(e.pointerId);
+    if (action) this.action(action);
+  }
+  private pointerUp = (e: PointerEvent) => this.finishPointer(e, false);
+  private pointerCancel = (e: PointerEvent) => this.finishPointer(e, true);
   private contextMenu = (e: Event) => e.preventDefault();
-  private wheel = (e: WheelEvent) => { e.preventDefault(); this.cameraDistance = clamp(this.cameraDistance + e.deltaY * .01, 5.5, 17); };
+  private wheel = (e: WheelEvent) => {
+    e.preventDefault(); if (this.simulation.paused) return;
+    const pixels = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? this.container.clientHeight : 1);
+    this.orbit.zoom(Math.exp(clamp(pixels * .0015, -.7, .7)));
+  };
   private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.callbacks.error('图形连接中断，请重新加载。已强化的装备和存档都还在。'); };
 
   private onEvent(e: GameEvent) {
@@ -223,21 +255,18 @@ export class Engine {
   };
   private updateCamera(dt: number, instant = false) {
     const p = this.simulation.player, m = this.simulation.monster;
-    if (this.simulation.locked && m.health > 0) { const desired = Math.atan2(p.x - m.x, p.z - m.z); this.yaw += angleDelta(this.yaw, desired) * Math.min(1, dt * 3); }
+    if (this.simulation.locked && m.health > 0) this.orbit.followLock(Math.atan2(p.x - m.x, p.z - m.z), dt);
     const y = groundHeight(p.x, p.z);
     this.target.set(p.x, y + 1.55, p.z);
-    const dist = this.cameraDistance + (p.sprinting ? .45 : 0), height = 2.45 + this.pitch * 8.5;
-    this.desiredCamera.set(p.x + Math.sin(this.yaw) * dist, y + height, p.z + Math.cos(this.yaw) * dist);
-    this.desiredCamera.y = Math.max(this.desiredCamera.y, groundHeight(this.desiredCamera.x, this.desiredCamera.z) + 1.2);
-    const clearDistance = cameraClearDistance(p, this.desiredCamera, dist, this.simulation.boxColliders);
-    if (clearDistance < dist) {
-      this.desiredCamera.x = p.x + Math.sin(this.yaw) * clearDistance;
-      this.desiredCamera.z = p.z + Math.cos(this.yaw) * clearDistance;
-      this.desiredCamera.y = Math.max(y + 1.65, y + height * Math.max(.55, clearDistance / dist));
-    }
-    const blend = instant || clearDistance < this.camera.position.distanceTo(this.target) * .55 ? 1 : 1 - Math.exp(-dt * (clearDistance < dist ? 18 : 7));
+    const position = orbitPosition(this.target, this.yaw, this.pitch, this.cameraDistance + (p.sprinting ? .45 : 0));
+    this.desiredCamera.set(position.x, position.y, position.z);
+    const fraction = cameraSafeFraction(this.target, this.desiredCamera, this.simulation.boxColliders, this.simulation.colliders, groundHeight);
+    this.desiredCamera.lerp(this.target, 1 - fraction);
+    const blend = instant || fraction < 1 ? 1 : 1 - Math.exp(-dt * 7);
     this.camera.position.lerp(this.desiredCamera, blend);
     if (!this.settings.reducedMotion && this.shake > 0) { this.camera.position.x += (Math.random() - .5) * this.shake; this.camera.position.y += (Math.random() - .5) * this.shake; }
+    const safe = cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight);
+    this.camera.position.lerp(this.target, 1 - safe);
     this.shake = Math.max(0, this.shake - dt * .5);
     this.camera.lookAt(this.target);
   }
@@ -258,7 +287,13 @@ export class Engine {
     });
   }
   publish() { const snapshot = this.simulation.snapshot(); snapshot.heading = ((-this.yaw * 180 / Math.PI) % 360 + 360) % 360; this.callbacks.snapshot(snapshot); }
-  setPaused(paused: boolean) { this.simulation.paused = paused; this.keys.clear(); this.pointer.dragging = false; this.touch = { x: 0, z: 0, sprint: false }; this.publish(); }
+  setPaused(paused: boolean) { this.simulation.paused = paused; this.blur(); this.publish(); }
+  resetCamera() {
+    this.releaseCameraPointers();
+    const sim = this.simulation;
+    this.orbit.reset(sim.locked && sim.monster.health > 0 ? Math.atan2(sim.monster.x - sim.player.x, sim.monster.z - sim.player.z) : sim.player.facing);
+    this.updateCamera(.1, true); this.publish();
+  }
   setSettings(settings: Settings) {
     const renderChanged = this.settings.quality !== settings.quality || this.settings.reducedMotion !== settings.reducedMotion;
     this.settings = settings; this.audio.setVolume(settings.volume, settings.sound); this.audio.setSoundscape(settings.soundscape);
@@ -312,7 +347,7 @@ export class Engine {
     this.simulation.rest(); this.updateCamera(.1, true); this.publish();
   }
   reset() {
-    this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = .07; this.elapsed = 0; this.shake = 0;
+    this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance; this.elapsed = 0; this.shake = 0;
     this.damage.forEach(d => d.element.remove()); this.damage = [];
     this.rebuildMonster();
     this.companion.position.set(-2, groundHeight(-2, 21), 21); this.audio.setWeather('晴夜');
@@ -320,9 +355,10 @@ export class Engine {
     this.updateCamera(.1, true); this.publish();
   }
   dispose() {
-    this.disposed = true; cancelAnimationFrame(this.raf); this.world.dispose(); this.resizeObserver?.disconnect(); window.removeEventListener('resize', this.resize);
+    this.disposed = true; this.blur(); cancelAnimationFrame(this.raf); this.world.dispose(); this.resizeObserver?.disconnect(); window.removeEventListener('resize', this.resize);
     window.removeEventListener('keydown', this.keyDown); window.removeEventListener('keyup', this.keyUp); window.removeEventListener('blur', this.blur); document.removeEventListener('visibilitychange', this.visibility);
     window.removeEventListener('pointermove', this.pointerMove); window.removeEventListener('pointerup', this.pointerUp);
+    window.removeEventListener('pointercancel', this.pointerCancel); this.renderer.domElement.removeEventListener('lostpointercapture', this.pointerCancel);
     const canvas = this.renderer.domElement; canvas.removeEventListener('pointerdown', this.pointerDown); canvas.removeEventListener('contextmenu', this.contextMenu); canvas.removeEventListener('wheel', this.wheel); canvas.removeEventListener('webglcontextlost', this.contextLost);
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
     this.scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Points || object instanceof THREE.LineSegments) { geometries.add(object.geometry); const ms = Array.isArray(object.material) ? object.material : [object.material]; ms.forEach((m: THREE.Material) => materials.add(m)); } });

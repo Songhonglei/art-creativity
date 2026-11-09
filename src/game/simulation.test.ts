@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Simulation, DEFAULT_PROGRESS, readProgress, ROSTER, WEATHER_DURATION, distance, huntSite, monsterBehavior } from './simulation';
-import { followPet, resolveCircle, cameraClearDistance } from './collision';
+import { followPet, resolveCircle } from './collision';
 import { CHUNK_SIZE, LAYOUT_CACHE_LIMIT, chunkCoordinate, districtKind, districtLayout, districtLayoutCacheSize, districtName, nearbyChunkKeys } from './districts';
 import { riverX } from './materials';
+import { cameraSafeFraction } from './camera';
 
 const idle = { x: 0, z: 0, sprint: false };
 function advance(sim: Simulation, seconds: number) { for (let i = 0; i < Math.ceil(seconds * 60); i++) sim.tick(1 / 60, idle); }
@@ -123,8 +124,8 @@ describe('游侠移动与动作', () => {
 describe('建筑碰撞与宠物绕行', () => {
   it('镜头在建筑前收缩，无遮挡时保留完整距离', () => {
     const boxes = [{ x: 0, z: 4, halfWidth: 3, halfDepth: 2 }];
-    expect(cameraClearDistance({ x: 0, z: 0 }, { x: 0, z: 10 }, 10, boxes)).toBeLessThan(4);
-    expect(cameraClearDistance({ x: 10, z: 0 }, { x: 10, z: 10 }, 10, boxes)).toBe(10);
+    expect(cameraSafeFraction({ x: 0, y: 2, z: 0 }, { x: 0, y: 3, z: 10 }, boxes, [], () => 0) * 10).toBeLessThan(4);
+    expect(cameraSafeFraction({ x: 10, y: 2, z: 0 }, { x: 10, y: 3, z: 10 }, boxes, [], () => 0) * 10).toBe(10);
   });
   const boxes = [{ x: 0, z: 0, halfWidth: 2, halfDepth: 2 }];
   it('建筑角落和误落在墙内的坐标都会被推出', () => {

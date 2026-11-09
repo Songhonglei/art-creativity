@@ -72,7 +72,7 @@ export default function App() {
       </nav>
       <div className="top-actions"><button className="hud-toggle" onClick={() => setCompactHud(value => !value)} aria-label={compactHud ? '显示完整状态界面' : '精简状态界面'} aria-pressed={compactHud}>{compactHud ? '完整' : '精简'}</button><span className="solo-label"><span />单人夜巡</span><button onClick={() => { engineRef.current?.audio.unlock(); setSettings({ ...settings, sound: !settings.sound }); }} aria-label={settings.sound ? '关闭声音' : '开启声音'} title={settings.sound ? '关闭声音' : '开启声音'}>{settings.sound ? <SpeakerHigh size={19} /> : <SpeakerSlash size={19} />}</button><span className="action-divider" /><button onClick={() => open('settings')} aria-label="打开设置" title="设置"><GearSix size={20} /></button></div>
     </header>
-    {ready && <Hud s={snapshot} engine={engineRef.current} open={open} />}
+    {ready && <Hud s={snapshot} engine={engineRef.current} open={open} paused={Boolean(modal) || welcome || result || !ready} />}
 
     {ready && welcome && !modal && !result && <section className="nightwatch-start">
       <div className="nightwatch-page">

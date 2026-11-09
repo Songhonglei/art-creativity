@@ -129,7 +129,7 @@ export class DistrictStreamer {
       if (overlaps) continue;
       const y = groundHeight(b.x, b.z) - .35;
       appendUrbanBuilding(urban, { x: b.x, z: b.z, y, halfWidth: b.halfWidth, halfDepth: b.halfDepth, height: b.height, kind: layout.kind, variant: b.variant, surface: b.style });
-      boxes.push({ x: b.x, z: b.z, halfWidth: b.halfWidth * 1.06, halfDepth: b.halfDepth * 1.06 });
+      boxes.push({ x: b.x, z: b.z, halfWidth: b.halfWidth * 1.06, halfDepth: b.halfDepth * 1.06, minY: y, maxY: y + b.height + 3 });
     }
     layout.trees.forEach((tree, i) => {
       if (this.detail === 'low' && i % 2) return;
@@ -139,14 +139,14 @@ export class DistrictStreamer {
         const crown = new THREE.IcosahedronGeometry(1, 1); crown.scale((1.05 + k * .14) * s, (.75 + k * .06) * s, (1 + k * .1) * s);
         crown.translate(tree.x + (k - 1) * .62 * s, y + (3.25 + (k % 2) * .55) * s, tree.z + (k === 1 ? -.4 : .2) * s); geometry(crown, leaves[(i + k) % leaves.length]);
       }
-      circles.push({ x: tree.x, z: tree.z, radius: .3 * s });
+      circles.push({ x: tree.x, z: tree.z, radius: .3 * s, minY: y, maxY: y + 3.1 * s });
     });
     for (const [lampIndex, [dx, dz]] of [[-3.1, -20], [3.1, 20], [-20, 3.1], [20, -3.1]].entries()) {
       if (this.detail !== 'high' && lampIndex % 2) continue;
       const x = centerX + dx, z = centerZ + dz, y = groundHeight(x, z);
       const pole = new THREE.CylinderGeometry(.065, .1, 4.2, 6); pole.translate(x, y + 2.1, z); geometry(pole, poles);
       const lamp = new THREE.SphereGeometry(.16, 7, 5); lamp.translate(x, y + 4.25, z); geometry(lamp, lamps);
-      circles.push({ x, z, radius: .18 });
+      circles.push({ x, z, radius: .18, minY: y, maxY: y + 4.42 });
     }
     // Neighbourhood-specific street life, merged into the same batches as the architecture.
     const side = (Math.abs(cx * 7 + cz * 11) % 2) ? 1 : -1;
