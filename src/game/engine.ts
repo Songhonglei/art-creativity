@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { Simulation, SAVE_KEY, readProgress, clamp } from './simulation';
+import { Simulation, SAVE_KEY, readProgress, clamp, ROSTER } from './simulation';
 import { groundHeight, makeMaterials, canvasTexture } from './materials';
 import type { Materials } from './materials';
 import { createMonster, createHunter, createPet } from './creatures';
 import { World } from './world';
-import { followPet, resolveCircle } from './collision';
+import { followPet, resolveCircle, hasLineOfSight } from './collision';
 import { CAMERA, CameraGesture, orbitPosition, cameraSafeFraction } from './camera';
 import { GameAudio } from './audio';
 import type { GameEvent, MonsterKind, Pet, Settings, Skin, Snapshot } from './types';
@@ -53,6 +53,10 @@ export class Engine {
   private targetMarker: HTMLDivElement;
   private dangerRing: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   private slash: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
+  private hitBurst: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
+  private hitLife = 0; private hitDuration = .2; private hitHeavy = false;
+  private hitReactions: { x: number; z: number; life: number; heavy: boolean }[] = [];
+  private enemyBars: HTMLDivElement[] = [];
   private loading = false;
   private pausedFrame = 0;
   private softwareRenderer = false;
@@ -93,6 +97,13 @@ export class Engine {
     this.companion.position.set(-2, 0, 21);
     this.dangerRing = new THREE.Mesh(new THREE.RingGeometry(3.7, 3.84, 80), new THREE.MeshBasicMaterial({ color: '#ff7a9c', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })); this.dangerRing.rotation.x = -Math.PI / 2; this.scene.add(this.dangerRing);
     this.slash = new THREE.Mesh(new THREE.RingGeometry(1.6, 1.9, 40, 1, 0, Math.PI * 1.25), new THREE.MeshBasicMaterial({ color: '#bfe6ff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })); this.scene.add(this.slash);
+    this.hitBurst = new THREE.Mesh(new THREE.RingGeometry(.18, .26, 20), new THREE.MeshBasicMaterial({ color: '#ffd796', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })); this.scene.add(this.hitBurst);
+    for (let i = 0; i < 4; i++) {
+      const bar = document.createElement('div'); bar.className = 'enemy-healthbar';
+      bar.innerHTML = '<span class="enemy-bar-name"></span><span class="enemy-bar-track"><i></i></span>';
+      bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-valuemin', '0'); bar.style.display = 'none';
+      container.appendChild(bar); this.enemyBars.push(bar);
+    }
     this.targetMarker = document.createElement('div'); this.targetMarker.className = 'world-target'; this.targetMarker.innerHTML = '<span class="target-diamond"></span><span class="target-distance"></span>'; container.appendChild(this.targetMarker);
     if (typeof ResizeObserver !== 'undefined') { this.resizeObserver = new ResizeObserver(this.resize); this.resizeObserver.observe(container); }
     else window.addEventListener('resize', this.resize);
@@ -193,10 +204,15 @@ export class Engine {
 
   private onEvent(e: GameEvent) {
     this.audio.play(e);
-    if (e.type === 'hurt' || e.type === 'hit') { this.shake = e.type === 'hurt' ? .16 : .08; }
+    if (e.type === 'hurt' || e.type === 'hit') { this.shake = e.type === 'hurt' ? .16 : e.heavy ? .14 : .045; }
     if (e.type === 'hit' && this.container) {
-      const element = document.createElement('div'); element.className = 'damage-number'; element.textContent = String(e.value); this.container.appendChild(element);
-      this.damage.push({ element, position: new THREE.Vector3(e.x ?? 0, groundHeight(e.x ?? 0, e.z ?? 0) + 4.5, e.z ?? 0), life: 1.15 });
+      const element = document.createElement('div'); element.className = `damage-number${e.heavy ? ' heavy-hit' : ''}${e.blocked ? ' blocked-hit' : ''}`; element.textContent = `${e.blocked ? '格挡 ' : e.heavy ? '重击 ' : ''}${e.value}`; this.container.appendChild(element);
+      const height = e.kind === 'cat' || e.kind === 'dog' ? 1.5 : 2.3;
+      this.damage.push({ element, position: new THREE.Vector3(e.x ?? 0, groundHeight(e.x ?? 0, e.z ?? 0) + height, e.z ?? 0), life: 1.15 });
+      this.hitHeavy = Boolean(e.heavy); this.hitDuration = e.heavy ? .26 : .17; this.hitLife = this.hitDuration;
+      this.hitBurst.position.set(e.x ?? 0, groundHeight(e.x ?? 0, e.z ?? 0) + height * .65, e.z ?? 0);
+      this.hitBurst.material.color.set(e.blocked ? '#b4d5ff' : e.heavy ? '#ffc773' : '#def9ff');
+      this.hitReactions.push({ x: e.x ?? 0, z: e.z ?? 0, life: .2, heavy: Boolean(e.heavy) }); this.hitReactions = this.hitReactions.slice(-4);
     }
     if (e.type === 'weather') this.audio.setWeather(this.simulation.weather);
   }
@@ -237,6 +253,13 @@ export class Engine {
       model.root.position.y = groundHeight(enemy.x, enemy.z);
       model.root.visible = enemy.health > 0 || enemy.respawn > 0;
     });
+    this.hitReactions.forEach(hit => {
+      const actor = Math.hypot(sim.monster.x - hit.x, sim.monster.z - hit.z) < 1 ? this.monster
+        : this.streetSlots[sim.streetEnemies.findIndex(enemy => Math.hypot(enemy.x - hit.x, enemy.z - hit.z) < 1)];
+      if (actor?.root.children[0]) actor.root.children[0].rotation.x -= hit.life / .2 * (hit.heavy ? .25 : .1);
+      hit.life -= visualDt;
+    });
+    this.hitReactions = this.hitReactions.filter(hit => hit.life > 0);
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = sim.targetRevealed;
     this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z); this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
     const petBefore = { x: this.companion.position.x, z: this.companion.position.z };
@@ -248,7 +271,15 @@ export class Engine {
     this.contactShadows.forEach((shadow, i) => { const actor = [this.hunter.root, this.monster.root, this.companion][i]; shadow.position.copy(actor.position); shadow.position.y += .06; shadow.rotation.z = -actor.rotation.y; });
     const warning = [sim.monster, ...sim.streetEnemies].filter(m => m.health > 0 && m.action === 'windup').sort((a, b) => Math.hypot(a.x - sim.player.x, a.z - sim.player.z) - Math.hypot(b.x - sim.player.x, b.z - sim.player.z))[0];
     const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = warning ? .3 + Math.sin(t * 12) * .15 : 0;
-    this.slash.position.set(sim.player.x, groundHeight(sim.player.x, sim.player.z) + 1.1, sim.player.z); this.slash.rotation.set(-Math.PI * .43, sim.player.facing, t * 9); this.slash.material.opacity = sim.player.attackTime > 0 ? Math.max(0, Math.sin(sim.player.attackTime * 6)) * .25 : 0;
+    const p = sim.player, swingTime = p.attackDuration - p.attackTime - p.attackImpact;
+    this.slash.position.set(p.x + Math.sin(p.facing) * .7, groundHeight(p.x, p.z) + 1.1, p.z + Math.cos(p.facing) * .7);
+    this.slash.rotation.set(p.attackWeapon === 'crowbar' && p.attackHeavy ? 0 : -Math.PI * .45, p.facing + (p.attackWeapon === 'crowbar' && p.attackHeavy ? Math.PI / 2 : 0), p.combo % 2 ? -.3 : .3);
+    this.slash.scale.setScalar(p.attackHeavy ? 1.12 : .72);
+    this.slash.material.color.set(p.attackHeavy ? '#ffd18c' : p.attackWeapon === 'umbrella' ? '#dfbfff' : '#bfe6ff');
+    this.slash.material.opacity = p.attackTime > 0 && swingTime > -.045 && swingTime < .16 ? Math.sin((swingTime + .045) / .205 * Math.PI) * (p.attackHeavy ? .65 : .3) : 0;
+    if (!sim.paused) this.hitLife = Math.max(0, this.hitLife - dt);
+    const burst = this.hitLife / this.hitDuration; this.hitBurst.material.opacity = burst * .8;
+    this.hitBurst.scale.setScalar((1 - burst) * (this.hitHeavy ? 6 : 3) + 1); this.hitBurst.quaternion.copy(this.camera.quaternion);
     this.updateCamera(dt);
     this.renderer.render(this.scene, this.camera); this.updateMarkers(dt);
     this.hudTimer += dt; if (this.hudTimer > .1) { this.publish(); this.hudTimer = 0; }
@@ -273,11 +304,23 @@ export class Engine {
   private updateMarkers(dt: number) {
     const width = this.container.clientWidth, height = this.container.clientHeight, sim = this.simulation;
     const show = sim.targetRevealed && sim.monster.health > 0 && !sim.dead;
-    this.projected.set(sim.monster.x, groundHeight(sim.monster.x, sim.monster.z) + 6.4, sim.monster.z).project(this.camera);
+    this.projected.set(sim.monster.x, groundHeight(sim.monster.x, sim.monster.z) + (sim.monster.kind === 'cat' || sim.monster.kind === 'dog' ? 2.2 : 2.9), sim.monster.z).project(this.camera);
     this.targetMarker.style.display = show && this.projected.z < 1 && Math.abs(this.projected.x) < .94 && Math.abs(this.projected.y) < .9 ? 'flex' : 'none';
     this.targetMarker.style.transform = `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`;
     this.targetMarker.classList.toggle('is-locked', sim.locked);
     this.targetMarker.children[1].textContent = `${Math.round(Math.hypot(sim.player.x - sim.monster.x, sim.player.z - sim.monster.z))} 米`;
+    const enemies = [...sim.streetEnemies, sim.monster];
+    this.enemyBars.forEach((bar, i) => {
+      const enemy = enemies[i], main = i === 3, distance = Math.hypot(enemy.x - sim.player.x, enemy.z - sim.player.z);
+      const labelHeight = enemy.kind === 'cat' || enemy.kind === 'dog' ? 1.7 : 2.35;
+      this.projected.set(enemy.x, groundHeight(enemy.x, enemy.z) + labelHeight, enemy.z).project(this.camera);
+      const visible = this.settings.enemyHealthBars && !sim.dead && enemy.health > 0 && (!main || sim.targetRevealed) && distance < 30 && this.projected.z > -1 && this.projected.z < 1 && Math.abs(this.projected.x) < .9 && Math.abs(this.projected.y) < .7 && hasLineOfSight(sim.player, enemy, sim.boxColliders);
+      bar.style.display = visible ? 'flex' : 'none'; if (!visible) return;
+      bar.style.transform = `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`;
+      bar.children[0].textContent = main ? sim.monsterName : (ROSTER.find(entry => entry.kind === enemy.kind)?.name ?? '游荡目标');
+      (bar.children[1].children[0] as HTMLElement).style.transform = `scaleX(${enemy.health / enemy.maxHealth})`;
+      bar.setAttribute('aria-label', `${bar.children[0].textContent}气血`); bar.setAttribute('aria-valuemax', String(enemy.maxHealth)); bar.setAttribute('aria-valuenow', String(Math.ceil(enemy.health)));
+    });
     this.damage = this.damage.filter(d => {
       if (!sim.paused) d.life -= dt;
       if (d.life <= 0) { d.element.remove(); return false; }
@@ -297,6 +340,7 @@ export class Engine {
   setSettings(settings: Settings) {
     const renderChanged = this.settings.quality !== settings.quality || this.settings.reducedMotion !== settings.reducedMotion;
     this.settings = settings; this.audio.setVolume(settings.volume, settings.sound); this.audio.setSoundscape(settings.soundscape);
+    this.updateMarkers(0);
     if (!renderChanged) return;
     this.renderer.setPixelRatio(pixelRatio(settings, this.softwareRenderer));
     this.renderer.shadowMap.enabled = !this.softwareRenderer && settings.quality === 'high';
@@ -348,7 +392,7 @@ export class Engine {
   }
   reset() {
     this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance; this.elapsed = 0; this.shake = 0;
-    this.damage.forEach(d => d.element.remove()); this.damage = [];
+    this.damage.forEach(d => d.element.remove()); this.damage = []; this.hitLife = 0; this.hitReactions = [];
     this.rebuildMonster();
     this.companion.position.set(-2, groundHeight(-2, 21), 21); this.audio.setWeather('晴夜');
     this.world.updateStreaming(this.simulation.player, true);
@@ -364,6 +408,6 @@ export class Engine {
     this.scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Points || object instanceof THREE.LineSegments) { geometries.add(object.geometry); const ms = Array.isArray(object.material) ? object.material : [object.material]; ms.forEach((m: THREE.Material) => materials.add(m)); } });
     materials.forEach(m => { Object.values(m).forEach(v => { if (v instanceof THREE.Texture) textures.add(v); }); if (m instanceof THREE.ShaderMaterial) Object.values(m.uniforms).forEach(u => { if (u.value instanceof THREE.Texture) textures.add(u.value); }); m.dispose(); });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); this.renderer.dispose(); this.renderer.forceContextLoss(); this.audio.dispose();
-    this.damage.forEach(d => d.element.remove()); this.targetMarker.remove(); canvas.remove();
+    this.damage.forEach(d => d.element.remove()); this.enemyBars.forEach(bar => bar.remove()); this.targetMarker.remove(); canvas.remove();
   }
 }

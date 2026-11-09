@@ -4,6 +4,7 @@ import { ellipsoid, box, taperedTube, batchRigidParts, canvasTexture } from './m
 import type { Materials } from './materials';
 import type { Pet, MonsterKind, Skin, Weapon } from './types';
 import type { Simulation } from './simulation';
+import { attackPose, dodgePose } from './combat';
 
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const standard = (color: string, roughness = .82, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -216,7 +217,7 @@ function capeTexture(skin: Skin) {
 
 export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
   const palette = HUNTER_PALETTES[skin];
-  const root = new THREE.Group(), body = new THREE.Group(); root.name = `hunter:${skin}`; root.add(body);
+  const root = new THREE.Group(), body = new THREE.Group(); root.name = `hunter:${skin}`; body.name = 'hunterBody'; root.add(body);
   const coat = standard(palette.coat, .82), coatDark = standard(palette.dark, .9), lining = standard(palette.lining, .8);
   const ivory = standard(palette.ivory, .78), leather = standard(palette.leather, .76), bronze = standard(palette.accent, .34, .62);
   const glow = new THREE.MeshStandardMaterial({ color: palette.glow, emissive: palette.glow, emissiveIntensity: skin === 'neon' ? 1.15 : .5, roughness: .45 });
@@ -289,7 +290,7 @@ export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
   }
   const cape = new THREE.Mesh(capeGeometry, new THREE.MeshStandardMaterial({ map: capeTexture(skin), roughness: .88, side: THREE.DoubleSide })); cape.position.set(0, skin === 'neon' ? 1.22 : 1.06, -.245); cape.castShadow = true; body.add(cape);
   const originalCape = Float32Array.from(capePos.array);
-  const weaponRoot = new THREE.Group(); weaponRoot.position.set(.24, 1.12, -.39); weaponRoot.rotation.z = -.43; body.add(weaponRoot);
+  const weaponRoot = new THREE.Group(); weaponRoot.name = 'weaponGrip'; weaponRoot.position.set(.24, 1.12, -.39); weaponRoot.rotation.z = -.43; body.add(weaponRoot);
   const weaponModels = new Map<Weapon, THREE.Group>();
   const tactical = new THREE.Group(); weaponRoot.add(tactical); weaponModels.set('crowbar', tactical);
   const carbon = standard('#202b36', .42, .5), steel = standard('#aebdca', .25, .78);
@@ -309,7 +310,7 @@ export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
   const umbrella = new THREE.Group(); weaponRoot.add(umbrella); weaponModels.set('umbrella', umbrella);
   panel(umbrella, steel, [0, .55, 0], [.045, 1.38, .045], .009);
   const umbrellaFabric = standard(skin === 'magnolia' ? '#813d50' : '#30365b', .72, .08);
-  const umbrellaCanopy = new THREE.Mesh(new THREE.ConeGeometry(.2, .8, 8, 2), umbrellaFabric); umbrellaCanopy.position.y = .83; umbrellaCanopy.castShadow = true; umbrella.add(umbrellaCanopy);
+  const umbrellaCanopy = new THREE.Mesh(new THREE.ConeGeometry(.2, .8, 8, 2), umbrellaFabric); umbrellaCanopy.name = 'umbrellaCanopy'; umbrellaCanopy.position.y = .83; umbrellaCanopy.castShadow = true; umbrella.add(umbrellaCanopy);
   for (let i = 0; i < 8; i++) {
     const angle = i / 8 * Math.PI * 2;
     umbrella.add(taperedTube([v(0, 1.24, 0), v(Math.cos(angle) * .14, .82, Math.sin(angle) * .14), v(Math.cos(angle) * .19, .43, Math.sin(angle) * .19)], [.008, .012, .007], i % 2 ? bronze : glow, 5, 5));
@@ -324,6 +325,7 @@ export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
   const rim = new THREE.PointLight(palette.glow, 7, 4.5, 2); rim.position.set(-1, 1.9, -1.2); root.add(rim);
   root.scale.setScalar(1.04);
   const legs = [body.getObjectByName('leftLeg')!, body.getObjectByName('rightLeg')!], arms = [body.getObjectByName('leftArm')!, body.getObjectByName('rightArm')!];
+  const armDirection = new THREE.Vector3(), armDown = new THREE.Vector3(0, -1, 0);
   batchRigidParts(body, [cape]); [...legs, ...arms].forEach(joint => batchRigidParts(joint as THREE.Group));
   return {
     root,
@@ -331,17 +333,26 @@ export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
       const p = sim.player; root.position.x = p.x; root.position.z = p.z; root.rotation.y = p.facing;
       const speed = p.sprinting ? 12 : 8, stride = p.moving ? .57 : 0;
       legs.forEach((leg, i) => { leg.rotation.x = Math.sin(t * speed + i * Math.PI) * stride; });
-      arms.forEach((arm, i) => { arm.rotation.x = Math.sin(t * speed + i * Math.PI + Math.PI) * stride * .65; });
+      arms.forEach((arm, i) => { arm.rotation.set(Math.sin(t * speed + i * Math.PI + Math.PI) * stride * .65, 0, i ? .06 : -.06); });
       body.position.y = p.moving ? Math.abs(Math.sin(t * speed)) * .04 : Math.sin(t * 2) * .006;
-      body.rotation.x = THREE.MathUtils.damp(body.rotation.x, p.dodgeTime > 0 ? -Math.sin((.44 - p.dodgeTime) / .44 * Math.PI) * 1.6 : p.sprinting ? .15 : 0, 15, dt);
-      body.rotation.z = sim.dead ? 1.4 : 0;
+      const dodge = p.dodgeTime > 0 ? dodgePose(p.dodgeTime, p.dodgeSide, p.dodgeDuration) : null;
+      body.rotation.x = THREE.MathUtils.damp(body.rotation.x, dodge ? dodge.lean : p.sprinting ? .15 : 0, 18, dt);
+      body.rotation.z = sim.dead ? 1.4 : dodge?.roll ?? 0;
+      body.rotation.y = 0;
+      if (dodge) { body.position.y = dodge.crouch; legs[0].rotation.x = -dodge.stride * p.dodgeSide; legs[1].rotation.x = dodge.stride * p.dodgeSide; arms.forEach(arm => { arm.rotation.x = -.6; }); }
       if (p.attackTime > 0) {
-        weaponRoot.position.set(.36, 1.24, .05); weaponRoot.rotation.set(Math.sin(p.attackTime * 8) * 1.4, Math.sin(p.attackTime * 9) * 1.9, -1.25);
-        arms[1].rotation.x = -1.6; body.rotation.y = Math.sin(p.attackTime * 9) * .6;
+        const pose = attackPose(p.attackWeapon, p.attackHeavy, p.combo, p.attackDuration - p.attackTime);
+        weaponRoot.position.set(pose.weaponX, pose.weaponY, pose.weaponZ); weaponRoot.rotation.set(pose.rotateX, pose.rotateY, pose.rotateZ);
+        // Keep the grip within arm reach, and make the hand follow the weapon rather than float beside it.
+        armDirection.subVectors(weaponRoot.position, arms[1].position).clampLength(0, .6);
+        weaponRoot.position.copy(arms[1].position).add(armDirection);
+        body.rotation.set(pose.bodyX, pose.bodyY, pose.bodyZ); body.position.y += pose.crouch;
+        arms[1].quaternion.setFromUnitVectors(armDown, armDirection.normalize()); arms[0].rotation.x = pose.leftArm;
+        if (p.attackHeavy) { armDirection.subVectors(weaponRoot.position, arms[0].position).normalize(); arms[0].quaternion.setFromUnitVectors(armDown, armDirection); }
+        umbrellaCanopy.scale.set(1 + pose.canopy * 2.7, 1 - pose.canopy * .58, 1 + pose.canopy * 2.7);
       } else { weaponRoot.position.set(.24, 1.12, -.39); weaponRoot.rotation.set(0, 0, -.43); body.rotation.y = 0; }
       weaponModels.forEach((model, weapon) => { model.visible = sim.progress.weapon === weapon; });
-      const opening = sim.progress.weapon === 'umbrella' && p.attackTime > 0 ? 1 : 0;
-      umbrellaCanopy.scale.set(1 + opening * 1.65, 1 - opening * .58, 1 + opening * 1.65);
+      if (p.attackTime <= 0) umbrellaCanopy.scale.set(1, 1, 1);
       for (let i = 0; i < capePos.count; i++) {
         const y = originalCape[i * 3 + 1], x = originalCape[i * 3], f = (capeHeight / 2 - y) / capeHeight;
         capePos.setZ(i, originalCape[i * 3 + 2] + Math.sin(t * 3.6 + x * 7 + f * 4) * .05 * f - (p.moving ? f * f * .2 : 0));

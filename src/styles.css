@@ -344,3 +344,11 @@ button,.touch-joystick{-webkit-tap-highlight-color:transparent}
   .quest-tracker{width:auto;padding:6px 9px}.map-hud{width:96px;bottom:146px}.minimap-button{width:90px;height:90px}.map-heading,.map-caption{display:none}
   .equipment-hud{bottom:146px}
 }
+
+.enemy-healthbar{position:absolute;left:0;top:0;z-index:1;display:flex;flex-direction:column;align-items:center;width:80px;pointer-events:none;will-change:transform}
+.enemy-bar-name{max-width:110px;font-size:10px;white-space:nowrap;color:#ffeac4;text-shadow:0 1px 4px #000;line-height:1.6}
+.enemy-bar-track{display:block;width:76px;height:6px;background:rgba(20,12,18,.85);border:1px solid rgba(255,225,180,.55);overflow:hidden;box-shadow:0 1px 3px #07101e}
+.enemy-bar-track>i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#ad514c,#f4b178);transform-origin:left;transition:transform .12s}
+.damage-number.heavy-hit{color:#ffe0a0;font-size:30px;font-weight:700;text-shadow:0 1px 3px #5b270c,0 0 12px #df862f}
+.damage-number.blocked-hit{color:#bed2e4;font-size:17px}
+@media(max-width:700px),(pointer:coarse){.damage-number.heavy-hit{font-size:25px}.enemy-bar-name{font-size:10px}.enemy-bar-track{width:64px}}

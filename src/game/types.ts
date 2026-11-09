@@ -24,11 +24,11 @@ export interface Encounter {
   enraged: boolean; elite: boolean; street: boolean;
 }
 export interface Settings {
-  sound: boolean; volume: number; soundscape: Soundscape; quality: 'high' | 'balanced' | 'low'; sensitivity: number; reducedMotion: boolean;
+  sound: boolean; volume: number; soundscape: Soundscape; quality: 'high' | 'balanced' | 'low'; sensitivity: number; reducedMotion: boolean; enemyHealthBars: boolean;
 }
 export interface GameEvent {
   type: 'hit' | 'hurt' | 'attack' | 'dodge' | 'gather' | 'roar' | 'victory' | 'weather' | 'heal' | 'forge' | 'step' | 'pet';
-  value?: number; x?: number; z?: number; kind?: MonsterKind;
+  value?: number; x?: number; z?: number; kind?: MonsterKind; heavy?: boolean; blocked?: boolean; weapon?: Weapon;
 }
 export interface Notification { id: number; title: string; description: string; kind: 'info' | 'success' | 'warning' }
 export interface Snapshot {
