@@ -167,7 +167,6 @@ function ebike(m: Materials, neon?: string): MonsterModel {
 
 function scooterRacer(m: Materials): MonsterModel {
   const model = humanoid(m, { jacket: '#344d68', helmet: true, stripes: '#43e1df' });
-  const neon = new THREE.Mesh(new THREE.PlaneGeometry(2, 2.5), new THREE.MeshBasicMaterial({ color: '#37e0ff', transparent: true, opacity: .28, blending: THREE.AdditiveBlending, depthWrite: false })); neon.rotation.x = -Math.PI / 2; neon.position.y = .04; model.root.add(neon);
   panel(model.root, standard('#28354a', .45, .4), [0, .18, .2], [.34, .1, .95], .04);
   for (const z of [-.35, .75]) { const wheel = new THREE.Mesh(new THREE.TorusGeometry(.16, .045, 7, 14), m.dark); wheel.position.set(0, .16, z); model.root.add(wheel); }
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .72, 7), m.metal); pole.position.set(0, .52, .68); pole.rotation.x = -.3; model.root.add(pole);
