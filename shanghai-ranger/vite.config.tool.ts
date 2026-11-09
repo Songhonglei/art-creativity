@@ -10,7 +10,7 @@ export default defineConfig({
     target: ['es2017', 'chrome61'],
     outDir: 'dist-tool',
     emptyOutDir: true,
-    lib: { entry: 'src/main.tsx', formats: ['iife'], name: 'NightWatch', fileName: () => 'app.js' },
+    lib: { entry: 'src/main.tsx', formats: ['iife'], name: 'ShanghaiRanger', fileName: () => 'app.js', cssFileName: 'shanghai-ranger' },
     cssCodeSplit: false,
   },
 });

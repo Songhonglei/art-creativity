@@ -1,5 +1,5 @@
 {
-  "name": "shanghai-night-watch",
+  "name": "shanghai-ranger",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "license": "ISC",
-  "description": "沪上夜行侠：上海都市背景的第三人称 3D 夜巡游戏。",
+  "description": "沪上游侠：上海都市背景的第三人称 3D 夜巡游戏。",
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "react": "^19.3.0",

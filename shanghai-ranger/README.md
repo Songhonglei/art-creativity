@@ -1,4 +1,4 @@
-# 沪上夜行侠
+# 沪上游侠
 
 上海都市背景的第三人称 3D 夜巡游戏。包含七类城市祸害、现代侠客与宠物、简化强化、天气和浏览器本地存档。
 
@@ -64,11 +64,15 @@ npm run preview
 
 普通构建文件位于 `dist`。`npm test` 当前包含 61 项回归（47 项游戏规则、10 项音频行为、4 项存档恢复），覆盖调查与攻击判定、动态街区、缓存上限、敌人行为、游荡目标补位与奖励、宠物技能、成长消费、精英奖励、脱战和旧存档迁移。音频回归覆盖四套不同编排、即时切换、首次解锁、静音恢复、独立调度和节点清理。
 
-生成小红书 Mini Tool 离线 H5 ZIP（需提供 Mini Tool builder，包含 manifest 写入器和产物审计器）：
+生成小红书小工具离线 H5 ZIP（自动查找 `webapp-building-pro` 内置 builder，也可用 `MINITOOL_BUILDER_DIR` 指定）：
 
 ```sh
-MINITOOL_BUILDER_DIR=/path/to/xiaohongshu-minitool/builder bash scripts/build-tool.sh
+bash scripts/build-tool.sh
 ```
+
+输出为 `output/沪上游侠-小红书小工具.zip`；同版 H5 位于 `dist-tool/index.html`。入口、字体、脚本和样式均随包提供。普通浏览器检查不能代替小红书容器验收，上传后还需分别验证平台模拟器、Android 与 iOS 真机。
+
+改名保留原存档与设置的内部键，已有浏览器进度仍可读取。
 
 ## 许可
 

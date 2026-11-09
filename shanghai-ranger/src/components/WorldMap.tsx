@@ -22,11 +22,12 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
   } : rawObjective;
   const cx = chunkCoordinate(snapshot.player.x), cz = chunkCoordinate(snapshot.player.z), chunks: { x: number; z: number }[] = [];
   for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) chunks.push({ x: cx + dx, z: cz + dz });
-  const roads = [-2, -1, 0, 1, 2].flatMap(i => {
+  const roads: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  for (const i of [-2, -1, 0, 1, 2]) {
     const vertical = toMap((cx + i) * CHUNK_SIZE, snapshot.player.z).x;
     const horizontal = toMap(snapshot.player.x, (cz + i) * CHUNK_SIZE).y;
-    return [{ x1: vertical, y1: 0, x2: vertical, y2: 300 }, { x1: 0, y1: horizontal, x2: 300, y2: horizontal }];
-  });
+    roads.push({ x1: vertical, y1: 0, x2: vertical, y2: 300 }, { x1: 0, y1: horizontal, x2: 300, y2: horizontal });
+  }
   const riverPoints: string[] = [];
   for (let z = snapshot.player.z - 105; z <= snapshot.player.z + 105; z += 7) {
     const point = toMap(riverX(z), z); riverPoints.push(`${point.x},${point.y}`);

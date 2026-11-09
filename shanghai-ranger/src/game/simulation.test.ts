@@ -55,7 +55,7 @@ describe('本地存档', () => {
   });
 });
 
-describe('夜行侠移动与动作', () => {
+describe('游侠移动与动作', () => {
   it('斜向移动归一化，暂停时整个模拟冻结', () => {
     const sim = new Simulation(), start = { ...sim.player };
     sim.tick(.05, { x: 1, z: 1, sprint: false });
