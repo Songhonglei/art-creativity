@@ -203,7 +203,7 @@ export class Engine {
   private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.callbacks.error('图形连接中断，请重新加载。已强化的装备和存档都还在。'); };
 
   private onEvent(e: GameEvent) {
-    this.audio.play(e);
+    this.audio.play(e, e.x !== undefined && e.z !== undefined ? Math.hypot(e.x - this.simulation.player.x, e.z - this.simulation.player.z) : 0);
     if (e.type === 'hurt' || e.type === 'hit') { this.shake = e.type === 'hurt' ? .16 : e.heavy ? .14 : .045; }
     if (e.type === 'hit' && this.container) {
       const element = document.createElement('div'); element.className = `damage-number${e.heavy ? ' heavy-hit' : ''}${e.blocked ? ' blocked-hit' : ''}`; element.textContent = `${e.blocked ? '格挡 ' : e.heavy ? '重击 ' : ''}${e.value}`; this.container.appendChild(element);
@@ -236,7 +236,15 @@ export class Engine {
     this.world.update(sim, t, visualDt);
     this.moodTimer += dt; if (this.moodTimer > .5) { this.audio.setMood(sim.weather, sim.combat, sim.player.health / sim.maxHealth < .3, sim.questDistrict); this.moodTimer = 0; }
     this.cityAudioTimer += dt;
-    if (this.cityAudioTimer > .15) { const feature = this.world.nearestCityFeature(sim.player); this.audio.setCityFeature(feature.kind, feature.distance); this.cityAudioTimer = 0; }
+    if (this.cityAudioTimer > .15) {
+      const feature = this.world.nearestCityFeature(sim.player); this.audio.setCityFeature(feature.kind, feature.distance);
+      const animals = [...sim.streetEnemies, ...(sim.targetRevealed ? [sim.monster] : [])]
+        .filter(enemy => enemy.health > 0 && (enemy.kind === 'cat' || enemy.kind === 'dog'))
+        .map(enemy => ({ kind: enemy.kind, distance: Math.hypot(enemy.x - sim.player.x, enemy.z - sim.player.z) })).sort((a, b) => a.distance - b.distance);
+      const animal = animals[0];
+      this.audio.setNearbyCreature(animal?.kind === 'cat' || animal?.kind === 'dog' ? animal.kind : null, animal?.distance ?? Infinity);
+      this.cityAudioTimer = 0;
+    }
     this.audio.updateCity(dt);
     this.hunter.update(sim, t, visualDt); this.monster.update(sim, t, visualDt);
     this.monster.root.visible = sim.targetRevealed;
@@ -330,7 +338,7 @@ export class Engine {
     });
   }
   publish() { const snapshot = this.simulation.snapshot(); snapshot.heading = ((-this.yaw * 180 / Math.PI) % 360 + 360) % 360; this.callbacks.snapshot(snapshot); }
-  setPaused(paused: boolean) { this.simulation.paused = paused; this.blur(); this.publish(); }
+  setPaused(paused: boolean) { this.simulation.paused = paused; this.audio.setEnvironmentActive(!paused); this.blur(); this.publish(); }
   resetCamera() {
     this.releaseCameraPointers();
     const sim = this.simulation;

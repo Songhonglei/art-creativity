@@ -32,12 +32,13 @@ class Context {
   state = 'running';
   destination = new Node();
   oscillators: Source[] = [];
+  buffers: (Source & { loop: boolean })[] = [];
   gains: (Node & { gain: Param })[] = [];
   constructor() { Context.latest = this; Context.instances.push(this); }
   createGain() { const gain = Object.assign(new Node(), { gain: new Param() }); gain.gain.value = 1; this.gains.push(gain); return gain; }
   createBiquadFilter() { return Object.assign(new Node(), { type: 'lowpass', frequency: new Param(), Q: new Param() }); }
   createBuffer(_channels: number, length: number, rate: number) { return { duration: length / rate, getChannelData: () => new Float32Array(length) }; }
-  createBufferSource() { return Object.assign(new Source(), { loop: false, buffer: null }); }
+  createBufferSource() { const source = Object.assign(new Source(), { loop: false, buffer: null }); this.buffers.push(source); return source; }
   createOscillator() { const source = new Source(); this.oscillators.push(source); return source; }
   resume = vi.fn(async () => { this.state = 'running'; });
   close = vi.fn(async () => { this.state = 'closed'; });
@@ -53,22 +54,21 @@ describe('城市声景', () => {
   it('选择在首次解锁前保留，首次发声直接使用所选声景', () => {
     audio.setSoundscape('jazz'); audio.unlock();
     expect(audio.audioDebug.soundscape).toBe('jazz');
+    expect(Context.latest.oscillators[0].type).toBe('triangle');
     expect(Context.latest.oscillators[1].type).toBe('sine');
-    expect(Context.latest.oscillators[3].type).toBe('triangle');
     expect(audio.audioDebug.scoreVoices).toBeGreaterThan(0);
   });
 
   it('不依赖游戏帧或 mood 轮询，切换立即替换发声和旧旋律', () => {
     audio.unlock();
-    const oldScore = Context.latest.oscillators.slice(5);
+    const oldScore = Context.latest.oscillators.slice(0);
     const oldRoot = audio.audioDebug.root;
     audio.setSoundscape('river');
     expect(audio.audioDebug.root).not.toBe(oldRoot);
-    expect(Context.latest.oscillators[1].type).toBe('sine');
     expect(oldScore.every(source => source.stop.mock.calls.length === 2)).toBe(true);
-    const newScore = Context.latest.oscillators.slice(5 + oldScore.length);
+    const newScore = Context.latest.oscillators.slice(oldScore.length);
     expect(newScore.length).toBeGreaterThan(0);
-    expect(newScore[0].stop.mock.calls[0][0]).toBeGreaterThan(3);
+    expect(newScore[0].stop.mock.calls[0][0]).toBeGreaterThan(1);
   });
 
   it('四套声景的实际音符、波形和节奏均可区分', () => {
@@ -76,7 +76,7 @@ describe('城市声景', () => {
       const player = new GameAudio(); player.setSoundscape(mode); player.unlock();
       const ctx = Context.latest;
       for (let i = 1; i <= 25; i++) { ctx.currentTime = i * .2; player.updateMusic(); }
-      const signature = ctx.oscillators.slice(5).map(source => ({
+      const signature = ctx.oscillators.slice(0).map(source => ({
         wave: source.type, frequency: source.frequency.setValueAtTime.mock.calls[0][0],
         start: source.start.mock.calls[0], end: source.stop.mock.calls[0],
       }));
@@ -87,10 +87,10 @@ describe('城市声景', () => {
 
   it('音量或其他设置重复提交同一声景时不会重启旋律', () => {
     audio.unlock(); const ctx = Context.latest, sources = ctx.oscillators.length;
-    const stops = ctx.oscillators.slice(5).map(source => source.stop.mock.calls.length);
+    const stops = ctx.oscillators.slice(0).map(source => source.stop.mock.calls.length);
     audio.setVolume(.6, true); audio.setSoundscape('neon');
     expect(ctx.oscillators).toHaveLength(sources);
-    expect(ctx.oscillators.slice(5).map(source => source.stop.mock.calls.length)).toEqual(stops);
+    expect(ctx.oscillators.slice(0).map(source => source.stop.mock.calls.length)).toEqual(stops);
   });
 
   it('静音时保存所选声景，恢复声音后才生成旋律', () => {
@@ -105,7 +105,7 @@ describe('城市声景', () => {
     audio.unlock(); const ctx = Context.latest, sources = ctx.oscillators.length;
     audio.setVolume(0, true); ctx.currentTime = 20; audio.updateMusic();
     expect(ctx.oscillators).toHaveLength(sources);
-    expect(ctx.oscillators.slice(5).every(source => source.stop.mock.calls.length === 2)).toBe(true);
+    expect(ctx.oscillators.slice(0).every(source => source.stop.mock.calls.length === 2)).toBe(true);
     audio.setVolume(.45, true); audio.updateMusic();
     expect(ctx.oscillators.length).toBeGreaterThan(sources);
   });
@@ -130,13 +130,14 @@ describe('城市声景', () => {
     audio.unlock(); audio.setMood('暴雨', true, true, '老弄堂'); audio.play({ type: 'hit' });
     const ctx = Context.latest, hitSources = ctx.oscillators.slice(-2);
     audio.setSoundscape('jazz');
-    expect(ctx.oscillators[3].type).toBe('triangle');
-    expect(ctx.gains[6].gain.setTargetAtTime.mock.calls.at(-1)?.[0]).toBe(.035);
+    expect(audio.audioDebug.soundscape).toBe('jazz');
+    expect(audio.audioDebug.ambientVoices).toBe(0);
+    expect(ctx.oscillators.every(source => source.stop.mock.calls.length > 0)).toBe(true);
     expect(hitSources.every(source => source.stop.mock.calls.length === 1)).toBe(true);
   });
 
   it('释放结束的音乐节点，销毁后不再生成声音', () => {
-    audio.unlock(); const ctx = Context.latest, score = ctx.oscillators.slice(5);
+    audio.unlock(); const ctx = Context.latest, score = ctx.oscillators.slice(0);
     score.forEach(source => source.onended?.());
     expect(audio.audioDebug.scoreVoices).toBe(0);
     expect(score.every(source => source.disconnect.mock.calls.length === 1)).toBe(true);
@@ -191,4 +192,58 @@ describe('城市声景', () => {
     expect(audio.audioDebug.outputConnected).toBe(false); expect(vi.getTimerCount()).toBe(0);
     create.mockRestore();
   });
+  it('四套音乐和战斗状态均无常驻噪声、循环音源或无期限振荡器', () => {
+    for (const mode of modes) {
+      const player = new GameAudio(); player.setSoundscape(mode); player.unlock(); player.setMood('暴雨', true, true, '老城');
+      const ctx = Context.latest;
+      expect(ctx.buffers).toHaveLength(0);
+      expect(ctx.oscillators.every(source => source.stop.mock.calls.length > 0 && Number.isFinite(source.stop.mock.calls[0][0]))).toBe(true);
+      player.dispose();
+    }
+  });
+
+  it('靠近声源才间歇创建短音源，离开或打开菜单会终止环境声', () => {
+    audio.unlock(); const ctx = Context.latest; audio.setCityFeature('river', 0);
+    expect(ctx.buffers).toHaveLength(0); expect(audio.audioDebug.ambientCount).toBe(0);
+    for (let i = 0; i < 80; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.ambientCount).toBeGreaterThan(0);
+    expect(ctx.buffers.every(source => !source.loop && source.stop.mock.calls.length > 0)).toBe(true);
+    audio.setCityFeature(null, Infinity); expect(audio.audioDebug.ambientVoices).toBe(0);
+    audio.setCityFeature('taxi', 0); for (let i = 0; i < 100; i++) audio.updateCity(.25);
+    audio.setEnvironmentActive(false); const count = audio.audioDebug.ambientCount;
+    for (let i = 0; i < 100; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.ambientVoices).toBe(0); expect(audio.audioDebug.ambientCount).toBe(count);
+  });
+
+  it('远处怪物不叫，近处叫声有冷却，音乐切换不取消必要打击音效', () => {
+    audio.unlock(); const ctx = Context.latest, before = ctx.oscillators.length;
+    audio.play({ type: 'roar', kind: 'dog' }, 30); expect(ctx.oscillators).toHaveLength(before);
+    audio.play({ type: 'roar', kind: 'dog' }, 2); const close = ctx.oscillators.length; expect(close).toBeGreaterThan(before);
+    for (let i = 0; i < 10; i++) audio.play({ type: 'roar', kind: 'dog' }, 2);
+    expect(ctx.oscillators).toHaveLength(close);
+    audio.setEnvironmentActive(false); ctx.currentTime = 20; audio.play({ type: 'roar', kind: 'cat' }, 1);
+    expect(ctx.oscillators).toHaveLength(close);
+  });
+
+  it('暴雨只发短雨声，转晴会收掉已有雨声且不再调度', () => {
+    audio.unlock(); audio.setWeather('暴雨');
+    for (let i = 0; i < 40; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.lastAmbient?.kind).toBe('rain');
+    const count = audio.audioDebug.ambientCount, sources = Context.latest.buffers;
+    expect(sources.length).toBeGreaterThan(0); expect(sources.every(source => !source.loop && source.stop.mock.calls[0][0]! <= 1.1)).toBe(true);
+    audio.setWeather('晴夜'); expect(audio.audioDebug.ambientVoices).toBe(0);
+    expect(sources.every(source => source.stop.mock.calls.length === 2)).toBe(true);
+    for (let i = 0; i < 100; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.ambientCount).toBe(count);
+  });
+
+  it('音频上下文暂停时不积压环境声，恢复后重新等待触发', () => {
+    audio.unlock(); audio.setCityFeature('store', 0); const ctx = Context.latest; ctx.state = 'suspended';
+    for (let i = 0; i < 1000; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.ambientCount).toBe(0);
+    ctx.state = 'running'; audio.updateCity(.25); expect(audio.audioDebug.ambientCount).toBe(0);
+    for (let i = 0; i < 60; i++) audio.updateCity(.25);
+    expect(audio.audioDebug.ambientCount).toBeGreaterThan(0);
+  });
+
 });
