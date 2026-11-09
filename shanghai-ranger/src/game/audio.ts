@@ -30,12 +30,15 @@ export class GameAudio {
   private scoreStep = 0;
   private root = 110;
   private musicTimer: ReturnType<typeof setInterval> | null = null;
+  private outputConnected = false;
+  private disposed = false;
   enabled = true; volume = .45;
 
   unlock() {
+    if (this.disposed || !this.enabled || this.volume <= 0) return;
     if (!this.ctx) {
       try {
-        this.ctx = new AudioContext(); this.master = this.ctx.createGain(); this.master.connect(this.ctx.destination);
+        this.ctx = new AudioContext(); this.master = this.ctx.createGain(); this.master.gain.value = 0;
         this.wind = this.ctx.createGain(); this.wind.gain.value = .065; this.wind.connect(this.master);
         const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 4, this.ctx.sampleRate), data = buffer.getChannelData(0); let last = 0;
         for (let i = 0; i < data.length; i++) { last = (last + (Math.random() * 2 - 1) * .045) / 1.025; data[i] = last * 3; }
@@ -60,8 +63,8 @@ export class GameAudio {
           const voice = this.ctx!.createOscillator(); voice.type = 'sawtooth'; voice.frequency.value = frequency;
           voice.connect(this.tension!); voice.start(); this.voices.push(voice);
         });
-        this.moodKey = ''; this.setVolume(this.volume, this.enabled); this.applyMood();
-      } catch { return; }
+        this.moodKey = ''; this.applyMood(); this.setVolume(this.volume, this.enabled);
+      } catch { this.dispose(); return; }
     }
     if (this.ctx.state === 'suspended') void this.ctx.resume().catch(() => { });
     if (this.musicTimer === null) this.musicTimer = setInterval(() => this.updateMusic(), 100);
@@ -69,9 +72,29 @@ export class GameAudio {
   }
 
   setVolume(volume: number, enabled: boolean) {
-    this.volume = volume; this.enabled = enabled;
-    if (this.master && this.ctx) this.master.gain.setTargetAtTime(enabled ? volume : 0, this.ctx.currentTime, .08);
-    if (!enabled || volume === 0) this.stopScore();
+    if (this.disposed) return;
+    this.volume = Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0; this.enabled = enabled;
+    const audible = enabled && this.volume > 0;
+    if (this.master && this.ctx) {
+      const now = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(now);
+      if (audible) {
+        if (!this.outputConnected) { this.master.connect(this.ctx.destination); this.outputConnected = true; }
+        this.master.gain.setTargetAtTime(this.volume, now, .025);
+      } else {
+        // A mute is exact silence, including every persistent wind/music/city oscillator.
+        this.master.gain.setValueAtTime(0, now);
+        if (this.outputConnected) { this.master.disconnect(this.ctx.destination); this.outputConnected = false; }
+      }
+    }
+    if (!audible) {
+      if (this.musicTimer !== null) clearInterval(this.musicTimer); this.musicTimer = null;
+      this.stopScore();
+      this.active.forEach(source => { try { source.stop(); } catch { /* Already ended. */ } }); this.active.clear();
+    } else if (this.ctx) {
+      if (this.musicTimer === null) this.musicTimer = setInterval(() => this.updateMusic(), 100);
+      this.updateMusic();
+    }
   }
 
   setSoundscape(soundscape: Soundscape) {
@@ -179,7 +202,7 @@ export class GameAudio {
   }
 
   updateCity(dt: number) {
-    if (!this.ctx || !this.enabled || !this.cityKind || !this.cityGain || this.cityGain.gain.value < .004) return;
+    if (!this.ctx || !this.enabled || this.volume <= 0 || !this.cityKind || !this.cityGain || this.cityGain.gain.value < .004) return;
     this.cityClock += dt;
     const interval = this.cityKind === 'store' ? 5.5 : this.cityKind === 'taxi' ? 8 : this.cityKind === 'youth' ? 4.2 : 3.4;
     if (this.cityClock < interval) return;
@@ -190,10 +213,10 @@ export class GameAudio {
     else if (this.cityKind === 'park') { this.tone(2600 + this.cityPulse % 3 * 300, .12, 'sine', .018, 3400); this.tone(3100, .1, 'sine', .012, 2500, .17); }
   }
 
-  get audioDebug() { return { soundscape: this.soundscape, scoreStep: this.scoreStep, scoreVoices: this.score.size, root: this.root, cityKind: this.cityKind, cityLevel: this.cityGain?.gain.value ?? 0, context: this.ctx?.state ?? 'locked' }; }
+  get audioDebug() { return { soundscape: this.soundscape, scoreStep: this.scoreStep, scoreVoices: this.score.size, root: this.root, cityKind: this.cityKind, cityLevel: this.cityGain?.gain.value ?? 0, enabled: this.enabled, volume: this.volume, outputConnected: this.outputConnected, masterLevel: this.master?.gain.value ?? 0, context: this.ctx?.state ?? 'locked' }; }
 
   private tone(frequency: number, duration: number, type: OscillatorType = 'sine', volume = .1, end = frequency, delay = 0) {
-    if (!this.ctx || !this.master) return;
+    if (!this.ctx || !this.master || !this.enabled || this.volume <= 0 || this.disposed) return;
     const ctx = this.ctx, start = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
     o.type = type; o.frequency.setValueAtTime(frequency, start); o.frequency.exponentialRampToValueAtTime(Math.max(20, end), start + duration);
     g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(volume, start + .012); g.gain.exponentialRampToValueAtTime(.001, start + duration);
@@ -202,7 +225,7 @@ export class GameAudio {
   }
 
   private noise(duration: number, frequency: number, volume: number) {
-    if (!this.ctx || !this.master || !this.noiseBuffer) return;
+    if (!this.ctx || !this.master || !this.noiseBuffer || !this.enabled || this.volume <= 0 || this.disposed) return;
     const ctx = this.ctx, source = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain(), now = ctx.currentTime;
     source.buffer = this.noiseBuffer; filter.type = 'lowpass'; filter.frequency.value = frequency;
     gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.001, now + duration);
@@ -213,7 +236,7 @@ export class GameAudio {
   }
 
   play(e: GameEvent) {
-    if (!this.enabled || !this.ctx) return;
+    if (!this.enabled || this.volume <= 0 || !this.ctx || this.disposed) return;
     switch (e.type) {
       case 'attack': this.noise(e.heavy ? .32 : .16, e.weapon === 'baton' ? 2400 : 1600, e.heavy ? .3 : .17); this.tone(e.heavy ? 105 : 180, .18, 'triangle', e.heavy ? .12 : .06, 60); break;
       case 'hit': this.noise(e.heavy ? .25 : .13, e.blocked ? 2600 : 1000, e.heavy ? .52 : .32); this.tone(e.blocked ? 620 : e.heavy ? 65 : 100, e.heavy ? .28 : .16, 'triangle', e.heavy ? .4 : .25, e.blocked ? 280 : 28); this.tone(780, .1, 'sine', .1, 180); break;
@@ -235,6 +258,8 @@ export class GameAudio {
   }
 
   dispose() {
+    if (this.disposed) return; this.disposed = true;
+    this.master?.disconnect(); this.outputConnected = false;
     if (this.musicTimer !== null) clearInterval(this.musicTimer); this.musicTimer = null;
     this.stopScore(); this.score.forEach((gain, voice) => { voice.disconnect(); gain.disconnect(); }); this.score.clear();
     this.active.forEach(n => { try { n.stop(); } catch { /* Already ended. */ } }); this.active.clear();
