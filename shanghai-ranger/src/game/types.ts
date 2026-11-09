@@ -32,6 +32,7 @@ export interface GameEvent {
 }
 export interface Notification { id: number; title: string; description: string; kind: 'info' | 'success' | 'warning' }
 export interface Snapshot {
+  saveStatus: 'idle' | 'saved' | 'failed';
   health: number; maxHealth: number; stamina: number; potions: number;
   monsterHealth: number; monsterMaxHealth: number; monsterAction: MonsterAction;
   monsterDistance: number; monsterName: string; monsterTitle: string; monsterEnraged: boolean;
