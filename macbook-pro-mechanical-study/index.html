@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f10">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b1011'/%3E%3Cpath d='M32 8 53 20v24L32 56 11 44V20Z' fill='none' stroke='%23c8f56a' stroke-width='3'/%3E%3Cpath d='m11 20 21 12 21-12M32 32v24' fill='none' stroke='%23c8f56a' stroke-width='3'/%3E%3C/svg%3E">
+  <title>MBP—14 · 机械研究台</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"><i data-lucide="box"></i></span>
+        <div><strong>MBP—14</strong><span>MECHANICAL STUDY</span></div>
+      </div>
+      <div class="top-status"><span class="status-dot"></span><span>2025 · M5</span><span class="status-divider">/</span><span>REV. 02</span></div>
+      <div class="top-actions">
+        <button id="panel-toggle" class="icon-button" aria-label="显示或隐藏部件面板" title="部件面板"><i data-lucide="panel-left"></i></button>
+        <button id="about-open" class="text-button"><i data-lucide="info"></i><span>研究说明</span></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="parts-panel" id="parts-panel" aria-label="部件检索">
+        <div class="panel-heading"><span>部件索引</span><span id="part-count">20 / 20</span></div>
+        <label class="search-box" for="part-search">
+          <i data-lucide="search"></i>
+          <input id="part-search" type="search" autocomplete="off" placeholder="搜索部件或材质…" aria-label="搜索部件或材质">
+          <kbd>/</kbd>
+        </label>
+        <div class="filter-row" id="category-filters" aria-label="部件分类">
+          <button class="filter-chip active" data-category="全部">全部</button>
+          <button class="filter-chip" data-category="外部结构">结构</button>
+          <button class="filter-chip" data-category="核心硬件">核心</button>
+          <button class="filter-chip" data-category="输入交互">输入</button>
+          <button class="filter-chip" data-category="接口">接口</button>
+        </div>
+        <div id="parts-list" class="parts-list"></div>
+        <div id="empty-state" class="empty-state" hidden><i data-lucide="search-x"></i><p>没有匹配部件</p><button id="clear-search">清除筛选</button></div>
+        <div class="panel-foot"><i data-lucide="keyboard"></i><span>按下物理按键，对应键帽会下沉并高亮。</span></div>
+      </aside>
+
+      <section id="viewport" aria-label="可交互的 MacBook Pro 三维机械模型">
+        <div id="canvas-wrap"></div>
+        <div class="viewport-vignette"></div>
+        <div class="stage-readout">
+          <span id="stage-index">01</span>
+          <div><strong id="stage-name">整机形态</strong><span id="stage-en">ASSEMBLED VIEW</span></div>
+        </div>
+        <button id="camera-mode" class="camera-mode" title="切换镜头跟随与自由观察"><span class="status-dot"></span><span id="camera-mode-label">镜头跟随</span><i data-lucide="scan"></i></button>
+        <div class="view-ratio" id="view-ratio"><span>16 : 9</span><small>TOP-DOWN LAYOUT</small></div>
+        <div id="labels" aria-hidden="true"></div>
+        <div id="key-toast" role="status" aria-live="polite"><span>KEY</span><strong></strong></div>
+        <div class="orbit-hint"><i data-lucide="mouse-pointer-2"></i><span>点击部件聚焦 · 拖动自由观察 · 滚轮缩放</span></div>
+        <div id="loading"><span class="loader-ring"></span><strong>构建机械研究模型</strong><small>2025 · M5 / 20 ASSEMBLIES</small></div>
+        <div id="webgl-fallback" role="status" hidden>
+          <svg class="fallback-illustration" viewBox="0 0 280 170" aria-hidden="true">
+            <path d="M84 18h112l12 86H72L84 18Z" />
+            <path d="M92 28h96l9 65H83l9-65Z" />
+            <path d="m52 108 176 0 24 30H28l24-30Z" />
+            <path d="M28 138h224v8H28zM112 114h56l8 10h-72l8-10Z" />
+            <path class="fallback-accent" d="M60 151h160" />
+          </svg>
+          <h2>无法启动 3D 视图</h2>
+          <p id="webgl-fallback-reason">当前浏览器未能启用 WebGL。已切换到部件研究模式，可继续搜索、筛选并查看全部组件说明。</p>
+        </div>
+      </section>
+
+      <aside class="inspector" id="inspector" aria-label="部件详情">
+        <div class="panel-heading"><span>部件观察</span><i data-lucide="crosshair"></i></div>
+        <div id="inspector-empty" class="inspector-empty">
+          <div class="inspect-graphic"><span></span><span></span><span></span><i data-lucide="focus"></i></div>
+          <h2>选择一个部件</h2>
+          <p>从索引或 3D 场景中选择，镜头会随当前布局平滑跟随。</p>
+        </div>
+        <div id="inspector-content" hidden>
+          <div class="part-number" id="detail-index">05</div>
+          <span class="detail-category" id="detail-category">核心硬件</span>
+          <h2 id="detail-name">逻辑板</h2>
+          <span class="detail-en" id="detail-en">LOGIC BOARD</span>
+          <p id="detail-note"></p>
+          <dl><div><dt>研究分区</dt><dd id="detail-material"></dd></div><div><dt>模型性质</dt><dd>参考照片抽象重建</dd></div></dl>
+          <button id="clear-focus" class="outline-button"><i data-lucide="scan"></i>回到整体视角</button>
+        </div>
+        <div class="axis-widget" aria-hidden="true"><span class="axis-y">Y</span><span class="axis-x">X</span><span class="axis-z">Z</span><i></i></div>
+      </aside>
+    </main>
+
+    <footer class="control-deck">
+      <div class="transport-row">
+        <div class="transport-buttons">
+          <button id="play-toggle" class="play-button" aria-label="自动播放"><i data-lucide="play"></i><span>自动播放</span></button>
+          <button id="reset-button" class="icon-button" aria-label="复位" title="复位 (R)"><i data-lucide="rotate-ccw"></i></button>
+        </div>
+        <div class="stage-jumps" aria-label="布局跳转">
+          <button class="stage-jump active" data-progress="0"><span>00</span>整机</button>
+          <button class="stage-jump" data-progress="0.5"><span>50</span>爆炸</button>
+          <button class="stage-jump" data-progress="1"><span>100</span>16:9 平铺</button>
+        </div>
+        <div class="progress-number"><strong id="progress-value">000</strong><span>/ 100</span></div>
+      </div>
+      <div class="slider-wrap">
+        <input id="layout-progress" type="range" min="0" max="1000" value="0" step="1" aria-label="整机、爆炸与俯视平铺连续过渡进度">
+        <div class="slider-ticks"><span>ASSEMBLED</span><span>EXPLODED</span><span>TOP-DOWN / 16:9</span></div>
+      </div>
+      <div class="deck-foot">
+        <div class="shortcuts"><span><kbd>Space</kbd> 播放</span><span><kbd>R</kbd> 复位</span><span><kbd>Esc</kbd> 清除聚焦</span></div>
+      </div>
+    </footer>
+  </div>
+
+  <dialog id="about-dialog">
+    <div class="dialog-head"><span>ABOUT THIS STUDY</span><button id="about-close" class="icon-button" aria-label="关闭研究说明"><i data-lucide="x"></i></button></div>
+    <h2>机械研究，而非维修指南。</h2>
+    <p>本展示依据 2025 款 MacBook Pro 14 英寸（M5）的官方规格、外观与拆解照片，重建主要组件的形态、层级和相对位置。所有几何均为实时程序化模型，用于观察整机、爆炸与俯视平铺之间的空间关系。</p>
+    <div class="notice"><i data-lucide="triangle-alert"></i><p><strong>不是维修级 CAD，也不是经核实的零件清单。</strong>尺寸、芯片封装与内部连接细节存在简化，不应作为拆机、制造、装配或采购依据。</p></div>
+    <p class="reference-note">参考：<a href="https://www.ifixit.com/News/114046/m5-macbook-pro-teardown" target="_blank" rel="noreferrer">iFixit · M5 MacBook Pro Teardown</a> 与 <a href="https://support.apple.com/en-us/125405" target="_blank" rel="noreferrer">Apple · 技术规格</a>。Apple 与 MacBook Pro 为其权利人所有，本研究无隶属或背书关系。</p>
+    <div class="dialog-specs"><span>20 个组件分组</span><span>独立核心硬件与接口</span><span>逐键输入联动</span><span>单进度布局插值</span></div>
+  </dialog>
+  <script type="module" src="./src/scene.js"></script>
+</body>
+</html>
