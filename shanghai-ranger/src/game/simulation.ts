@@ -1,3 +1,5 @@
+import { attackSpec, DODGE } from './combat';
+import { chooseDodge } from './dodge';
 import type { GameEvent, InputState, MonsterAction, MonsterKind, Notification, Pet, Point, Progress, Resource, Skin, Snapshot, Weather, Weapon } from './types';
 import { moveCircle, resolveCircle, hasLineOfSight } from './collision';
 import type { BoxCollider, CircleCollider } from './collision';
@@ -91,7 +93,7 @@ export interface StreetEnemy {
 export const STREET_SLOTS = 3;
 
 export class Simulation {
-  player = { x: 0, z: 20, facing: Math.PI, health: 100, stamina: 100, attackTime: 0, dodgeTime: 0, invulnerable: 0, sprinting: false, moving: false, combo: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0 };
+  player = { x: 0, z: 20, facing: Math.PI, health: 100, stamina: 100, attackTime: 0, attackHeavy: false, attackWeapon: 'crowbar' as Weapon, attackDuration: 0, attackImpact: 0, dodgeTime: 0, dodgeDuration: DODGE.duration, dodgeSide: 1, invulnerable: 0, sprinting: false, moving: false, combo: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0 };
   monster = { x: 8, z: -12, facing: -0.85, health: 640, maxHealth: 640, action: 'idle' as MonsterAction, timer: 4, enraged: false, chargeX: 0, chargeZ: 0, attackCount: 0, kind: 'cat' as MonsterKind };
   progress: Progress;
   resources: Resource[] = [];
@@ -108,8 +110,8 @@ export class Simulation {
   attackCooldown = 0; healingCooldown = 0; petCooldown = 0; notifications: Notification[] = [];
   private noticeId = 0;
   private noticeTimes = new Map<number, number>();
+  private pendingStrike = false;
   private dodgeDirection = { x: 0, z: 1 };
-  private lastInput: InputState = { x: 0, z: 0, sprint: false };
   private comboTimer = 0; private monsterHit = false; private idleHeal = 0;
   private event: (event: GameEvent) => void;
   private save: (progress: Progress) => void;
@@ -183,7 +185,6 @@ export class Simulation {
     if (this.paused || this.dead) return;
     dt = clamp(dt, 0, 0.05); this.time += dt; this.weatherTime += dt;
     if (this.weatherTime >= WEATHER_DURATION) this.cycleWeather();
-    this.lastInput = input;
     this.notifications = this.notifications.filter(n => {
       if (this.time - (this.noticeTimes.get(n.id) ?? 0) < 6) return true;
       this.noticeTimes.delete(n.id); return false;
@@ -191,13 +192,15 @@ export class Simulation {
     const p = this.player;
     this.attackCooldown = Math.max(0, this.attackCooldown - dt); this.healingCooldown = Math.max(0, this.healingCooldown - dt);
     this.petCooldown = Math.max(0, this.petCooldown - dt * (this.weather === '晴夜' ? 1.15 : 1));
-    p.attackTime = Math.max(0, p.attackTime - dt); p.invulnerable = Math.max(0, p.invulnerable - dt);
+    p.attackTime = Math.max(0, p.attackTime - dt);
+    if (this.pendingStrike && p.attackDuration - p.attackTime >= p.attackImpact) { this.pendingStrike = false; this.resolveStrike(); }
+    p.invulnerable = Math.max(0, p.invulnerable - dt);
     this.comboTimer = Math.max(0, this.comboTimer - dt); if (!this.comboTimer) p.combo = 0;
     const length = Math.hypot(input.x, input.z);
-    p.moving = length > 0.05; p.sprinting = input.sprint && p.moving && p.stamina > 2 && !p.attackTime;
+    p.moving = length > 0.05; p.sprinting = input.sprint && p.moving && p.stamina > 2 && !p.attackTime && p.dodgeTime <= 0;
     const movement = { x: 0, z: 0 };
     if (p.dodgeTime > 0) {
-      p.dodgeTime -= dt; movement.x = this.dodgeDirection.x * 13 * dt; movement.z = this.dodgeDirection.z * 13 * dt;
+      const step = Math.min(dt, p.dodgeTime); p.dodgeTime = Math.max(0, p.dodgeTime - dt); movement.x = this.dodgeDirection.x * DODGE.speed * step; movement.z = this.dodgeDirection.z * DODGE.speed * step;
     } else if (p.knockbackTime > 0) {
       p.knockbackTime = Math.max(0, p.knockbackTime - dt);
       movement.x = p.knockbackX * dt; movement.z = p.knockbackZ * dt;
@@ -374,25 +377,31 @@ export class Simulation {
   }
   attack(heavy = false) {
     const p = this.player;
-    if (this.paused || this.dead || this.attackCooldown > 0 || p.dodgeTime > 0) return false;
+    if (this.paused || this.dead || this.attackCooldown > 0 || p.dodgeTime > 0 || p.attackTime > 0) return false;
     const cost = heavy ? 27 : 10;
     if (p.stamina < cost) { this.notify('喘口气', '体力不够了，先缓一缓再出手。', 'warning'); return false; }
     p.stamina -= cost;
-    const faster = this.progress.weapon === 'baton', umbrella = this.progress.weapon === 'umbrella';
-    this.attackCooldown = heavy ? 1.15 : faster ? 0.4 : umbrella ? .54 : 0.66; p.attackTime = heavy ? 0.85 : faster ? 0.38 : umbrella ? .46 : 0.55;
-    p.combo = this.comboTimer > 0 ? p.combo % 3 + 1 : 1; this.comboTimer = 1.7;
-    this.event({ type: 'attack', value: heavy ? 1 : 0 });
-    const range = (heavy ? 3.35 : 2.75) + (umbrella ? .35 : 0);
+    const spec = attackSpec(this.progress.weapon, heavy);
+    this.attackCooldown = spec.cooldown; p.attackTime = p.attackDuration = spec.duration;
+    p.attackHeavy = heavy; p.attackWeapon = this.progress.weapon; p.attackImpact = spec.impact;
+    p.combo = heavy ? 1 : this.comboTimer > 0 ? p.combo % 3 + 1 : 1; this.comboTimer = 1.7;
+    this.pendingStrike = true;
+    return true;
+  }
+  private resolveStrike() {
+    const p = this.player, heavy = p.attackHeavy, spec = attackSpec(p.attackWeapon, heavy);
+    this.event({ type: 'attack', value: heavy ? 1 : 0, heavy, weapon: p.attackWeapon });
+    const range = spec.range;
     const candidates = [...this.streetEnemies, ...(this.targetRevealed ? [this.monster] : [])]
       .filter(m => m.health > 0 && distance(p, m) <= range && hasLineOfSight(p, m, this.boxColliders))
       .sort((a, b) => distance(p, a) - distance(p, b));
     const m = candidates.find(target => Math.abs(angleDelta(p.facing, Math.atan2(target.x - p.x, target.z - p.z))) <= (this.locked ? 1.5 : 1.2));
-    if (!m) return true;
+    if (!m) return;
     const targetAngle = Math.atan2(m.x - p.x, m.z - p.z), street = 'slot' in m;
     p.facing += clamp(angleDelta(p.facing, targetAngle), -.32, .32);
     const weakness = m.action === 'recover' || m.action === 'stagger', guarded = m.action === 'guard';
     const damage = Math.round(this.attackDamage * (heavy ? 1.95 : 1) * (p.combo === 3 ? 1.35 : 1) * (weakness ? 1.3 : 1) * (guarded ? heavy ? .8 : .35 : 1));
-    m.health = Math.max(0, m.health - damage); this.event({ type: 'hit', value: damage, x: m.x, z: m.z });
+    m.health = Math.max(0, m.health - damage); this.event({ type: 'hit', value: damage, x: m.x, z: m.z, heavy, blocked: guarded && !heavy, weapon: p.attackWeapon, kind: m.kind });
     if (guarded && heavy) { m.action = 'stagger'; m.timer = 2; this.notify('破防成功', '重击拆开架势，目标陷入硬直。', 'success'); }
     else if (heavy && weakness) { m.action = 'stagger'; m.timer = 2.3; }
     if (m.health <= 0) {
@@ -410,24 +419,24 @@ export class Simulation {
       this.combat = this.mainCombat || this.streetEnemies.some(enemy => enemy.health > 0 && distance(enemy, p) < 10.5);
       this.event({ type: 'victory' });
     } else if (street) { this.streetEngaged = true; this.combat = true; }
-    return true;
   }
   dodge() {
     const p = this.player;
     if (this.paused || this.dead || p.dodgeTime > 0 || p.stamina < 23) return false;
-    p.stamina -= 23; p.dodgeTime = 0.44; p.invulnerable = 0.6; p.attackTime = 0;
-    const len = Math.hypot(this.lastInput.x, this.lastInput.z);
-    this.dodgeDirection = len > 0.1 ? { x: this.lastInput.x / len, z: this.lastInput.z / len } : { x: -Math.sin(p.facing), z: -Math.cos(p.facing) };
+    const route = chooseDodge(p, p.facing, this.colliders, this.boxColliders);
+    if (!route) { this.notify('没有闪避空间', '左右后方都被挡住了，先挪开一步。', 'warning'); return false; }
+    p.stamina -= 23; p.dodgeTime = p.dodgeDuration = Math.min(DODGE.duration, route.clearance / DODGE.speed); p.dodgeSide = route.side; p.invulnerable = Math.max(p.invulnerable, p.dodgeTime + .24); p.attackTime = 0;
+    this.pendingStrike = false; this.dodgeDirection = route;
     this.event({ type: 'dodge' }); return true;
   }
   hurt(amount: number, source?: Point) {
     if (this.player.invulnerable > 0 || this.dead) return;
     const petGuard = this.progress.pet === 'orangeCat' ? this.progress.petLevel * 3 : 0;
     this.player.health = Math.max(0, this.player.health - Math.max(5, amount - (this.progress.level - 1) * 3 - petGuard)); this.player.invulnerable = 0.8;
+    this.player.attackTime = 0; this.pendingStrike = false;
     if (source) {
       const angle = Math.atan2(this.player.x - source.x, this.player.z - source.z);
       this.player.knockbackTime = .2; this.player.knockbackX = Math.sin(angle) * 5.5; this.player.knockbackZ = Math.cos(angle) * 5.5;
-      this.player.attackTime = 0;
     }
     this.event({ type: 'hurt', value: amount });
     if (this.player.health <= 0) { this.dead = true; this.locked = false; this.combat = false; this.mainCombat = false; this.streetEngaged = false; }
@@ -537,7 +546,7 @@ export class Simulation {
     this.save(this.progress); this.event({ type: 'forge' }); this.notify('侠义提升', `你的侠义等级升至 ${this.progress.level} 级，攻防兼备。`, 'success'); return true;
   }
   equip(weapon: Weapon) {
-    if (this.combat || !weaponUnlocked(weapon, this.progress.level)) return false;
+    if (this.combat || this.player.attackTime > 0 || !weaponUnlocked(weapon, this.progress.level)) return false;
     this.progress.weapon = weapon; this.player.combo = 0; this.save(this.progress); return true;
   }
   setPet(pet: Pet) {
@@ -551,12 +560,12 @@ export class Simulation {
     this.locked = !this.locked; if (this.locked) this.notify('锁定目标', '盯住它周旋。再按 Q 解除锁定。');
   }
   newHunt() {
-    this.player = { x: 0, z: 20, facing: Math.PI, health: this.maxHealth, stamina: 100, attackTime: 0, dodgeTime: 0, invulnerable: 0, sprinting: false, moving: false, combo: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0 };
+    this.pendingStrike = false; this.player = { x: 0, z: 20, facing: Math.PI, health: this.maxHealth, stamina: 100, attackTime: 0, attackHeavy: false, attackWeapon: 'crowbar' as Weapon, attackDuration: 0, attackImpact: 0, dodgeTime: 0, dodgeDuration: DODGE.duration, dodgeSide: 1, invulnerable: 0, sprinting: false, moving: false, combo: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0 };
     this.monster = { x: 8, z: -12, facing: -0.85, health: 0, maxHealth: 0, action: 'idle', timer: 4, enraged: false, chargeX: 0, chargeZ: 0, attackCount: 0, kind: this.monster.kind };
     this.setMonsterForHunt(this.progress.hunts);
     this.potions = 5; this.dead = false; this.combat = false; this.mainCombat = false; this.streetEngaged = false; this.locked = false; this.questPhase = 'tracking'; this.tracked = 0;
     this.time = 0; this.weatherTime = 0; this.weather = '晴夜'; this.attackCooldown = 0; this.healingCooldown = 0; this.petCooldown = 0; this.comboTimer = 0;
-    this.monsterHit = false; this.idleHeal = 0; this.dodgeDirection = { x: 0, z: 1 }; this.lastInput = { x: 0, z: 0, sprint: false };
+    this.monsterHit = false; this.idleHeal = 0; this.dodgeDirection = { x: 0, z: 1 };
     this.notifications = []; this.noticeTimes.clear(); this.resetResources();
     for (let slot = 0; slot < STREET_SLOTS; slot++) this.resetStreetEnemy(slot, true);
   }

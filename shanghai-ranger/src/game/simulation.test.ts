@@ -8,7 +8,13 @@ import { cameraSafeFraction } from './camera';
 const idle = { x: 0, z: 0, sprint: false };
 function advance(sim: Simulation, seconds: number) { for (let i = 0; i < Math.ceil(seconds * 60); i++) sim.tick(1 / 60, idle); }
 function reveal(sim: Simulation) { sim.tracked = 3; sim.questPhase = 'hunting'; }
-function closeToTarget(sim: Simulation) { reveal(sim); sim.player.x = sim.monster.x; sim.player.z = sim.monster.z + 2.4; sim.player.facing = Math.PI; }
+function closeToTarget(sim: Simulation) { reveal(sim); sim.combat = true; sim.player.x = sim.monster.x; sim.player.z = sim.monster.z + 2.4; sim.player.facing = Math.PI; }
+
+function strike(sim: Simulation, heavy = false) {
+  const accepted = sim.attack(heavy);
+  if (accepted) advance(sim, sim.player.attackImpact + .001);
+  return accepted;
+}
 
 describe('本地存档', () => {
   it('损坏的存档安全回退，畸形进度被钳制', () => {
@@ -213,14 +219,14 @@ describe('城中祸害遭遇战', () => {
     expect(sim.attack()).toBe(true); expect(sim.monster.health).toBe(420);
     expect(sim.attack()).toBe(false);
     advance(sim, .7);
-    closeToTarget(sim); sim.attack(); expect(sim.monster.health).toBeLessThan(420);
-    const hp = sim.monster.health; sim.attack(); expect(sim.monster.health).toBe(hp);
+    closeToTarget(sim); strike(sim); expect(sim.monster.health).toBeLessThan(420);
+    const hp = sim.monster.health; strike(sim); expect(sim.monster.health).toBe(hp);
   });
   it('攻击需要面向目标且不能隔着建筑命中', () => {
-    const sim = new Simulation(); closeToTarget(sim); sim.player.facing = 0; sim.attack(); expect(sim.monster.health).toBe(420);
-    sim.player.facing = Math.PI; sim.boxColliders = [{ x: sim.monster.x, z: sim.monster.z + 1.2, halfWidth: 2, halfDepth: .2 }];
-    sim.attackCooldown = 0; sim.attack(); expect(sim.monster.health).toBe(420);
-    sim.boxColliders = []; sim.attackCooldown = 0; sim.attack(); expect(sim.monster.health).toBeLessThan(420);
+    const sim = new Simulation(); closeToTarget(sim); sim.player.facing = 0; strike(sim); expect(sim.monster.health).toBe(420);
+    advance(sim, .7); sim.player.facing = Math.PI; sim.boxColliders = [{ x: sim.monster.x, z: sim.monster.z + 1.2, halfWidth: 2, halfDepth: .2 }];
+    sim.attackCooldown = 0; strike(sim); expect(sim.monster.health).toBe(420);
+    sim.boxColliders = []; advance(sim, .7); closeToTarget(sim); strike(sim); expect(sim.monster.health).toBeLessThan(420);
   });
   it('冲撞受击只产生有限击退，不会持续推动玩家', () => {
     const sim = new Simulation(); sim.player.x = 0; sim.player.z = 0;
@@ -232,7 +238,7 @@ describe('城中祸害遭遇战', () => {
   it('目标收势时重击有加成并打出硬直', () => {
     const normal = new Simulation(), opening = new Simulation();
     for (const sim of [normal, opening]) closeToTarget(sim);
-    opening.monster.action = 'recover'; normal.attack(true); opening.attack(true);
+    opening.monster.action = 'recover'; strike(normal, true); strike(opening, true);
     expect(opening.monster.health).toBeLessThan(normal.monster.health);
     expect(opening.monster.action).toBe('stagger');
   });
@@ -245,7 +251,7 @@ describe('城中祸害遭遇战', () => {
   });
   it('收缴只结算一次，奖励落袋，升级保留到新的一夜', () => {
     const save = vi.fn(), sim = new Simulation(undefined, undefined, save);
-    closeToTarget(sim); sim.monster.health = 10; sim.attack();
+    closeToTarget(sim); sim.monster.health = 10; strike(sim);
     expect(sim.questPhase).toBe('harvest'); expect(sim.monster.action).toBe('dead');
     expect(sim.interact()).toBe(true);
     expect(sim.questPhase).toBe('complete');
@@ -320,10 +326,10 @@ describe('第二轮：跨城区委托与成长', () => {
   it('调查完成前目标不会受伤或被锁定', () => {
     const sim = new Simulation(); sim.player.x = sim.monster.x; sim.player.z = sim.monster.z + 2.4; sim.player.facing = Math.PI;
     sim.toggleLock(); expect(sim.locked).toBe(false);
-    sim.attack(); expect(sim.monster.health).toBe(sim.monster.maxHealth);
+    strike(sim); expect(sim.monster.health).toBe(sim.monster.maxHealth); advance(sim, .7);
     for (const clue of sim.resources.filter(r => r.kind === 'clue')) { sim.player.x = clue.x; sim.player.z = clue.z; expect(sim.interact()).toBe(true); }
     expect(sim.targetRevealed).toBe(true); sim.player.x = sim.monster.x; sim.player.z = sim.monster.z + 2.4; sim.player.facing = Math.PI; sim.attackCooldown = 0;
-    sim.attack(); expect(sim.monster.health).toBeLessThan(sim.monster.maxHealth);
+    strike(sim); expect(sim.monster.health).toBeLessThan(sim.monster.maxHealth);
   });
   it('后续夜晚轮换五种城区，并使用确定性的道路交汇点', () => {
     const expected = ['lane', 'office', 'campus', 'skyscraper', 'wutong'];
@@ -359,7 +365,7 @@ describe('第二轮：跨城区委托与成长', () => {
   it('第四夜是精英委托，血量与现金、零件悬赏同步提高', () => {
     const progress = { ...DEFAULT_PROGRESS, hunts: 3 }, sim = new Simulation(progress);
     expect(sim.elite).toBe(true); expect(sim.questReward).toBe(1650); expect(sim.monster.maxHealth).toBe(Math.round(sim.nextMonsterHealth * 1.3));
-    closeToTarget(sim); sim.monster.health = 10; sim.attack(); expect(sim.questPhase).toBe('harvest'); expect(sim.interact()).toBe(true);
+    closeToTarget(sim); sim.monster.health = 10; strike(sim); expect(sim.questPhase).toBe('harvest'); expect(sim.interact()).toBe(true);
     expect(sim.progress.cash).toBe(2000); expect(sim.progress.parts).toBe(8);
   });
 });
@@ -371,8 +377,8 @@ describe('第二轮：敌人行为差异', () => {
   it('地痞格挡减免普攻，重击可以破防并打出硬直', () => {
     const normal = new Simulation({ ...DEFAULT_PROGRESS, hunts: 4 }), heavy = new Simulation({ ...DEFAULT_PROGRESS, hunts: 4 });
     closeToTarget(normal); closeToTarget(heavy); normal.monster.action = heavy.monster.action = 'guard';
-    normal.attack(); expect(normal.monster.maxHealth - normal.monster.health).toBe(15);
-    heavy.attack(true); expect(heavy.monster.action).toBe('stagger'); expect(heavy.monster.timer).toBe(2);
+    strike(normal); expect(normal.monster.maxHealth - normal.monster.health).toBe(15);
+    strike(heavy, true); expect(heavy.monster.action).toBe('stagger'); expect(heavy.monster.timer).toBeGreaterThan(1.9);
     expect(heavy.monster.maxHealth - heavy.monster.health).toBeGreaterThan(normal.monster.maxHealth - normal.monster.health);
   });
   it('车辆高速撞墙会收势不住，进入长硬直', () => {
@@ -403,7 +409,7 @@ describe('持续街区夜巡', () => {
     enemy.x = 0; enemy.z = 4.5; enemy.action = 'stalk'; enemy.timer = 0;
     const health = sim.player.health; sim.tick(.016, idle);
     expect(enemy.action).toBe('windup'); expect(sim.player.health).toBe(health);
-    enemy.z = 1.5; enemy.health = 100; sim.attack();
+    enemy.z = 1.5; enemy.health = 100; strike(sim);
     expect(enemy.health).toBeLessThan(100); expect(sim.tracked).toBe(0); expect(sim.targetRevealed).toBe(false);
   });
 
@@ -413,7 +419,7 @@ describe('持续街区夜巡', () => {
     sim.streetEnemies.forEach((other, i) => { other.x = 0; other.z = 42 + i * 2; other.action = 'idle'; });
     enemy.x = 0; enemy.z = 1.4; enemy.health = 10; enemy.action = 'recover';
     const cash = sim.progress.cash, id = enemy.id;
-    sim.attack();
+    strike(sim);
     expect(sim.streetDefeated).toBe(1); expect(sim.progress.cash).toBeGreaterThan(cash);
     expect(sim.progress.hunts).toBe(0); expect(sim.questPhase).toBe('tracking'); expect(save).toHaveBeenCalled();
     expect(sim.streetEnemies).toHaveLength(3); expect(sim.snapshot().streetActive).toBe(2);
