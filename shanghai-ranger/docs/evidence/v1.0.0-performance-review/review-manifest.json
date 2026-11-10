@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-10",
+  "reviewBaseCommit": "eac2545",
+  "applicationCodeCommit": "8913d2c3de56664da8566fc3e56fa52b59eef125",
+  "applicationSourceMismatches": [],
+  "releaseZip": {
+    "file": "沪上游侠-v1.0.0-小红书小工具-字体A.zip",
+    "sha256": "055d0bdff21fbdc039b5809febd715113de834b5949518f5a931e932556f91fc",
+    "unchanged": true
+  },
+  "evidence": {
+    "browser-meta.json": {
+      "bytes": 306,
+      "sha256": "393309a31e7ffbc6d019a4a072512a444b6b3e106a307f82770930b74fdb6719"
+    },
+    "cpu-microbench.json": {
+      "bytes": 9292,
+      "sha256": "60cc946d58ed61c801d39485ba4abc760074734a539600495dbc04f065413846"
+    },
+    "font-subset-estimate.json": {
+      "bytes": 661,
+      "sha256": "23778dab3ab2df2fcd9fdc6ddb762caa3c233821ea2f1da6a4b4cc086b8d7ba4"
+    },
+    "mobile-balanced-camp.png": {
+      "bytes": 248172,
+      "sha256": "f4e1a441267e07a16d999165d07f07aa566721a627e62879952146eb444c11ec"
+    },
+    "package-analysis.json": {
+      "bytes": 5400,
+      "sha256": "78d0b094066f3e8ebe36e4a05df0a03b918159b48510726cb11add18b837f6d1"
+    },
+    "render-inspection.json": {
+      "bytes": 589627,
+      "sha256": "819e474b9bcdb5bb8a39b579d123bcc7a600858eb6b56865bc57348d4069aef5"
+    },
+    "streaming-isolated.json": {
+      "bytes": 24492,
+      "sha256": "7222e492d36adff8af023bf99f1f1aaf9852317ab419135e852638a1d8a14c77"
+    },
+    "streaming-microbench.json": {
+      "bytes": 7331,
+      "sha256": "cd7050b69a0b3d37daacaaf390f8e2a834a45ef740daa767627f30682c211b99"
+    }
+  },
+  "browserCleanup": {
+    "space": 50,
+    "finished": true,
+    "isolatedOrigin": "http://127.0.0.1:5217",
+    "initialSaveAbsent": true,
+    "syntheticSaveRemoved": true,
+    "syntheticSettingsRemoved": true,
+    "serverStopped": true
+  },
+  "limits": [
+    "FPS probe affected by scheduling; no current FPS pass conclusion",
+    "Node and browser CPU microbenchmarks are not real-device validation",
+    "No implementation/assets/build/publication changes"
+  ]
+}

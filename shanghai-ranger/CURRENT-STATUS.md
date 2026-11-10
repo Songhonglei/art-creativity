@@ -8,5 +8,6 @@
 - 用户已确认字体A「得意黑」并实施；[字体修订验收](docs/V1_0_0_FONT_A_VERIFICATION.md)与[最新构建清单](docs/evidence/v1.0.0-font-a/build-manifest.json)记录本轮结果。最新包为 `output/沪上游侠-v1.0.0-小红书小工具-字体A.zip`；原包与历史验收保留。
 - 包含v0.9.5死亡恢复，基线53文件与旧正式验收散列一致；原工作区 `/Users/songhonglei/space/沪上游侠` 的v0.9.5应用源码未修改。
 - 小红书模拟器、Android/iOS真机及实际Chrome61仍待验证，不能由浏览器模拟或host mock推断通过。
+- 2026-11-10综合审查已记录[8项问题与3项优化](docs/V1_0_0_REVIEW_BACKLOG.md)，均待处理；性能专项另见[性能审查](docs/V1_0_0_PERFORMANCE_REVIEW.md)。审查记录不代表已修复或重新发布。
 
 [README](README.md)提供操作与构建命令；[v0.9.5历史验收](docs/V0_9_5_VERIFICATION.md)、[宠物美术历史验收](docs/PET_VISUAL_REVISION_2026_11_10.md)保留。资料索引说明见[OPENVIKING](docs/OPENVIKING.md)，注册工作区仍为原目录，不自动将本隔离工作树注册或扩展白名单。

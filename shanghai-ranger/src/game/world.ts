@@ -7,6 +7,7 @@ import { facadeTexture } from './facade';
 import { appendUrbanBuilding, createUrbanBuckets } from './architecture';
 import type { UrbanKind, UrbanSurface } from './architecture';
 import { DistrictStreamer } from './streaming';
+import { SceneryBatches } from './scenery';
 import { createCityLife } from './cityLife';
 import type { Settings } from './types';
 
@@ -49,27 +50,36 @@ function barkTexture() {
 }
 
 export class World {
+  readonly ready: Promise<void>;
   root = new THREE.Group();
-  sky: THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
-  sun: THREE.DirectionalLight;
-  ambient: THREE.HemisphereLight;
-  grass: THREE.InstancedMesh;
+  private scenery!: SceneryBatches;
+  private architectureLods: { full: THREE.Group; far: THREE.Group; bounds: THREE.Box3; instances: { mesh: THREE.InstancedMesh; index: number; matrix: THREE.Matrix4 }[] }[] = [];
+  private lodPoint = new THREE.Vector3();
+  private hiddenInstance = new THREE.Matrix4().makeScale(0, 0, 0);
+  private quality: Settings['quality'] = 'balanced';
+  private ground!: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
+  private terrainCache = new Map<string, THREE.PlaneGeometry>();
+  private waterCache = new Map<string, THREE.PlaneGeometry>();
+  sky!: THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
+  sun!: THREE.DirectionalLight;
+  ambient!: THREE.HemisphereLight;
+  grass!: THREE.InstancedMesh;
   grassShader: { uniforms: Record<string, { value: unknown }> } | null = null;
-  water: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
-  amberMotes: THREE.Points;
-  rain: THREE.LineSegments;
-  motes: THREE.Points;
+  water!: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
+  amberMotes!: THREE.Points;
+  rain!: THREE.LineSegments;
+  motes!: THREE.Points;
   resourceModels = new Map<string, THREE.Group>();
-  campFire: THREE.PointLight;
+  campFire!: THREE.PointLight;
   private weatherBlend = 0;
   private birds: THREE.Group[] = [];
   private animals: THREE.Group[] = [];
-  private rainPositions: Float32Array;
-  private scoutPositions: Float32Array;
+  private rainPositions!: Float32Array;
+  private scoutPositions!: Float32Array;
   private rng = random(41);
   private scene: THREE.Scene;
-  private streaming: DistrictStreamer;
-  private cityLife: ReturnType<typeof createCityLife>;
+  private streaming!: DistrictStreamer;
+  private cityLife!: ReturnType<typeof createCityLife>;
   private skyColors = { top: new THREE.Color('#0a0f24'), horizon: new THREE.Color('#273054') };
   private stormTop = new THREE.Color('#131722');
   private stormHorizon = new THREE.Color('#3a4258');
@@ -77,9 +87,13 @@ export class World {
   private stormFog = new THREE.Color('#2b3346');
   private baseGrassCount = 0;
   private reducedMotion = false;
+  private disposed = false;
 
-  constructor(scene: THREE.Scene, materials: Materials, simulation: Simulation, _loader: THREE.TextureLoader) {
+  constructor(scene: THREE.Scene, materials: Materials, simulation: Simulation, _loader: THREE.TextureLoader, onProgress: (n: number) => void = () => {}) {
     this.scene = scene; scene.add(this.root);
+    const yieldStage = async (progress: number) => { onProgress(progress); await new Promise<void>(resolve => setTimeout(resolve, 0)); if (this.disposed) throw Error('街区加载已取消'); };
+    this.ready = (async () => {
+    await yieldStage(12);
     scene.fog = new THREE.FogExp2('#182238', .0038);
     const clouds = canvasTexture((ctx, size) => {
       const image = ctx.createImageData(size, size);
@@ -104,25 +118,21 @@ export class World {
     // Plaza pavement.
     const pavement = pavementTexture();
     const groundMat = new THREE.MeshStandardMaterial({ map: pavement, roughness: .96, vertexColors: true });
-    const terrainGeo = new THREE.PlaneGeometry(340, 340, 120, 120); terrainGeo.rotateX(-Math.PI / 2);
-    const pos = terrainGeo.attributes.position, colors = [];
-    const low = new THREE.Color('#647082'), high = new THREE.Color('#8993a0');
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i), z = pos.getZ(i); pos.setY(i, groundHeight(x, z));
-      const c = low.clone().lerp(high, noise(x * .05 + 12, z * .05 + 13)); colors.push(c.r, c.g, c.b);
-    }
-    terrainGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3)); terrainGeo.computeVertexNormals();
-    const ground = new THREE.Mesh(terrainGeo, groundMat); ground.receiveShadow = true; this.root.add(ground);
+    const terrainGeo = this.makeTerrain('balanced');
+    const ground = new THREE.Mesh(terrainGeo, groundMat); ground.receiveShadow = true; this.root.add(ground); this.ground = ground;
     this.createStreetDetails();
 
+    await yieldStage(25);
     this.createSkyline(simulation);
     this.createLandmarks(materials, simulation);
     this.createBollards(simulation);
+    await yieldStage(42);
     this.createTrees();
+    await yieldStage(58);
     this.createStreetLamps(simulation);
     for (const [x, z] of [[-28, -29], [-34, 5], [38, -49], [43, 17], [-19, -51], [-60, -20], [62, -26], [-41, 31], [7, -77], [51, 54], [-10, 14], [13, 7], [-12, -8], [12, 32]]) simulation.colliders.push({ x, z, radius: .4 });
     this.grass = this.createGrass(); this.baseGrassCount = this.grass.count; this.root.add(this.grass);
-    this.water = new THREE.Mesh(new THREE.PlaneGeometry(230, 280, 64, 88), new THREE.ShaderMaterial({
+    this.water = new THREE.Mesh(this.makeWater('balanced'), new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 }, uStorm: { value: 0 } },
       vertexShader: `varying vec3 vPos;uniform float uTime;void main(){vec3 p=position;float ripple=sin(p.x*.72+p.y*.31+uTime*1.7)*.055+sin(p.y*1.1-uTime*2.2)*.025;p.z+=ripple;vec4 world=modelMatrix*vec4(p,1.);vPos=world.xyz;gl_Position=projectionMatrix*viewMatrix*world;}`,
       fragmentShader: `varying vec3 vPos;uniform float uTime;uniform float uStorm;void main(){
@@ -149,14 +159,36 @@ export class World {
     this.rainPositions = new Float32Array(850 * 6); for (let i = 0; i < 850; i++) { const x = (this.rng() - .5) * 75, y = this.rng() * 26, z = (this.rng() - .5) * 75; this.rainPositions.set([x, y, z, x - .3, y - 1, z], i * 6); }
     const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(this.rainPositions, 3));
     this.rain = new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: '#9fb4d8', transparent: true, opacity: 0, depthWrite: false })); this.root.add(this.rain);
+    await yieldStage(72);
     this.createResources(simulation, materials);
     this.campFire = this.createCamp(materials, simulation);
     this.createWildlife();
     this.cityLife = createCityLife(this.root, simulation);
     this.streaming = new DistrictStreamer(this.root, simulation);
-    this.streaming.update(simulation.player, true);
+    this.scenery = new SceneryBatches(this.root, [...this.resourceModels.values(), ...this.birds, ...this.animals, ...this.cityLife.dynamicRoots, this.ground, ...this.architectureLods.reduce<THREE.Object3D[]>((list, lod) => list.concat(lod.full, lod.far), [])]);
+    this.streaming.update(simulation.player);
+    await yieldStage(92);
+    })();
   }
 
+  private makeTerrain(quality: Settings['quality']) {
+    const cached = this.terrainCache.get(quality); if (cached) return cached;
+    const segments = quality === 'low' ? 80 : quality === 'balanced' ? 100 : 120;
+    const geometry = new THREE.PlaneGeometry(340, 340, segments, segments); geometry.rotateX(-Math.PI / 2);
+    const positions = geometry.attributes.position, colors: number[] = [], low = new THREE.Color('#647082'), high = new THREE.Color('#8993a0');
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i), z = positions.getZ(i); positions.setY(i, groundHeight(x, z));
+      const c = low.clone().lerp(high, noise(x * .05 + 12, z * .05 + 13)); colors.push(c.r, c.g, c.b);
+    }
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3)); geometry.computeVertexNormals(); this.terrainCache.set(quality, geometry); return geometry;
+  }
+  private makeWater(quality: Settings['quality']) {
+    const cached = this.waterCache.get(quality); if (cached) return cached;
+    // Fit the river itself instead of shading a huge plane and discarding its banks.
+    const geometry = new THREE.PlaneGeometry(12.4, 280, quality === 'low' ? 4 : 8, quality === 'high' ? 88 : 64), p = geometry.attributes.position;
+    for (let i = 0; i < p.count; i++) p.setX(i, p.getX(i) + riverX(-p.getY(i)));
+    geometry.computeVertexNormals(); geometry.computeBoundingSphere(); this.waterCache.set(quality, geometry); return geometry;
+  }
   updateStreaming(player: { x: number; z: number }, immediate = false) { this.streaming.update(player, immediate); }
   get streamingStats() { return this.streaming.stats; }
   get cityFeatures() { return this.cityLife.features; }
@@ -166,7 +198,9 @@ export class World {
     return features.map(feature => ({ ...feature, distance: Math.hypot(feature.x - player.x, feature.z - player.z) })).sort((a, b) => a.distance - b.distance)[0];
   }
   setQuality(settings: Settings, software: boolean) {
-    const quality = settings.quality;
+    const quality = settings.quality; this.quality = quality;
+    this.ground.geometry = this.makeTerrain(quality); this.water.geometry = this.makeWater(quality);
+    const shadowSize = 1024; if (this.sun.shadow.mapSize.x !== shadowSize) { this.sun.shadow.map?.dispose(); this.sun.shadow.map = null; this.sun.shadow.mapSize.set(shadowSize, shadowSize); }
     const grassRatio = quality === 'high' ? software ? .55 : 1 : quality === 'balanced' ? .55 : .25;
     this.grass.count = Math.max(1, Math.floor(this.baseGrassCount * grassRatio));
     this.motes.visible = quality !== 'low';
@@ -174,7 +208,7 @@ export class World {
     this.streaming.setQuality(quality, software);
     this.reducedMotion = settings.reducedMotion;
   }
-  dispose() { this.streaming.dispose(); }
+  dispose() { this.disposed = true; this.streaming?.dispose(); this.terrainCache.forEach(g => g.dispose()); this.waterCache.forEach(g => g.dispose()); }
 
   private createStreetDetails() {
     const paintGeos: THREE.BufferGeometry[] = [];
@@ -210,7 +244,8 @@ export class World {
       glass: facadeMaterials[0], residence: facadeMaterials[1], stone: facadeMaterials[2], brick: facadeMaterials[3],
       trim: trimMat, dark: darkMat, roof: roofMat, glow: glowMat, accent: accentMat,
     };
-    const buckets = createUrbanBuckets();
+    const districts = new Map<string, ReturnType<typeof createUrbanBuckets>>();
+    const distant = new Map<string, Map<number, THREE.BufferGeometry[]>>();
     // x, z, half-width, height. Landmarks retain their own handcrafted models.
     const blocks: number[][] = [[-41, -73, 7, 34], [-54, -80, 9, 44], [-65, -91, 6, 30], [-27, -96, 7, 24], [-83, -61, 10, 28], [-99, -102, 14, 46], [47, -86, 8, 30], [61, -90, 7, 36], [71, -96, 10, 32], [95, -74, 12, 42], [24, -125, 12, 26], [-13, -139, 18, 50], [-95, -149, 22, 66], [80, -150, 20, 58], [-130, -90, 22, 56], [132, -125, 24, 60], [-72, 26, 8, 18], [76, 17, 10, 22], [-46, 56, 8, 16], [50, 67, 11, 20], [-110, -30, 14, 38], [110, -40, 16, 48], [-60, 96, 12, 24], [20, 100, 14, 30], [-100, 60, 10, 26], [90, 80, 12, 34]];
     blocks.forEach(([x, z, w, sourceHeight], i) => {
@@ -223,15 +258,32 @@ export class World {
           : kind === 'wutong' ? 9 + (i % 4) * 1.8
             : kind === 'campus' ? 12 + (i % 2) * 3 : Math.max(17, sourceHeight);
       const surface = (kind === 'skyscraper' ? 0 : kind === 'campus' || kind === 'lane' ? 3 : i % 3) as 0 | 1 | 2 | 3;
+      const key = `${Math.floor(x / 48)},${Math.floor(z / 48)}`, buckets = districts.get(key) ?? createUrbanBuckets(); districts.set(key, buckets);
+      const far = distant.get(key) ?? new Map<number, THREE.BufferGeometry[]>(), list = far.get(surface) ?? [];
+      const shape = new THREE.BoxGeometry(w * 2, h, w * 2); shape.translate(x, groundHeight(x, z) - .5 + h / 2, z); list.push(shape); far.set(surface, list); distant.set(key, far);
       appendUrbanBuilding(buckets, { x, z, y: groundHeight(x, z) - .5, halfWidth: w, halfDepth: w, height: h, kind, variant: i % 4, surface });
       simulation.boxColliders.push({ x, z, halfWidth: w * 1.06, halfDepth: w * 1.06, minY: groundHeight(x, z) - .5, maxY: groundHeight(x, z) + h + 3 });
     });
-    for (const surface of Object.keys(buckets) as UrbanSurface[]) {
-      const geos = buckets[surface];
-      if (!geos.length) continue;
-      const merged = mergeGeometries(geos); geos.forEach(g => g.dispose());
-      if (!merged) continue;
-      const mesh = new THREE.Mesh(merged, materials[surface]); mesh.castShadow = surface !== 'glow'; mesh.receiveShadow = surface !== 'glow'; this.root.add(mesh);
+    const instancePools = new Map<number, { mesh: THREE.InstancedMesh; next: number }>();
+    for (let surface = 0; surface < 4; surface++) {
+      let count = 0; distant.forEach(group => { count += group.get(surface)?.length ?? 0; }); if (!count) continue;
+      const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), facadeMaterials[surface], count); mesh.frustumCulled = false; mesh.name = `distant-architecture:${surface}`;
+      for (let i = 0; i < count; i++) mesh.setMatrixAt(i, this.hiddenInstance);
+      this.root.add(mesh); instancePools.set(surface, { mesh, next: 0 });
+    }
+    for (const [key, buckets] of districts) {
+      const full = new THREE.Group(), far = new THREE.Group(); full.name = `architecture:${key}:full`; far.name = `architecture:${key}:far`;
+      for (const surface of Object.keys(buckets) as UrbanSurface[]) {
+        const geos = buckets[surface]; if (!geos.length) continue;
+        const merged = mergeGeometries(geos); geos.forEach(g => g.dispose()); if (!merged) continue;
+        const mesh = new THREE.Mesh(merged, materials[surface]); mesh.castShadow = surface !== 'glow'; mesh.receiveShadow = surface !== 'glow'; full.add(mesh);
+      }
+      const instances: { mesh: THREE.InstancedMesh; index: number; matrix: THREE.Matrix4 }[] = [];
+      for (const [surface, geos] of distant.get(key)!) for (const geometry of geos) {
+        geometry.computeBoundingBox(); const box = geometry.boundingBox!, matrix = new THREE.Matrix4().compose(box.getCenter(new THREE.Vector3()), new THREE.Quaternion(), box.getSize(new THREE.Vector3())), pool = instancePools.get(surface)!;
+        instances.push({ mesh: pool.mesh, index: pool.next++, matrix }); geometry.dispose();
+      }
+      far.visible = false; this.root.add(full, far); const bounds = new THREE.Box3().setFromObject(full); this.architectureLods.push({ full, far, bounds, instances });
     }
   }
 
@@ -391,6 +443,7 @@ export class World {
     const leafMats = ['#3c654d', '#527a54', '#315846', '#68865a', '#294b40'].map(color =>
       new THREE.MeshStandardMaterial({ color, roughness: .92, flatShading: true })
     );
+    trunkMat.name = 'scenery-tree-trunk'; leafMats.forEach(m => { m.name = 'scenery-tree-leaf'; });
     const lightMat = new THREE.MeshBasicMaterial({ color: '#ffd9a0' });
     const positions = [[-28, -29, 1.2], [-34, 5, 1.1], [38, -49, 1.4], [43, 17, 1], [-19, -51, .85], [-60, -20, 1.2], [62, -26, 1.5], [-41, 31, 1.2], [7, -77, .95], [51, 54, 1.4], [-10, 14, 1.05], [13, 7, 1.15], [-12, -8, .95], [12, 32, 1.1]];
     positions.forEach(([x, z, s], idx) => {
@@ -546,6 +599,11 @@ export class World {
   }
 
   update(sim: Simulation, t: number, dt: number) {
+    this.scenery.update(sim.player, this.quality);
+    this.lodPoint.set(sim.player.x, 1, sim.player.z);
+    const range = this.quality === 'low' ? 42 : this.quality === 'balanced' ? 70 : 105;
+    for (const lod of this.architectureLods) { const near = lod.bounds.distanceToPoint(this.lodPoint) < range + (lod.full.visible ? 4 : -4); if (lod.far.visible === near) { for (const entry of lod.instances) { entry.mesh.setMatrixAt(entry.index, near ? this.hiddenInstance : entry.matrix); entry.mesh.instanceMatrix.needsUpdate = true; } }
+      lod.full.visible = near; lod.far.visible = !near; }
     const storm = sim.weather === '暴雨' ? 1 : sim.weather === '雾霾' ? .43 : 0;
     this.weatherBlend = THREE.MathUtils.damp(this.weatherBlend, storm, .5, dt);
     const w = this.weatherBlend;
@@ -569,7 +627,7 @@ export class World {
     this.amberMotes.geometry.attributes.position.needsUpdate = true;
     this.amberMotes.visible = !sim.combat && sim.questPhase !== 'complete' && (sim.questPhase === 'tracking' ? Boolean(next) : sim.targetRevealed);
     this.motes.rotation.y = t * .004;
-    (this.rain.material as THREE.LineBasicMaterial).opacity = Math.max(0, w - .6) * .68;
+    this.rain.visible = w > .6; (this.rain.material as THREE.LineBasicMaterial).opacity = Math.max(0, w - .6) * .68;
     this.rain.position.set(sim.player.x, 0, sim.player.z);
     if (w > .6) { for (let i = 0; i < 850; i++) { const n = i * 6; this.rainPositions[n + 1] -= dt * 20; this.rainPositions[n + 4] -= dt * 20; if (this.rainPositions[n + 1] < 0) { this.rainPositions[n + 1] = 26; this.rainPositions[n + 4] = 25; } } this.rain.geometry.attributes.position.needsUpdate = true; }
     for (const r of sim.resources) {

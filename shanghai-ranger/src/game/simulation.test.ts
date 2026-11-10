@@ -18,7 +18,7 @@ function strike(sim: Simulation, heavy = false) {
 
 describe('本地存档', () => {
   it('损坏的存档安全回退，畸形进度被钳制', () => {
-    expect(readProgress('{bad')).toEqual(DEFAULT_PROGRESS);
+    expect(() => readProgress('{bad')).toThrow('原存档未覆盖');
     const p = readProgress(JSON.stringify({ version: 2, weapon: 'invalid', level: 90, hunts: -1, cash: 'many', parts: -20, pet: 'dragon' }));
     expect(p.weapon).toBe('crowbar');
     expect(p.level).toBe(10);

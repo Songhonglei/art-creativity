@@ -12,7 +12,7 @@ function disposeModel(root: THREE.Object3D) {
 /** One on-demand WebGL preview, shared by all skin cards. No idle animation loop. */
 export function PetPreview({ pet, skin }: { pet: Pet; skin: string }) {
   const host = useRef<HTMLDivElement>(null), view = useRef<{ scene: THREE.Scene; render: () => void; model: THREE.Group | null } | null>(null);
-  const [error, setError] = useState(false), pointer = useRef<{ id: number; x: number } | null>(null);
+  const [error, setError] = useState(false), pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   useEffect(() => {
     if (!host.current) return;
     const container = host.current;
@@ -43,8 +43,8 @@ export function PetPreview({ pet, skin }: { pet: Pet; skin: string }) {
   },[pet,skin]);
   const rotate=(angle:number)=>{const v=view.current;if(v?.model){v.model.rotation.y+=angle;v.render();}};
   return <div className="pet-preview-wrap"><div className="pet-model-preview" ref={host} role="img" aria-label="宠物当前皮肤的三维预览，可用下方按钮旋转"
-    onPointerDown={e=>{if(e.button!==0)return;pointer.current={id:e.pointerId,x:e.clientX};e.currentTarget.setPointerCapture?.(e.pointerId);}}
-    onPointerMove={e=>{if(pointer.current?.id!==e.pointerId)return;rotate((e.clientX-pointer.current.x)*.015);pointer.current.x=e.clientX;}}
+    onPointerDown={e=>{if(e.button!==0)return;pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.currentTarget.setPointerCapture?.(e.pointerId);}}
+    onPointerMove={e=>{if(pointer.current?.id!==e.pointerId)return;if(Math.abs(e.clientX-pointer.current.x)<Math.abs(e.clientY-pointer.current.y))return;rotate((e.clientX-pointer.current.x)*.015);pointer.current.x=e.clientX;pointer.current.y=e.clientY;}}
     onPointerUp={()=>{pointer.current=null;}} onPointerCancel={()=>{pointer.current=null;}} onLostPointerCapture={()=>{pointer.current=null;}}>
     {error&&<p className="preview-error">3D 预览暂不可用，可关闭宠物页后重试。</p>}
   </div><div className="pet-preview-controls"><button aria-label="向左旋转宠物" onClick={()=>rotate(-Math.PI/6)}><CaretLeft size={18}/></button><span>拖动查看造型</span><button aria-label="宠物预览归位" onClick={()=>{const v=view.current;if(v?.model){v.model.rotation.y=.15;v.render();}}}><ArrowClockwise size={17}/></button><button aria-label="向右旋转宠物" onClick={()=>rotate(Math.PI/6)}><CaretRight size={18}/></button></div></div>;

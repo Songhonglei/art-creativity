@@ -41,6 +41,7 @@ class Context {
   createBufferSource() { const source = Object.assign(new Source(), { loop: false, buffer: null }); this.buffers.push(source); return source; }
   createOscillator() { const source = new Source(); this.oscillators.push(source); return source; }
   resume = vi.fn(async () => { this.state = 'running'; });
+  suspend = vi.fn(async () => { this.state = 'suspended'; });
   close = vi.fn(async () => { this.state = 'closed'; });
 }
 
@@ -57,6 +58,12 @@ describe('城市声景', () => {
     expect(Context.latest.oscillators[0].type).toBe('triangle');
     expect(Context.latest.oscillators[1].type).toBe('sine');
     expect(audio.audioDebug.scoreVoices).toBeGreaterThan(0);
+  });
+  it('切后台停止调度并暂停音频上下文，返回后可恢复', () => {
+    audio.unlock(); const context = Context.latest;
+    audio.setBackground(true); expect(context.suspend).toHaveBeenCalled();
+    const count = context.oscillators.length; context.currentTime = 5; audio.updateMusic(); expect(context.oscillators.length).toBe(count);
+    audio.setBackground(false); expect(context.resume).toHaveBeenCalled();
   });
 
   it('不依赖游戏帧或 mood 轮询，切换立即替换发声和旧旋律', () => {

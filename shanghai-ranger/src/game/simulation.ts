@@ -62,9 +62,11 @@ export const DEFAULT_PROGRESS: Progress = {
   version: 3, parts: 2, cash: 350, level: 1, weapon: 'crowbar', hunts: 0, pet: 'orangeCat', skin: 'nightwatch', gender: 'male', pets: newPets(), weaponLevel: 0,
 };
 export function readProgress(raw: string | null): Progress {
+  if (raw === null) return clone(DEFAULT_PROGRESS);
   try {
-    const p = JSON.parse(raw || 'null');
-    if (!p || (p.version !== 3 && p.version !== 2 && p.version !== 1)) return clone(DEFAULT_PROGRESS);
+    const p = JSON.parse(raw);
+    if (!p || typeof p !== 'object' || Array.isArray(p)) throw Error('存档内容异常');
+    if (p.version !== 3 && p.version !== 2 && p.version !== 1) throw Error('存档版本不支持');
     const number = (n: unknown, fallback: number, max = 99999) => typeof n === 'number' && Number.isFinite(n) ? clamp(Math.floor(n), 0, max) : fallback;
     const level = clamp(number(p.level, 1), 1, HERO_MAX_LEVEL);
     const requestedWeapon = p.weapon === 'baton' || p.weapon === 'umbrella' ? p.weapon as Weapon : 'crowbar';
@@ -80,7 +82,7 @@ export function readProgress(raw: string | null): Progress {
     };
     if (p.version === 3) progress.patrol = readCheckpoint(p.patrol, progress);
     return progress;
-  } catch { return clone(DEFAULT_PROGRESS); }
+  } catch (error) { throw Error(`${error instanceof Error && error.message === '存档版本不支持' ? error.message : '存档内容异常'}。原存档未覆盖，请从备份或文件恢复。`); }
 }
 
 export interface StreetEnemy {
@@ -123,6 +125,7 @@ export class Simulation {
   private save: (progress: Progress) => void;
   private saveRevision = 0;
   pendingSave: Promise<void> = Promise.resolve();
+  colliderRevision = 0;
   private streamedColliders = new Map<string, { circles: Set<CircleCollider>; boxes: Set<BoxCollider> }>();
 
   constructor(progress?: Progress, event: (e: GameEvent) => void = () => { }, save: (p: Progress) => void | Promise<void> = () => { }) {
@@ -250,7 +253,7 @@ export class Simulation {
   /** Streamed obstacles are removed by identity when their district leaves the active radius. */
   addChunkColliders(key: string, circles: CircleCollider[], boxes: BoxCollider[]) {
     this.removeChunkColliders(key);
-    this.streamedColliders.set(key, { circles: new Set(circles), boxes: new Set(boxes) });
+    this.colliderRevision++; this.streamedColliders.set(key, { circles: new Set(circles), boxes: new Set(boxes) });
     this.colliders.push(...circles); this.boxColliders.push(...boxes);
   }
   removeChunkColliders(key: string) {
@@ -258,10 +261,11 @@ export class Simulation {
     if (!active) return;
     this.colliders = this.colliders.filter(c => !active.circles.has(c));
     this.boxColliders = this.boxColliders.filter(b => !active.boxes.has(b));
-    this.streamedColliders.delete(key);
+    this.colliderRevision++; this.streamedColliders.delete(key);
   }
   notify(title: string, description: string, kind: Notification['kind'] = 'info') {
     const id = ++this.noticeId;
+    this.notifications.slice(0, -2).forEach(n => this.noticeTimes.delete(n.id));
     this.notifications = [...this.notifications.slice(-2), { id, title, description, kind }];
     this.noticeTimes.set(id, this.time); return id;
   }
@@ -802,7 +806,7 @@ export class Simulation {
       action: this.monster.action, enraged: this.monster.enraged, elite: this.elite, street: false,
     } : null;
     return {
-      saveStatus: this.saveStatus,
+      saveStatus: this.saveStatus, hunt: this.hunt,
       health: this.player.health, maxHealth: this.maxHealth, stamina: this.player.stamina, potions: this.potions,
       monsterHealth: this.monster.health, monsterMaxHealth: this.monster.maxHealth, monsterAction: this.monster.action,
       monsterDistance: distance(this.player, this.monster), monsterName: this.monsterName, monsterTitle: this.monsterTitle, monsterEnraged: this.monster.enraged,

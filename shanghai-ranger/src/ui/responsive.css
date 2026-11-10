@@ -1,0 +1,929 @@
+@media(max-width:1150px){
+  .game-shell .topbar{
+  grid-gap:12px;
+  gap:12px;
+  padding:10px 16px
+}
+.game-shell .main-nav>button{
+  padding:8px
+}
+.game-shell .main-nav>button>span{
+  font-size:12px
+}
+.game-shell .brand{
+  min-width:124px
+}
+.game-shell .brand-tagline,.game-shell .solo-label{
+  display:none
+}
+.game-shell .weather-widget{
+  width:205px
+}
+.game-shell .world-title{
+  display:none
+}
+.game-shell .bottom-controls>span:nth-child(n+3){
+  display:none
+}
+.game-shell .quest-tracker{
+  width:220px
+}
+.game-shell .skin-choices{
+  grid-template-columns:1fr
+}
+.outfit-choice{
+  min-height:64px
+}
+.outfit-color{
+  height:40px
+}
+.hero-model-preview{
+  height:380px
+}
+
+}
+@media(max-width:800px),(pointer:coarse){
+  .game-shell .topbar{
+  height:112px;
+  padding:8px 12px;
+  display:flex;
+  align-items:flex-start;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .brand{
+  height:44px;
+  min-width:108px;
+  grid-gap:7px;
+  gap:7px
+}
+.game-shell .brand>svg{
+  height:37px;
+  width:29px
+}
+.game-shell .brand>span{
+  display:flex;
+  align-items:baseline;
+  grid-gap:4px;
+  gap:4px
+}
+.game-shell .brand strong{
+  font-size:25px
+}
+.game-shell .brand small{
+  font-size:14px!important
+}
+.game-shell .brand-tagline{
+  display:none
+}
+.game-shell .top-actions{
+  margin-left:auto
+}
+.game-shell .top-actions .solo-label,.game-shell .hud-toggle{
+  display:none
+}
+.game-shell .main-nav{
+  position:absolute;
+  bottom:7px;
+  left:12px;
+  right:12px;
+  display:flex;
+  grid-gap:8px;
+  gap:8px;
+  justify-content:space-between;
+  overflow:visible
+}
+.game-shell .main-nav>button{
+  flex:1;
+  max-width:140px;
+  min-width:44px;
+  padding:8px 4px;
+  height:44px;
+  grid-gap:6px;
+  gap:6px
+}
+.game-shell .main-nav>button>span{
+  font-size:12px
+}
+.game-shell .main-nav>button:first-child{
+  display:none
+}
+.game-shell .main-nav svg{
+  width:17px;
+  flex-shrink:0
+}
+.game-shell .top-actions>button{
+  width:44px;
+  height:44px
+}
+.game-shell .hunter-status{
+  top:124px;
+  left:12px;
+  width:236px;
+  padding:8px;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .hunter-sigil{
+  width:48px;
+  height:64px;
+  min-width:48px
+}
+.game-shell .hunter-name strong{
+  font-size:16px
+}
+.game-shell .hunter-name>span{
+  font-size:12px
+}
+.game-shell .companion-status{
+  font-size:12px;
+  min-height:44px
+}
+.game-shell .hunter-details{
+  padding:0
+}
+.game-shell .vital-line{
+  margin-top:6px
+}
+.game-shell .stamina-line{
+  margin-top:7px
+}
+.game-shell .weather-widget,.game-shell .compass-strip,.game-shell .map-hud,.game-shell .street-patrol-count,.game-shell .bottom-controls,.game-shell .world-title,.game-shell .help-corner{
+  display:none
+}
+.game-shell .quest-tracker{
+  top:272px;
+  left:12px;
+  width:195px;
+  background:rgba(17,29,42,.85);
+  border-left:2px solid var(--gold);
+  padding:8px 10px
+}
+.game-shell .quest-tracker h1,.game-shell .quest-tracker .quest-subtitle,.game-shell .quest-tracker .quest-difficulty,.game-shell .quest-tracker .quest-details{
+  display:none
+}
+.game-shell .quest-tracker .eyebrow{
+  font-size:12px!important;
+  letter-spacing:0
+}
+.game-shell .quest-steps{
+  margin-top:4px
+}
+.game-shell .quest-steps>div{
+  display:none;
+  min-height:26px;
+  font-size:12px
+}
+.game-shell .quest-steps>div.current{
+  display:flex
+}
+.game-shell .quest-rule{
+  display:none
+}
+.game-shell .monster-status{
+  top:262px;
+  left:50%;
+  width:calc(100vw - 24px);
+  padding:10px
+}
+.game-shell .in-combat .quest-tracker{
+  display:none
+}
+.game-shell .monster-status strong{
+  font-size:18px
+}
+.game-shell .monster-status p{
+  margin:8px 0 0
+}
+.game-shell .monster-status>div>b{
+  font-size:19px
+}
+.game-shell .equipment-hud{
+  right:12px;
+  bottom:178px;
+  width:172px;
+  transform:none
+}
+.game-shell .weapon-label,.game-shell .quick-guide,.game-shell .quick-forge,.game-shell .item-caption{
+  display:none
+}
+.game-shell .quick-items{
+  display:flex;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .quick-item{
+  width:52px;
+  height:64px;
+  min-width:52px;
+  padding:6px
+}
+.game-shell .quick-item .quick-label{
+  font-size:12px;
+  display:block
+}
+.game-shell .quick-item svg{
+  width:23px;
+  height:23px
+}
+.game-shell .item-count{
+  font-size:12px;
+  top:-5px;
+  right:-3px
+}
+.game-shell .mobile-controls{
+  display:flex;
+  left:16px;
+  right:16px;
+  bottom:24px;
+  bottom:var(--safe-area-inset-bottom, max(24px,env(safe-area-inset-bottom)));
+  align-items:flex-end;
+  justify-content:space-between;
+  pointer-events:none
+}
+.game-shell .touch-joystick{
+  display:block;
+  width:108px;
+  height:108px;
+  min-width:108px;
+  border-radius:50%;
+  background:rgba(17,35,43,.78);
+  border:1px solid #a6b19a;
+  pointer-events:auto;
+  touch-action:pan-y
+}
+.game-shell .joystick-ring{
+  top:12px;
+  right:12px;
+  bottom:12px;
+  left:12px;
+  border-color:rgba(121,188,178,.4)
+}
+.game-shell .joystick-knob{
+  width:44px;
+  height:44px;
+  background:#345854;
+  border:1px solid var(--ui-jade)
+}
+.game-shell .touch-joystick small{
+  font-size:12px!important;
+  bottom:-18px;
+  white-space:nowrap
+}
+.game-shell .touch-actions{
+  display:grid;
+  grid-template-columns:repeat(2,64px);
+  grid-gap:8px;
+  gap:8px;
+  align-items:center
+}
+.game-shell .touch-actions button{
+  width:56px;
+  height:56px;
+  min-width:56px;
+  min-height:56px;
+  background:rgba(23,45,64,.925);
+  border:1px solid #d7b56d8c;
+  color:var(--cream);
+  border-radius:50%;
+  pointer-events:auto;
+  touch-action:pan-y
+}
+.game-shell .touch-actions button>span{
+  font-size:12px;
+  display:block
+}
+.game-shell .touch-actions button.primary-action{
+  width:64px;
+  height:64px;
+  background:#bda069;
+  color:#152531;
+  border:2px solid #e1c488;
+  grid-column:2;
+  grid-row:2
+}
+.game-shell .touch-actions button[aria-label=重击]{
+  grid-column:2;
+  grid-row:1
+}
+.game-shell .touch-actions button[aria-label=闪避]{
+  grid-column:1;
+  grid-row:2
+}
+.game-shell .touch-interact{
+  grid-column:1;
+  grid-row:1
+}
+.game-shell .camera-tools{
+  top:130px;
+  right:12px;
+  bottom:auto
+}
+.game-shell .camera-tools button{
+  width:56px;
+  min-height:44px;
+  display:grid;
+  grid-gap:3px;
+  gap:3px;
+  justify-content:center;
+  padding:7px
+}
+.game-shell .camera-tools button>span{
+  display:block;
+  font-size:12px
+}
+.game-shell .interact-prompt{
+  display:none
+}
+.game-shell .notifications{
+  top:auto;
+  bottom:268px;
+  right:12px;
+  width:210px
+}
+.game-shell .notice{
+  padding:10px;
+  grid-gap:7px;
+  gap:7px
+}
+.game-shell .notice strong{
+  font-size:13px
+}
+.game-shell .notice p{
+  font-size:12px
+}
+.game-shell .pet-buff-status{
+  bottom:252px;
+  font-size:12px
+}
+.game-shell .pet-rescue-toast{
+  font-size:14px;
+  bottom:265px
+}
+.game-shell .combo-indicator{
+  top:390px;
+  font-size:16px
+}
+.game-shell .nightwatch-start{
+  top:122px;
+  right:12px;
+  bottom:16px;
+  left:12px;
+  grid-template-columns:1fr;
+  overflow-y:auto;
+  display:block
+}
+.game-shell .nightwatch-page{
+  padding:16px 20px;
+  overflow:visible;
+  border-right:0;
+  border-bottom:1px solid #d7b56d50;
+  min-height:0
+}
+.game-shell .nightwatch-start h1{
+  font-size:31px;
+  margin:8px 0;
+  display:flex;
+  grid-gap:8px;
+  gap:8px;
+  line-height:1.2
+}
+.game-shell .nightwatch-start h1 br{
+  display:none
+}
+.game-shell .nightwatch-tab{
+  font-size:12px
+}
+.game-shell .nightwatch-deck,.game-shell .nightwatch-specimen,.game-shell .nightwatch-seal{
+  display:none
+}
+.game-shell .nightwatch-notes{
+  padding:16px 20px;
+  overflow:visible
+}
+.game-shell .nightwatch-start h2{
+  font-size:24px;
+  margin:8px 0
+}
+.game-shell .nightwatch-notes>p:first-of-type{
+  font-size:14px;
+  margin:8px 0
+}
+.game-shell .target-card{
+  margin-top:10px
+}
+.game-shell .gender-select{
+  margin-top:12px
+}
+.game-shell .gender-picker>button{
+  height:58px;
+  padding:4px 10px
+}
+.game-shell .gender-picker .hero-portrait{
+  width:44px;
+  height:48px
+}
+.game-shell .pet-select{
+  margin-top:12px;
+  padding-top:10px
+}
+.game-shell .pet-picker>button{
+  min-height:90px
+}
+.game-shell .nightwatch-controls{
+  display:none
+}
+.game-shell .modal-backdrop{
+  padding:12px
+}
+.game-shell .modal-panel{
+  width:100%;
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px);
+  min-height:0;
+  border-radius:5px;
+  overflow-x:hidden
+}
+.game-shell .modal-header{
+  padding:14px 16px;
+  min-height:88px
+}
+.game-shell .modal-header h2{
+  font-size:25px
+}
+.game-shell .modal-footer{
+  padding:10px 16px
+}
+.game-shell .modal-footer>span:last-child{
+  display:none
+}
+.game-shell .panel-tabs{
+  padding:12px 16px;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .panel-tabs button{
+  padding:8px 10px;
+  flex:1;
+  white-space:nowrap
+}
+.game-shell .map-content,.game-shell .guide-content,.game-shell .story-content,.game-shell .forge-content,.game-shell .training-content,.game-shell .settings-content,.game-shell .help-content,.game-shell .pet-content{
+  padding:16px;
+  grid-gap:18px;
+  gap:18px
+}
+.game-shell .map-content,.game-shell .guide-content,.game-shell .forge-content{
+  grid-template-columns:1fr
+}
+.game-shell .map-canvas{
+  min-height:260px
+}
+.game-shell .map-info h3{
+  font-size:24px
+}
+.game-shell .guide-plate{
+  min-height:220px
+}
+.game-shell .guide-copy h3{
+  font-size:24px
+}
+.game-shell .story-content h3{
+  font-size:26px
+}
+.game-shell .story-seasons,.game-shell .controls-grid{
+  grid-template-columns:1fr
+}
+.game-shell .controls-grid>div{
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .settings-row{
+  grid-gap:12px;
+  gap:12px;
+  flex-wrap:wrap
+}
+.game-shell .settings-row>div:first-child{
+  min-width:0;
+  flex:1
+}
+.game-shell .settings-row input[type=range]{
+  max-width:145px;
+  min-width:120px
+}
+.game-shell .settings-row.soundscape-row{
+  display:block
+}
+.game-shell .soundscape-picker{
+  grid-template-columns:1fr 1fr;
+  width:100%;
+  margin-top:12px
+}
+.game-shell .segmented{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .segmented button{
+  padding:8px 10px
+}
+.game-shell .forge-toolbar{
+  padding-right:16px;
+  flex-wrap:wrap;
+  grid-gap:0;
+  gap:0
+}
+.game-shell .forge-toolbar .panel-tabs{
+  width:100%;
+  padding-right:0
+}
+.game-shell .forge-toolbar>span{
+  margin:0 0 8px 16px
+}
+.game-shell .forge-art{
+  min-height:220px
+}
+.game-shell .forge-content{
+  grid-gap:20px;
+  gap:20px
+}
+.game-shell .forge-details h3{
+  font-size:24px
+}
+.game-shell .training-content{
+  display:block
+}
+.game-shell .training-card{
+  padding:16px
+}
+.game-shell .materials-list{
+  font-size:14px
+}
+.game-shell .materials-list small{
+  font-size:12px
+}
+.wardrobe-v1{
+  grid-template-columns:1fr;
+  padding:16px;
+  grid-gap:20px;
+  gap:20px
+}
+.hero-model-preview{
+  height:320px
+}
+.hero-view-controls{
+  grid-gap:8px;
+  gap:8px
+}
+.hero-view-controls button{
+  padding:6px;
+  min-width:44px
+}
+.skin-choices{
+  grid-template-columns:1fr 1fr!important;
+  grid-gap:8px;
+  gap:8px
+}
+.outfit-choice{
+  min-height:82px;
+  padding:8px;
+  grid-gap:6px;
+  gap:6px
+}
+.outfit-choice>svg{
+  display:none
+}
+.outfit-color{
+  width:28px;
+  height:40px
+}
+.outfit-color svg{
+  width:22px
+}
+.outfit-choice strong{
+  font-size:13px
+}
+.outfit-choice small{
+  font-size:12px!important
+}
+.wardrobe-heading h3{
+  font-size:26px
+}
+.game-shell .pet-roster{
+  grid-template-columns:repeat(3,minmax(0,1fr))
+}
+.game-shell .pet-attributes{
+  grid-template-columns:1fr
+}
+.game-shell .pet-skin-grid{
+  grid-template-columns:1fr 1fr
+}
+.game-shell .pet-panel-tabs{
+  flex-wrap:wrap
+}
+.game-shell .pet-panel-tabs button{
+  flex:1
+}
+.game-shell .result-panel{
+  padding:24px 18px;
+  width:100%;
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px);
+  overflow-y:auto
+}
+.game-shell .result-panel h2{
+  font-size:30px
+}
+.game-shell .result-rewards{
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .result-rewards span{
+  font-size:12px
+}
+.game-shell .result-actions{
+  flex-wrap:wrap
+}
+.game-shell .result-actions>button{
+  width:100%;
+  font-size:14px
+}
+.game-shell .save-warning{
+  padding:12px;
+  align-items:flex-start;
+  flex-wrap:wrap
+}
+.game-shell .save-warning button{
+  margin-left:auto
+}
+.game-shell .recovery-card h2{
+  font-size:29px
+}
+
+}
+@media(max-height:560px)and (min-width:600px){
+  .game-shell .topbar{
+  height:64px
+}
+.game-shell .main-nav{
+  position:static;
+  flex:1;
+  justify-content:center;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .main-nav>button{
+  flex:0
+}
+.game-shell .main-nav>button>span{
+  display:none
+}
+.game-shell .brand{
+  min-width:104px
+}
+.game-shell .top-actions{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .hunter-status{
+  top:76px;
+  width:228px
+}
+.game-shell .quest-tracker,.game-shell .weather-widget,.game-shell .monster-status,.game-shell .notifications{
+  display:none
+}
+.game-shell .camera-tools{
+  top:76px
+}
+.game-shell .equipment-hud{
+  bottom:175px;
+  width:172px;
+  right:12px
+}
+.game-shell .mobile-controls{
+  left:20px;
+  right:20px;
+  bottom:20px
+}
+.game-shell .nightwatch-start{
+  top:74px;
+  right:12px;
+  bottom:12px;
+  left:12px;
+  display:grid;
+  grid-template-columns:.7fr 1.3fr;
+  overflow:hidden
+}
+.game-shell .nightwatch-page,.game-shell .nightwatch-notes{
+  height:100%;
+  overflow-y:auto;
+  padding:14px 18px
+}
+.game-shell .nightwatch-start h1{
+  font-size:37px;
+  display:block
+}
+.game-shell .nightwatch-start h1 br{
+  display:block
+}
+.game-shell .nightwatch-notes>span,.game-shell .nightwatch-notes>p:first-of-type{
+  display:none
+}
+.game-shell .nightwatch-start h2{
+  font-size:23px;
+  margin:0
+}
+.game-shell .target-card{
+  margin:8px 0
+}
+.game-shell .gender-picker>button{
+  height:52px
+}
+.game-shell .pet-picker small{
+  display:none
+}
+.game-shell .pet-picker>button{
+  min-height:68px
+}
+.game-shell .pet-select-label{
+  margin-bottom:8px
+}
+.game-shell .nightwatch-notes>.primary-button{
+  margin-top:12px
+}
+.game-shell .wardrobe-v1{
+  grid-template-columns:1fr 1fr;
+  grid-gap:16px;
+  gap:16px
+}
+.game-shell .hero-model-preview{
+  height:300px
+}
+.game-shell .skin-choices{
+  grid-template-columns:1fr!important
+}
+.game-shell .outfit-choice{
+  min-height:64px
+}
+.game-shell .modal-panel{
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px)
+}
+.game-shell .modal-header{
+  min-height:80px
+}
+.game-shell .modal-footer{
+  min-height:54px
+}
+
+}
+@media(prefers-reduced-motion:reduce){
+  .game-shell *,.game-shell *:before,.game-shell *:after{
+  animation:none!important;
+  transition:none!important
+}
+
+}
+.reduced-motion *{
+  animation:none!important;
+  transition:none!important
+}
+.is-welcome .hud{
+  visibility:hidden
+}
+.game-shell .quick-label{
+  display:block;
+  font-size:12px!important
+}
+.game-shell .hero-preview-wrap{
+  position:sticky;
+  top:110px;
+  align-self:start
+}
+.game-shell .wardrobe-v1 .skin-choices{
+  grid-template-columns:1fr 1fr
+}
+.game-shell .wardrobe-v1 .outfit-choice{
+  min-height:84px
+}
+.game-shell .wardrobe-v1 .outfit-choice .outfit-color{
+  width:30px
+}
+.game-shell .hero-model-preview{
+  touch-action:pan-y
+}
+@media(max-width:800px){
+  .game-shell .hero-preview-wrap{
+  position:static
+}
+
+}
+.game-shell .forge-stat>span{
+  font-size:14px
+}
+.game-shell .materials-heading>span{
+  font-size:12px
+}
+.game-shell .materials-list>div>span{
+  font-size:14px
+}
+.game-shell .guide-plate>span{
+  font-size:14px
+}
+.game-shell .quest-reward>span{
+  font-size:14px
+}
+.game-shell .modal-panel{
+  animation:none;
+  transform:none
+}
+.preview-details{
+  margin-top:12px;
+  border-top:1px solid #697364
+}
+.preview-details>summary{
+  padding:12px 4px;
+  min-height:44px;
+  cursor:pointer;
+  color:var(--ui-muted);
+  font-size:14px
+}
+@media(max-width:800px),(pointer:coarse){
+  .game-shell .main-nav{
+  height:auto;
+  top:auto;
+  min-height:44px;
+  align-items:center
+}
+.game-shell .main-nav>button>span{
+  display:inline
+}
+.game-shell .hero-model-preview{
+  height:260px
+}
+
+}
+@media(max-height:560px)and (min-width:600px){
+  .game-shell .main-nav>button>span{
+  display:none
+}
+.game-shell .hero-model-preview{
+  height:300px
+}
+
+}
+.game-shell button:focus,.game-shell select:focus,.game-shell input:focus{
+  outline:2px solid #79bcb2;
+  outline-offset:2px
+}
+.game-shell .modal-panel,.game-shell .nightwatch-start{
+  -webkit-overflow-scrolling:touch
+}
+.no-flex-gap .main-nav>button+button,.no-flex-gap .top-actions>button+button,.no-flex-gap .hero-view-controls>button+button,.no-flex-gap .panel-tabs>button+button,.no-flex-gap .quick-items>button+button{
+  margin-left:8px
+}
+.no-flex-gap .skin-choices,.no-flex-gap .gender-picker,.no-flex-gap .pet-picker{
+  grid-gap:8px
+}
+
+/* Map dossier: readable fields, reachable camp action. */
+.game-shell .map-info{display:flex;flex-direction:column;align-items:stretch;gap:16px;min-width:0}
+.game-shell .map-info>h3,.game-shell .map-info>p,.game-shell .map-info>div{width:auto;max-width:100%;min-width:0;margin:0;grid-area:auto}
+.game-shell .map-info>h3{line-height:1.4;white-space:normal}.game-shell .map-info>p{line-height:1.7}
+.game-shell .map-info-weather{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #d7b56d45;background:#182b37}
+.game-shell .map-info-weather>span{display:grid;gap:4px;font-size:16px;min-width:0}
+.game-shell .map-legend{display:grid;grid-template-columns:1fr;grid-gap:12px;gap:12px}.game-shell .map-legend>span{display:flex;gap:10px;min-width:0;white-space:normal}
+.game-shell .map-scale{position:static;display:block;text-align:center;margin:8px 0;font-size:12px}.game-shell .map-canvas{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;height:auto}
+.game-shell .map-canvas .world-map{width:100%;height:auto;max-width:440px;flex-shrink:1}
+.game-shell .map-info h3>small{display:block;margin-top:6px;font-size:12px;color:var(--ui-muted)}
+.game-shell .pet-roster-card.selected{border-color:var(--gold);background:#d7b56d13}.game-shell .pet-points-toolbar button{border:1px solid #697364;padding:8px;border-radius:4px}.game-shell .pet-traits button.active{border-color:var(--gold);background:#d7b56d13}
+@media(pointer:coarse){.game-shell .hero-preview-wrap{position:static}}
+/* Near supplies, retain all four actions. */
+.game-shell .touch-actions>button,.game-shell .has-interact .touch-actions>button[aria-label="重击"]{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:2px}
+.game-shell .modal-panel>.save-warning{position:sticky;top:110px;z-index:4;margin:12px 16px;transform:none;width:auto}
+.game-shell>.save-warning{top:110px}
+:root{--ui-safe-top:var(--safe-area-inset-top,0px);--ui-safe-bottom:var(--safe-area-inset-bottom,0px);--ui-safe-left:var(--safe-area-inset-left,0px);--ui-safe-right:var(--safe-area-inset-right,0px)}
+@supports(padding-top:env(safe-area-inset-top)){:root{--ui-safe-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));--ui-safe-bottom:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px));--ui-safe-left:var(--safe-area-inset-left,env(safe-area-inset-left,0px));--ui-safe-right:var(--safe-area-inset-right,env(safe-area-inset-right,0px))}}
+@media(max-width:800px),(pointer:coarse){
+.game-shell .topbar{height:calc(112px + var(--ui-safe-top));padding-top:calc(8px + var(--ui-safe-top));padding-left:calc(12px + var(--ui-safe-left));padding-right:calc(12px + var(--ui-safe-right))}
+.game-shell .main-nav{left:calc(12px + var(--ui-safe-left));right:calc(12px + var(--ui-safe-right))}
+.game-shell .hunter-status{top:calc(124px + var(--ui-safe-top));left:calc(12px + var(--ui-safe-left))}.game-shell .quest-tracker{top:calc(272px + var(--ui-safe-top));left:calc(12px + var(--ui-safe-left))}
+.game-shell .monster-status{top:calc(262px + var(--ui-safe-top))}.game-shell .camera-tools{top:calc(130px + var(--ui-safe-top));right:calc(12px + var(--ui-safe-right))}
+.game-shell .equipment-hud{right:calc(12px + var(--ui-safe-right));bottom:calc(178px + var(--ui-safe-bottom))}
+.game-shell .mobile-controls{left:calc(16px + var(--ui-safe-left));right:calc(16px + var(--ui-safe-right));bottom:calc(24px + var(--ui-safe-bottom))}
+.game-shell .nightwatch-start{top:calc(122px + var(--ui-safe-top));bottom:calc(16px + var(--ui-safe-bottom));left:calc(12px + var(--ui-safe-left));right:calc(12px + var(--ui-safe-right))}
+.game-shell .modal-backdrop{padding-top:calc(12px + var(--ui-safe-top));padding-bottom:calc(12px + var(--ui-safe-bottom));padding-left:calc(12px + var(--ui-safe-left));padding-right:calc(12px + var(--ui-safe-right))}
+.game-shell .modal-panel{max-height:calc(100vh - 24px - var(--ui-safe-top) - var(--ui-safe-bottom));max-height:calc(100dvh - 24px - var(--ui-safe-top) - var(--ui-safe-bottom))}
+.game-shell .modal-panel>.save-warning{top:96px}.game-shell>.save-warning{top:calc(124px + var(--ui-safe-top))}
+}
+@media(max-height:560px) and (min-width:600px){.game-shell .topbar{height:calc(64px + var(--ui-safe-top))}.game-shell .hunter-status,.game-shell .camera-tools{top:calc(76px + var(--ui-safe-top))}.game-shell .equipment-hud{bottom:calc(175px + var(--ui-safe-bottom))}.game-shell .nightwatch-start{top:calc(74px + var(--ui-safe-top))}}
+/* Horizontal drag rotates; vertical drag scrolls the menu. */
+.game-shell .hero-model-preview canvas,.game-shell .pet-model-preview canvas{touch-action:pan-y}
+.game-shell .outfit-color{width:46px;height:62px;overflow:hidden}.outfit-color img{display:block;width:100%;height:100%;object-fit:cover}.game-shell .wardrobe-v1 .outfit-choice .outfit-color{width:46px}
+@media(max-width:800px){.game-shell .wardrobe-v1 .outfit-choice .outfit-color{width:36px;height:52px}.game-shell .outfit-choice{padding:7px;gap:5px}}
+/* Physical positions are the baseline; older WebViews ignore the inset shorthand. */
+.scene-container,.cinematic-shade,.hud,.modal-backdrop,.result-backdrop,.loading-screen,.recovery-backdrop,.death-veil,.revive-transition{top:0;right:0;bottom:0;left:0}
+.game-shell .error-content .save-warning{position:static;transform:none;width:100%;margin:16px 0;text-align:left}
+.game-shell.has-error .topbar,.game-shell.has-error .help-corner{display:none}
+/* Small HUD labels use the same readable floor as menu captions. */
+.game-shell .brand-tagline,.game-shell .compass-strip>b,.game-shell .weather-meta span,.game-shell .quest-difficulty>span,.game-shell .camera-tools button>span,.game-shell .world-target .target-distance,.game-shell .enemy-bar-name{font-size:12px}
+.game-shell .weather-widget{height:auto}
+.game-shell .minimap-button .world-map>text{font-size:26px}
