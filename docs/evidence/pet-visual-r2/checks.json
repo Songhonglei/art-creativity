@@ -6,7 +6,7 @@
   "zipMiB": 2.182,
   "sha256": "ffb8f04d08ff5fd097b8d56d1e91f4e6d530f7422909d07950d90c8813f66b8d",
   "zipEqualsH5": true,
-  "preview": "http://127.0.0.1:4174/?v=0.9.0&art=2",
+  "preview": "http://127.0.0.1:4179/?v=0.9.0&art=2",
   "previewVersion": "0.9.0",
   "tests": {
     "files": 9,
@@ -56,5 +56,7 @@
       }
     ],
     "realDeviceTested": false
-  }
+  },
+  "isolatedSourceCommit": "841b8c27c1dce30684d4fb9c636891472173974b",
+  "isolatedBuildFilesEqualDeliveredZip": 18
 }
