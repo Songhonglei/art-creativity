@@ -7,9 +7,10 @@ import { World } from './world';
 import { followPet, resolveCircle, hasLineOfSight } from './collision';
 import { CAMERA, CameraGesture, orbitPosition, cameraSafeFraction } from './camera';
 import { GameAudio } from './audio';
-import type { GameEvent, MonsterKind, Pet, Settings, Skin, Snapshot } from './types';
+import { routeFootprints } from './petNavigation';
+import type { GameEvent, MonsterKind, Pet, Point, Progress, Settings, Skin, Snapshot } from './types';
 
-export type Shortcut = 'map' | 'guide' | 'forge' | 'settings' | 'help' | 'escape';
+export type Shortcut = 'map' | 'guide' | 'forge' | 'settings' | 'help' | 'pets' | 'escape';
 interface EngineCallbacks { snapshot: (s: Snapshot) => void; ready: () => void; error: (s: string) => void; shortcut: (key: Shortcut) => void; progress: (n: number) => void }
 interface DamageText { element: HTMLDivElement; position: THREE.Vector3; life: number }
 const pixelRatio = (settings: Settings, software: boolean) => Math.min(window.devicePixelRatio,
@@ -18,6 +19,7 @@ const pixelRatio = (settings: Settings, software: boolean) => Math.min(window.de
 
 export class Engine {
   simulation: Simulation;
+  readonly storageLabel: string;
   renderer: THREE.WebGLRenderer;
   camera: THREE.PerspectiveCamera;
   scene = new THREE.Scene();
@@ -39,7 +41,14 @@ export class Engine {
   private streetSlots: (ReturnType<typeof createMonster> | undefined)[] = [];
   private streetKinds: MonsterKind[] = [];
   private companion: THREE.Group;
-  private companions = new Map<Pet, THREE.Group>();
+  private companions = new Map<string, THREE.Group>();
+  private companionKey = '';
+  private petFootprints = new THREE.InstancedMesh(new THREE.SphereGeometry(.10, 6, 4), new THREE.MeshBasicMaterial({ color: '#62d8df', toneMapped: false }), 28);
+  private petMarker = new THREE.Mesh(new THREE.OctahedronGeometry(.14), new THREE.MeshBasicMaterial({ color: '#8cdee4', wireframe: true }));
+  private supplyMarker = new THREE.Mesh(new THREE.OctahedronGeometry(.12), new THREE.MeshBasicMaterial({ color: '#ead29a' }));
+  private petShield = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), new THREE.MeshBasicMaterial({ color: '#e2c77a', transparent: true, opacity: .16, wireframe: true, depthWrite: false }));
+  private lastPetRoute: Point[] | null = null;
+  private petMatrix = new THREE.Object3D();
   private keys = new Set<string>();
   private touch = { x: 0, z: 0, sprint: false };
   private container: HTMLDivElement;
@@ -62,10 +71,12 @@ export class Engine {
   private softwareRenderer = false;
   private contactShadows: THREE.Mesh[] = [];
 
-  constructor(container: HTMLDivElement, settings: Settings, callbacks: EngineCallbacks) {
+  constructor(container: HTMLDivElement, settings: Settings, callbacks: EngineCallbacks, storage?: { progress: Progress; save: (progress: Progress) => void | Promise<void>; label: string }) {
     this.container = container; this.callbacks = callbacks; this.settings = settings;
-    let saved: string | null = null; try { saved = localStorage.getItem(SAVE_KEY); } catch { /* Storage may be unavailable. */ }
-    this.simulation = new Simulation(readProgress(saved), e => this.onEvent(e), p => localStorage.setItem(SAVE_KEY, JSON.stringify(p)));
+    let saved: string | null = null;
+    if (!storage) { try { saved = localStorage.getItem(SAVE_KEY); } catch { /* The App normally provides its validated storage adapter. */ } }
+    this.storageLabel = storage?.label ?? '本机浏览器';
+    this.simulation = new Simulation(storage?.progress ?? readProgress(saved), e => this.onEvent(e), storage?.save ?? (p => localStorage.setItem(SAVE_KEY, JSON.stringify(p))));
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     const gl = this.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
     this.softwareRenderer = Boolean(debug && /swiftshader|llvmpipe|software/i.test(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)));
@@ -85,7 +96,10 @@ export class Engine {
     this.world.setQuality(settings, this.softwareRenderer);
     this.hunter = createHunter(materials, this.simulation.progress.skin); this.hunters.set(this.simulation.progress.skin, this.hunter);
     this.monster = createMonster(this.simulation.monster.kind, materials); this.monsters.set(this.simulation.monster.kind, this.monster);
-    this.companion = createPet(this.simulation.progress.pet); this.companions.set(this.simulation.progress.pet, this.companion);
+    this.companionKey = `${this.simulation.progress.pet}:${this.simulation.petGrowth.skin}`;
+    this.companion = createPet(this.simulation.progress.pet, this.simulation.petGrowth.skin); this.companions.set(this.companionKey, this.companion);
+    this.petFootprints.count = 0; this.petFootprints.frustumCulled = false; this.petMarker.visible = this.supplyMarker.visible = this.petShield.visible = false;
+    this.scene.add(this.petFootprints, this.petMarker, this.supplyMarker, this.petShield);
     this.scene.add(this.hunter.root, this.monster.root, this.companion);
     if (this.softwareRenderer) {
       const texture = canvasTexture((ctx, size) => { const g = ctx.createRadialGradient(size / 2, size / 2, 1, size / 2, size / 2, size / 2); g.addColorStop(0, 'rgba(10,14,24,.65)'); g.addColorStop(.4, 'rgba(10,14,24,.38)'); g.addColorStop(1, 'rgba(10,14,24,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, size, size); }, 64);
@@ -94,7 +108,7 @@ export class Engine {
         shadow.rotation.x = -Math.PI / 2; this.scene.add(shadow); this.contactShadows.push(shadow);
       }
     }
-    this.companion.position.set(-2, 0, 21);
+    this.companion.position.set(this.simulation.player.x - 2, 0, this.simulation.player.z + 1);
     this.dangerRing = new THREE.Mesh(new THREE.RingGeometry(3.7, 3.84, 80), new THREE.MeshBasicMaterial({ color: '#ff7a9c', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })); this.dangerRing.rotation.x = -Math.PI / 2; this.scene.add(this.dangerRing);
     this.slash = new THREE.Mesh(new THREE.RingGeometry(1.6, 1.9, 40, 1, 0, Math.PI * 1.25), new THREE.MeshBasicMaterial({ color: '#bfe6ff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })); this.scene.add(this.slash);
     this.hitBurst = new THREE.Mesh(new THREE.RingGeometry(.18, .26, 20), new THREE.MeshBasicMaterial({ color: '#ffd796', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })); this.scene.add(this.hitBurst);
@@ -109,7 +123,7 @@ export class Engine {
     else window.addEventListener('resize', this.resize);
     this.resize();
     this.updateCamera(.1, true);
-    this.bindEvents(); this.audio.setVolume(settings.volume, settings.sound); this.audio.setSoundscape(settings.soundscape);
+    this.bindEvents(); this.audio.setVolume(settings.volume, settings.sound); this.audio.setSoundscape(settings.soundscape); this.audio.setWeather(this.simulation.weather);
     callbacks.snapshot(this.simulation.snapshot());
     if (new URLSearchParams(location.search).has('qa')) Object.defineProperty(window, '__originalQa', { configurable: true, get: () => ({
       snapshot: this.simulation.snapshot(), player: { ...this.simulation.player },
@@ -118,7 +132,7 @@ export class Engine {
       stream: this.world.streamingStats,
       audio: this.audio.audioDebug,
       cityFeature: this.world.nearestCityFeature(this.simulation.player),
-      appearance: { skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
+      appearance: { skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, petSkin: this.simulation.petGrowth.skin, petModel: this.companion.name, petModels: this.companions.size, petFootprints: this.petFootprints.count, petMarkVisible: this.petMarker.visible, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
       street: this.simulation.streetEnemies.map(enemy => ({ ...enemy })),
       camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, yaw: this.yaw, pitch: this.pitch, distance: this.cameraDistance, contacts: this.orbit.count, target: this.target.clone(), targetDistance: this.camera.position.distanceTo(this.target), safeFraction: cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight) },
       render: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures },
@@ -144,7 +158,7 @@ export class Engine {
   }
   private bindEvents() {
     window.addEventListener('keydown', this.keyDown); window.addEventListener('keyup', this.keyUp);
-    window.addEventListener('blur', this.blur); document.addEventListener('visibilitychange', this.visibility);
+    window.addEventListener('blur', this.blur); window.addEventListener('pagehide', this.checkpoint); document.addEventListener('visibilitychange', this.visibility);
     this.renderer.domElement.addEventListener('pointerdown', this.pointerDown); window.addEventListener('pointermove', this.pointerMove); window.addEventListener('pointerup', this.pointerUp);
     window.addEventListener('pointercancel', this.pointerCancel); this.renderer.domElement.addEventListener('lostpointercapture', this.pointerCancel);
     this.renderer.domElement.addEventListener('contextmenu', this.contextMenu); this.renderer.domElement.addEventListener('wheel', this.wheel, { passive: false });
@@ -153,7 +167,7 @@ export class Engine {
   private keyDown = (e: KeyboardEvent) => {
     if (e.target instanceof HTMLElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
     if (e.target instanceof HTMLButtonElement && ['Space', 'Enter'].includes(e.code)) return;
-    const shortcuts: Record<string, Shortcut> = { KeyM: 'map', KeyG: 'guide', KeyF: 'forge', KeyH: 'help', Escape: 'escape' };
+    const shortcuts: Record<string, Shortcut> = { KeyM: 'map', KeyG: 'guide', KeyF: 'forge', KeyH: 'help', KeyP: 'pets', Escape: 'escape' };
     if (shortcuts[e.code] && !e.repeat) { e.preventDefault(); this.callbacks.shortcut(shortcuts[e.code]); return; }
     if (this.simulation.paused) return;
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
@@ -172,7 +186,8 @@ export class Engine {
   }
   private capturedPointers = new Set<number>();
   private blur = () => { this.keys.clear(); this.touch = { x: 0, z: 0, sprint: false }; this.releaseCameraPointers(); };
-  private visibility = () => { this.blur(); this.lastTime = 0; };
+  private checkpoint = () => this.simulation.persist();
+  private visibility = () => { this.blur(); this.lastTime = 0; if (document.hidden) this.simulation.persist(); };
   private pointerDown = (e: PointerEvent) => {
     if (this.simulation.paused) return;
     if (!this.orbit.begin({ id: e.pointerId, x: e.clientX, y: e.clientY, type: e.pointerType, button: e.button })) return;
@@ -270,12 +285,15 @@ export class Engine {
     this.hitReactions = this.hitReactions.filter(hit => hit.life > 0);
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = sim.targetRevealed;
     this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z); this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
+    this.syncCompanion();
     const petBefore = { x: this.companion.position.x, z: this.companion.position.z };
-    const petNext = followPet(petBefore, sim.player, visualDt, sim.colliders, sim.boxColliders);
+    const petNext = followPet(petBefore, sim.player, visualDt * (sim.rescueTime > 0 ? 3 : 1), sim.colliders, sim.boxColliders);
     this.companion.position.x = petNext.x; this.companion.position.z = petNext.z;
     const petMoveX = petNext.x - petBefore.x, petMoveZ = petNext.z - petBefore.z;
     if (Math.hypot(petMoveX, petMoveZ) > .0001) this.companion.rotation.y = Math.atan2(petMoveX, petMoveZ);
-    this.companion.position.y = groundHeight(petNext.x, petNext.z) + (sim.player.moving ? Math.abs(Math.sin(t * 9)) * .14 : 0);
+    this.companion.position.y = groundHeight(petNext.x, petNext.z) + (sim.player.moving ? Math.abs(Math.sin(t * 9)) * .14 : 0) + (sim.petAnimation > 0 && !this.settings.reducedMotion ? Math.sin(sim.petAnimation / .7 * Math.PI) * .18 : 0);
+    this.companion.rotation.z = sim.rescueTime > 0 ? -.15 : 0;
+    this.updatePetVisuals(t);
     this.contactShadows.forEach((shadow, i) => { const actor = [this.hunter.root, this.monster.root, this.companion][i]; shadow.position.copy(actor.position); shadow.position.y += .06; shadow.rotation.z = -actor.rotation.y; });
     const warning = [sim.monster, ...sim.streetEnemies].filter(m => m.health > 0 && m.action === 'windup').sort((a, b) => Math.hypot(a.x - sim.player.x, a.z - sim.player.z) - Math.hypot(b.x - sim.player.x, b.z - sim.player.z))[0];
     const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = warning ? .3 + Math.sin(t * 12) * .15 : 0;
@@ -337,8 +355,29 @@ export class Engine {
       d.element.style.opacity = String(Math.min(1, d.life * 2)); return true;
     });
   }
+  private updatePetVisuals(t: number) {
+    const sim = this.simulation;
+    if (this.lastPetRoute !== sim.petGuide) {
+      this.lastPetRoute = sim.petGuide;
+      const points = routeFootprints(sim.petGuide); this.petFootprints.count = points.length;
+      points.forEach((p, i) => {
+        const next=points[Math.min(i+1,points.length-1)], previous=points[Math.max(0,i-1)], yaw=Math.atan2(next.x-previous.x,next.z-previous.z), offset=i%2?.10:-.10;
+        this.petMatrix.position.set(p.x+Math.cos(yaw)*offset,groundHeight(p.x,p.z)+.10,p.z-Math.sin(yaw)*offset);
+        this.petMatrix.scale.set(.7,.16,1.25); this.petMatrix.rotation.set(0,yaw,0); this.petMatrix.updateMatrix(); this.petFootprints.setMatrixAt(i,this.petMatrix.matrix);
+      });
+      this.petFootprints.instanceMatrix.needsUpdate = true;
+    }
+    this.petFootprints.visible = sim.petEffects.guideTime > 0 && !sim.dead;
+    const target = sim.markedTarget;
+    this.petMarker.visible = Boolean(sim.petEffects.markTime > 0 && target && target.health > 0 && !sim.dead);
+    if (target) { this.petMarker.position.set(target.x, groundHeight(target.x,target.z) + (target.kind === 'cat' || target.kind === 'dog' ? 1.5 : 2.2),target.z); this.petMarker.rotation.y = this.settings.reducedMotion ? 0 : t; }
+    const supply = sim.petSupply; this.supplyMarker.visible = Boolean(supply && !supply.collected && sim.petEffects.guideTime > 0 && !sim.dead);
+    if (supply) this.supplyMarker.position.set(supply.x,groundHeight(supply.x,supply.z)+.9,supply.z);
+    this.petShield.visible = !sim.dead && (sim.petEffects.shield > 0 || sim.rescueTime > 0);
+    this.petShield.position.set(sim.player.x,groundHeight(sim.player.x,sim.player.z)+1,sim.player.z); this.petShield.scale.set(.65,1,.65);
+  }
   publish() { const snapshot = this.simulation.snapshot(); snapshot.heading = ((-this.yaw * 180 / Math.PI) % 360 + 360) % 360; this.callbacks.snapshot(snapshot); }
-  setPaused(paused: boolean) { this.simulation.paused = paused; this.audio.setEnvironmentActive(!paused); this.blur(); this.publish(); }
+  setPaused(paused: boolean) { if (paused && !this.simulation.paused) this.simulation.persist(); this.simulation.paused = paused; this.audio.setEnvironmentActive(!paused); this.blur(); this.publish(); }
   resetCamera() {
     this.releaseCameraPointers();
     const sim = this.simulation;
@@ -377,28 +416,28 @@ export class Engine {
     hunter.root.visible = true; this.hunter = hunter;
     this.simulation.setSkin(skin); this.publish();
   }
-  /** Cache each complete companion so repeated selections never leak GPU resources. */
-  setPet(pet: Pet) {
-    if (pet === this.simulation.progress.pet) return;
-    this.companion.visible = false;
-    let companion = this.companions.get(pet);
-    if (!companion) { companion = createPet(pet); this.companions.set(pet, companion); this.scene.add(companion); }
-    companion.visible = true; this.companion = companion;
-    const petStart = resolveCircle({ x: this.simulation.player.x - 2, z: this.simulation.player.z + 1 }, .3, this.simulation.colliders, this.simulation.boxColliders);
-    this.companion.position.set(petStart.x, groundHeight(petStart.x, petStart.z), petStart.z);
-    this.simulation.setPet(pet);
-    this.publish();
+  /** A bounded cache of at most twelve authored companion outfits. */
+  private syncCompanion() {
+    const sim = this.simulation, key = `${sim.progress.pet}:${sim.petGrowth.skin}`;
+    if (key === this.companionKey) return;
+    const position = this.companion.position.clone(), rotation = this.companion.rotation.clone(); this.companion.visible = false;
+    let model = this.companions.get(key);
+    if (!model) { model = createPet(sim.progress.pet, sim.petGrowth.skin); this.companions.set(key, model); this.scene.add(model); }
+    this.companion = model; this.companion.position.copy(position); this.companion.rotation.copy(rotation); this.companion.visible = true; this.companionKey = key;
   }
-  /** Return both hero and companion to the handcrafted camp without a long cross-map pet path. */
+  setPet(pet: Pet) { if (this.simulation.setPet(pet)) { this.syncCompanion(); this.publish(); } }
+  setPetSkin(pet: Pet, skin: string) { if (this.simulation.setPetSkin(pet,skin)) { this.syncCompanion(); this.publish(); } }
   returnToCamp() {
-    if (this.simulation.combat) return;
-    this.simulation.player.x = -18; this.simulation.player.z = 31.2;
-    const petStart = resolveCircle({ x: -20.2, z: 32.3 }, .3, this.simulation.colliders, this.simulation.boxColliders);
-    this.companion.position.set(petStart.x, groundHeight(petStart.x, petStart.z), petStart.z);
+    if (!this.simulation.returnToCamp()) return;
+    this.blur();
     this.world.updateStreaming(this.simulation.player, true);
-    this.simulation.rest(); this.updateCamera(.1, true); this.publish();
+    const start = resolveCircle({ x: -20.2, z: 32.3 }, .3, this.simulation.colliders, this.simulation.boxColliders);
+    this.companion.position.set(start.x, groundHeight(start.x,start.z), start.z);
+    this.audio.setWeather(this.simulation.weather); this.updateCamera(.1,true); this.publish();
   }
   reset() {
+    if (this.simulation.dead) { this.returnToCamp(); return; }
+    if (this.simulation.questPhase !== 'complete') return;
     this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance; this.elapsed = 0; this.shake = 0;
     this.damage.forEach(d => d.element.remove()); this.damage = []; this.hitLife = 0; this.hitReactions = [];
     this.rebuildMonster();
@@ -408,7 +447,7 @@ export class Engine {
   }
   dispose() {
     this.disposed = true; this.blur(); cancelAnimationFrame(this.raf); this.world.dispose(); this.resizeObserver?.disconnect(); window.removeEventListener('resize', this.resize);
-    window.removeEventListener('keydown', this.keyDown); window.removeEventListener('keyup', this.keyUp); window.removeEventListener('blur', this.blur); document.removeEventListener('visibilitychange', this.visibility);
+    window.removeEventListener('keydown', this.keyDown); window.removeEventListener('keyup', this.keyUp); window.removeEventListener('blur', this.blur); window.removeEventListener('pagehide', this.checkpoint); document.removeEventListener('visibilitychange', this.visibility);
     window.removeEventListener('pointermove', this.pointerMove); window.removeEventListener('pointerup', this.pointerUp);
     window.removeEventListener('pointercancel', this.pointerCancel); this.renderer.domElement.removeEventListener('lostpointercapture', this.pointerCancel);
     const canvas = this.renderer.domElement; canvas.removeEventListener('pointerdown', this.pointerDown); canvas.removeEventListener('contextmenu', this.contextMenu); canvas.removeEventListener('wheel', this.wheel); canvas.removeEventListener('webglcontextlost', this.contextLost);

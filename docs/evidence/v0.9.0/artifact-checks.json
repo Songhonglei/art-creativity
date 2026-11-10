@@ -1,0 +1,15 @@
+{
+  "version": "0.9.0",
+  "files": 18,
+  "zipBytes": 2286209,
+  "zipMiB": 2.18,
+  "sha256": "89c86461505b2c21518f006dcdb7338f0e09c1097cd5be7a367ab212ef326d93",
+  "zipEqualsH5": true,
+  "manifest": {
+    "is_high_consumption_scene": false
+  },
+  "preview": "http://127.0.0.1:4174/?v=0.9.0",
+  "previewVersion": "0.9.0",
+  "testsPassed": 176,
+  "testFiles": 8
+}

@@ -75,7 +75,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
         <div className="hunter-name"><strong>夜鹰</strong><span>侠义等级 {String(s.progress.level).padStart(2, '0')}</span></div>
         <div className="vital-line"><Heart size={12} weight="fill" /><div className="vital health" role="progressbar" aria-label="气血" aria-valuenow={Math.round(s.health)} aria-valuemin={0} aria-valuemax={s.maxHealth}><i style={{ transform: `scaleX(${s.health / s.maxHealth})` }} /></div><span>{Math.ceil(s.health)}<small> / {s.maxHealth}</small></span></div>
         <div className="vital-line stamina-line"><Feather size={12} /><div className="vital stamina" role="progressbar" aria-label="体力" aria-valuenow={Math.round(s.stamina)} aria-valuemin={0} aria-valuemax={100}><i style={{ transform: `scaleX(${s.stamina / 100})` }} /></div></div>
-        <div className="companion-status"><PawPrint size={11} weight="fill" /><span>{PET_NAMES[s.progress.pet]} · 训练 {s.progress.petLevel}</span><span className="companion-line" /><small>{s.petSkillName}</small></div>
+        <button className="companion-status" onClick={() => open('pets')} aria-label="查看宠物成长"><PawPrint size={11} weight="fill" /><span>{PET_NAMES[s.progress.pet]} · Lv.{s.progress.pets[s.progress.pet].level}</span><span className="companion-line" /><small>{s.rescueAvailable ? '救援可用' : '救援已用'}</small></button>
       </div>
     </section>
 
@@ -117,7 +117,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
       <div className="sharpness"><span /><span /><span /><span /><span /></div>
       <div className="quick-items">
         <button className="quick-item selected" {...actionHandlers('heal')} title="喝奶茶回血 (R)" aria-label={`喝奶茶，还剩 ${s.potions} 杯`}><span className="item-key">R</span><Flask size={27} weight="light" /><span className="quick-label">奶茶</span><span className="item-count">{s.potions}</span></button>
-        <button className={`quick-item quick-pet ${s.petCooldown <= 0 ? 'selected' : ''}`} disabled={s.petCooldown > 0} {...actionHandlers('pet')} title={`${s.petSkillName} (C)`} aria-label={`${s.petSkillName}，${s.petCooldown > 0 ? `冷却 ${Math.ceil(s.petCooldown)} 秒` : '已就绪'}`}><span className="item-key">C</span><PawPrint size={27} weight="light" /><span className="quick-label">宠物</span><span className="item-count">{s.petCooldown > 0 ? Math.ceil(s.petCooldown) : s.progress.petLevel}</span></button>
+        <button className={`quick-item quick-pet ${s.petCooldown <= 0 ? 'selected' : ''}`} disabled={s.petCooldown > 0 || !s.petSkillAvailable || s.rescueTime > 0} {...actionHandlers('pet')} title={`${s.petSkillName} (C)`} aria-label={`${s.petSkillName}，${s.petCooldown > 0 ? `冷却 ${Math.ceil(s.petCooldown)} 秒` : s.petSkillAvailable ? '已就绪' : '无目标'}`}><span className="item-key">C</span><PawPrint size={27} weight="light" /><span className="quick-label">{s.petSkillName}</span><span className="item-count">{s.petCooldown > 0 ? Math.ceil(s.petCooldown) : s.petSkillAvailable ? '✓' : '—'}</span></button>
         <button className={`quick-item ${s.locked ? 'selected' : ''}`} {...actionHandlers('lock')} title="锁定目标 (Q)" aria-label="锁定目标" aria-pressed={s.locked}><span className="item-key">Q</span><Crosshair size={27} weight="light" /><span className="quick-label">锁定</span></button>
         <button className="quick-item quick-forge" onClick={() => open('forge')} title="侠客强化 (F)" aria-label="打开强化所"><span className="item-key">F</span><Wrench size={26} weight="light" /><span className="quick-label">强化</span><span className="item-count">{s.progress.level}</span></button>
         <button className="quick-item quick-guide" onClick={() => open('guide')} title="夜巡手册 (G)" aria-label="打开夜巡手册"><span className="item-key">G</span><BookOpen size={26} weight="light" /><span className="quick-label">手册</span></button>
@@ -131,9 +131,11 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
 
     {s.interact && <button className="interact-prompt" {...actionHandlers('interact')}><Key>E</Key><span><strong>{s.interact.label}</strong><small>{s.interact.detail}</small></span><CaretRight size={18} /></button>}
 
-    {s.notifications.length > 0 && <div className="notifications" aria-live="polite">{s.notifications.slice(-2).map(n => <div className={`notice ${n.kind}`} key={n.id}><div className="notice-icon">{n.kind === 'success' ? <Check size={17} /> : n.kind === 'warning' ? <Skull size={17} /> : <Wind size={17} />}</div><div><strong>{n.title}</strong><p>{n.description}</p></div></div>)}</div>}
+    {s.notifications.length > 0 && !s.dead && <div className="notifications" aria-live="polite">{s.notifications.slice(-2).map(n => <div className={`notice ${n.kind}`} key={n.id}><div className="notice-icon">{n.kind === 'success' ? <Check size={17} /> : n.kind === 'warning' ? <Skull size={17} /> : <Wind size={17} />}</div><div><strong>{n.title}</strong><p>{n.description}</p></div></div>)}</div>}
     {s.combo > 1 && s.combat && s.attacking && <div className="combo-indicator"><span>{s.combo}</span> 连击 <CircleNotch size={13} /></div>}
-    {s.health / s.maxHealth < .3 && !s.dead && <div className="low-health" aria-hidden="true" />}
+    {s.rescueTime > 0 && <div className="pet-rescue-toast" role="status"><PawPrint size={20}/>{PET_NAMES[s.progress.pet]}正在救你</div>}
+    {(s.petShield > 0 || s.petEconomy > 0) && <div className="pet-buff-status" role="status">{s.petShield > 0 ? `护盾 ${Math.ceil(s.petShield)}` : `体力减耗 ${Math.ceil(s.petEconomy)} 秒`}</div>}
+    {s.health / s.maxHealth < .3 && !s.dead && !s.rescueTime && <div className="low-health" aria-hidden="true" />}
     <div className={`mobile-controls ${s.interact ? 'has-interact' : ''}`}>
       <TouchJoystick engine={engine} paused={paused} />
       <div className="touch-actions">
