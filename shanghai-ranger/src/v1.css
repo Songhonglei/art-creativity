@@ -15,10 +15,16 @@
   font-size:14px;
   background:var(--ink)
 }
+.game-shell h1,.game-shell h2,.game-shell h3,.game-shell h4,
+.game-shell .brand strong,.game-shell .hunter-name>strong,.game-shell .monster-status strong{
+  font-family:NightTitle,GameChineseSans,sans-serif!important;
+  font-weight:400!important;
+  font-style:normal;
+  font-synthesis:none;
+  letter-spacing:.025em
+}
 .game-shell h1,.game-shell h2,.game-shell h3,.game-shell h4{
-  font-family:GameChineseDisplay,GameChineseSans,serif!important;
   color:var(--cream);
-  letter-spacing:.04em
 }
 .game-shell button,.game-shell input,.game-shell select{
   font-family:GameChineseSans,system-ui,sans-serif!important;
