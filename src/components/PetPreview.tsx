@@ -21,7 +21,7 @@ export function PetPreview({ pet, skin }: { pet: Pet; skin: string }) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); renderer.setClearColor('#15222e'); renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.35;
     renderer.domElement.setAttribute('aria-hidden','true'); container.appendChild(renderer.domElement);
-    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(33, 1, .1, 10); camera.position.set(1.25,.85,1.65); camera.lookAt(0,.27,0);
+    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(33, 1, .1, 10); camera.position.set(1.50,1.08,2.10); camera.lookAt(0,.43,0);
     scene.add(new THREE.HemisphereLight('#e0f2f3','#5d4938',2.3));
     const key = new THREE.DirectionalLight('#ffe4b7',3.2); key.position.set(1,2,2); scene.add(key);
     const rim = new THREE.DirectionalLight('#83c0d6',1.7); rim.position.set(-2,1,-1); scene.add(rim);
