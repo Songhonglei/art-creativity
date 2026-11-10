@@ -9,7 +9,7 @@
     "assets:check": "node scripts/check-assets.mjs"
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "沪上游侠：上海都市背景的第三人称 3D 夜巡游戏。",
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
