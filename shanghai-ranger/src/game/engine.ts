@@ -1,3 +1,4 @@
+import { disposeHero } from './heroModel';
 import * as THREE from 'three';
 import { Simulation, SAVE_KEY, readProgress, clamp, ROSTER } from './simulation';
 import { groundHeight, makeMaterials, canvasTexture } from './materials';
@@ -8,7 +9,8 @@ import { followPet, resolveCircle, hasLineOfSight } from './collision';
 import { CAMERA, CameraGesture, orbitPosition, cameraSafeFraction } from './camera';
 import { GameAudio } from './audio';
 import { routeFootprints } from './petNavigation';
-import type { GameEvent, MonsterKind, Pet, Point, Progress, Settings, Skin, Snapshot } from './types';
+import type { GameEvent, MonsterKind, Pet, Point, Progress, Settings, Gender, Skin, Snapshot } from './types';
+import { RECOVERY } from './recovery';
 
 export type Shortcut = 'map' | 'guide' | 'forge' | 'settings' | 'help' | 'pets' | 'escape';
 interface EngineCallbacks { snapshot: (s: Snapshot) => void; ready: () => void; error: (s: string) => void; shortcut: (key: Shortcut) => void; progress: (n: number) => void }
@@ -34,7 +36,7 @@ export class Engine {
   set cameraDistance(value: number) { this.orbit.distance = clamp(value, CAMERA.minDistance, CAMERA.maxDistance); }
   private world: World;
   private hunter: ReturnType<typeof createHunter>;
-  private hunters = new Map<Skin, ReturnType<typeof createHunter>>();
+  private hunters = new Map<string, ReturnType<typeof createHunter>>();
   private monster: ReturnType<typeof createMonster>;
   private monsters = new Map<MonsterKind, ReturnType<typeof createMonster>>();
   private streetModels = new Map<string, ReturnType<typeof createMonster>>();
@@ -70,6 +72,9 @@ export class Engine {
   private pausedFrame = 0;
   private softwareRenderer = false;
   private contactShadows: THREE.Mesh[] = [];
+  private deathElapsed = 0; private riseElapsed = RECOVERY.riseSeconds as number;
+  private recoveryRing = new THREE.Mesh(new THREE.RingGeometry(.75, .78, 48), new THREE.MeshBasicMaterial({ color: '#8bcfc0', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  private systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   constructor(container: HTMLDivElement, settings: Settings, callbacks: EngineCallbacks, storage?: { progress: Progress; save: (progress: Progress) => void | Promise<void>; label: string }) {
     this.container = container; this.callbacks = callbacks; this.settings = settings;
@@ -77,6 +82,8 @@ export class Engine {
     if (!storage) { try { saved = localStorage.getItem(SAVE_KEY); } catch { /* The App normally provides its validated storage adapter. */ } }
     this.storageLabel = storage?.label ?? '本机浏览器';
     this.simulation = new Simulation(storage?.progress ?? readProgress(saved), e => this.onEvent(e), storage?.save ?? (p => localStorage.setItem(SAVE_KEY, JSON.stringify(p))));
+    // App releases the initial pause after loading and the welcome/recovery screen.
+    this.simulation.paused = true;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     const gl = this.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
     this.softwareRenderer = Boolean(debug && /swiftshader|llvmpipe|software/i.test(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)));
@@ -94,13 +101,14 @@ export class Engine {
     const materials = makeMaterials(); this.materials = materials; this.world = new World(this.scene, materials, this.simulation, new THREE.TextureLoader(manager));
     if (this.softwareRenderer) { this.world.sun.shadow.mapSize.set(1024, 1024); }
     this.world.setQuality(settings, this.softwareRenderer);
-    this.hunter = createHunter(materials, this.simulation.progress.skin); this.hunters.set(this.simulation.progress.skin, this.hunter);
+    this.hunter = createHunter(materials, this.simulation.progress.skin, this.simulation.progress.gender); this.hunters.set(`${this.simulation.progress.skin}:${this.simulation.progress.gender ?? 'male'}`, this.hunter);
     this.monster = createMonster(this.simulation.monster.kind, materials); this.monsters.set(this.simulation.monster.kind, this.monster);
     this.companionKey = `${this.simulation.progress.pet}:${this.simulation.petGrowth.skin}`;
     this.companion = createPet(this.simulation.progress.pet, this.simulation.petGrowth.skin); this.companions.set(this.companionKey, this.companion);
     this.petFootprints.count = 0; this.petFootprints.frustumCulled = false; this.petMarker.visible = this.supplyMarker.visible = this.petShield.visible = false;
     this.scene.add(this.petFootprints, this.petMarker, this.supplyMarker, this.petShield);
     this.scene.add(this.hunter.root, this.monster.root, this.companion);
+    this.recoveryRing.rotation.x = -Math.PI / 2; this.recoveryRing.visible = false; this.scene.add(this.recoveryRing);
     if (this.softwareRenderer) {
       const texture = canvasTexture((ctx, size) => { const g = ctx.createRadialGradient(size / 2, size / 2, 1, size / 2, size / 2, size / 2); g.addColorStop(0, 'rgba(10,14,24,.65)'); g.addColorStop(.4, 'rgba(10,14,24,.38)'); g.addColorStop(1, 'rgba(10,14,24,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, size, size); }, 64);
       for (const scale of [[1.8, 2.5], [7, 10], [1.2, 1.5]]) {
@@ -132,7 +140,7 @@ export class Engine {
       stream: this.world.streamingStats,
       audio: this.audio.audioDebug,
       cityFeature: this.world.nearestCityFeature(this.simulation.player),
-      appearance: { skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, petSkin: this.simulation.petGrowth.skin, petModel: this.companion.name, petModels: this.companions.size, petFootprints: this.petFootprints.count, petMarkVisible: this.petMarker.visible, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
+      appearance: { gender: this.simulation.progress.gender ?? 'male', heroModels: this.hunters.size, skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, petSkin: this.simulation.petGrowth.skin, petModel: this.companion.name, petModels: this.companions.size, petFootprints: this.petFootprints.count, petMarkVisible: this.petMarker.visible, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
       street: this.simulation.streetEnemies.map(enemy => ({ ...enemy })),
       camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, yaw: this.yaw, pitch: this.pitch, distance: this.cameraDistance, contacts: this.orbit.count, target: this.target.clone(), targetDistance: this.camera.position.distanceTo(this.target), safeFraction: cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight) },
       render: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures },
@@ -143,6 +151,8 @@ export class Engine {
       interact: () => { this.simulation.interact(); this.publish(); },
       petSkill: () => { this.simulation.petSkill(); this.publish(); },
       step: (seconds: number) => { for (let i = 0; i < Math.ceil(seconds * 60); i++) this.simulation.tick(1 / 60, { x: 0, z: 0, sprint: false }); this.publish(); },
+      heroModel: () => this.hunter.root,
+      setSkin: (skin: Skin) => this.setSkin(skin),
       freeze: () => { this.simulation.paused = true; },
     }) });
 
@@ -165,6 +175,7 @@ export class Engine {
     this.renderer.domElement.addEventListener('webglcontextlost', this.contextLost);
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Escape' && !e.repeat) { e.preventDefault(); this.callbacks.shortcut('escape'); return; }
     if (e.target instanceof HTMLElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
     if (e.target instanceof HTMLButtonElement && ['Space', 'Enter'].includes(e.code)) return;
     const shortcuts: Record<string, Shortcut> = { KeyM: 'map', KeyG: 'guide', KeyF: 'forge', KeyH: 'help', KeyP: 'pets', Escape: 'escape' };
@@ -215,9 +226,15 @@ export class Engine {
     const pixels = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? this.container.clientHeight : 1);
     this.orbit.zoom(Math.exp(clamp(pixels * .0015, -.7, .7)));
   };
-  private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.callbacks.error('图形连接中断，请重新加载。已强化的装备和存档都还在。'); };
+  private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.loading = true; this.callbacks.error('图形连接中断，请重新加载。已保存的进度可以恢复。'); };
 
   private onEvent(e: GameEvent) {
+    if (e.type === 'fall') {
+      this.deathElapsed = 0; this.shake = 0; this.hitLife = 0; this.hitReactions = []; this.blur();
+      this.simulation.paused = true; this.audio.setEnvironmentActive(false);
+      this.damage.forEach(d => d.element.remove()); this.damage = [];
+    }
+    if (e.type === 'revive') this.riseElapsed = 0;
     this.audio.play(e, e.x !== undefined && e.z !== undefined ? Math.hypot(e.x - this.simulation.player.x, e.z - this.simulation.player.z) : 0);
     if (e.type === 'hurt' || e.type === 'hit') { this.shake = e.type === 'hurt' ? .16 : e.heavy ? .14 : .045; }
     if (e.type === 'hit' && this.container) {
@@ -234,11 +251,13 @@ export class Engine {
   private loop = (now: number) => {
     if (this.disposed) return; this.raf = requestAnimationFrame(this.loop);
     if (document.hidden) { this.lastTime = 0; return; }
-    const dt = this.lastTime ? Math.min((now - this.lastTime) / 1000, .25) : 1 / 60; this.lastTime = now;
+    const dt = this.lastTime ? clamp((now - this.lastTime) / 1000, 0, .25) : 1 / 60; this.lastTime = now;
     if (this.loading) return;
     const sim = this.simulation;
-    this.world.updateStreaming(sim.player);
-    if (sim.paused) { this.pausedFrame += dt; if (this.pausedFrame < .15) return; this.pausedFrame = 0; }
+    if (sim.dead) this.deathElapsed = Math.min(RECOVERY.deathSeconds, this.deathElapsed + dt);
+    else if (!sim.paused) this.riseElapsed = Math.min(RECOVERY.riseSeconds, this.riseElapsed + dt);
+    if (!sim.dead) this.world.updateStreaming(sim.player);
+    if (sim.paused && (!sim.dead || this.deathElapsed >= RECOVERY.deathSeconds)) { this.pausedFrame += dt; if (this.pausedFrame < .15) return; this.pausedFrame = 0; }
     if (!sim.paused && !this.loading) {
       this.elapsed += dt;
       const right = (this.keys.has('KeyD') || this.keys.has('ArrowRight') ? 1 : 0) - (this.keys.has('KeyA') || this.keys.has('ArrowLeft') ? 1 : 0) + this.touch.x;
@@ -261,7 +280,13 @@ export class Engine {
       this.cityAudioTimer = 0;
     }
     this.audio.updateCity(dt);
-    this.hunter.update(sim, t, visualDt); this.monster.update(sim, t, visualDt);
+    const reducedMotion = this.settings.reducedMotion || this.systemReducedMotion.matches;
+    this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z);
+    this.hunter.update(sim, t, visualDt, { death: this.deathElapsed, rise: this.riseElapsed, reducedMotion }); this.monster.update(sim, t, visualDt);
+    this.recoveryRing.visible = !sim.dead && !reducedMotion && sim.recoveryProtection > 0;
+    this.recoveryRing.position.set(sim.player.x, groundHeight(sim.player.x, sim.player.z) + .07, sim.player.z);
+    this.recoveryRing.scale.setScalar(1 + Math.min(1, this.riseElapsed / RECOVERY.riseSeconds) * .65);
+    this.recoveryRing.material.opacity = .34 * Math.min(1, sim.recoveryProtection / .7);
     this.monster.root.visible = sim.targetRevealed;
     sim.streetEnemies.forEach((enemy, slot) => {
       if (this.streetKinds[slot] !== enemy.kind || !this.streetSlots[slot]) {
@@ -284,7 +309,7 @@ export class Engine {
     });
     this.hitReactions = this.hitReactions.filter(hit => hit.life > 0);
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = sim.targetRevealed;
-    this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z); this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
+    this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
     this.syncCompanion();
     const petBefore = { x: this.companion.position.x, z: this.companion.position.z };
     const petNext = followPet(petBefore, sim.player, visualDt * (sim.rescueTime > 0 ? 3 : 1), sim.colliders, sim.boxColliders);
@@ -296,7 +321,7 @@ export class Engine {
     this.updatePetVisuals(t);
     this.contactShadows.forEach((shadow, i) => { const actor = [this.hunter.root, this.monster.root, this.companion][i]; shadow.position.copy(actor.position); shadow.position.y += .06; shadow.rotation.z = -actor.rotation.y; });
     const warning = [sim.monster, ...sim.streetEnemies].filter(m => m.health > 0 && m.action === 'windup').sort((a, b) => Math.hypot(a.x - sim.player.x, a.z - sim.player.z) - Math.hypot(b.x - sim.player.x, b.z - sim.player.z))[0];
-    const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = warning ? .3 + Math.sin(t * 12) * .15 : 0;
+    const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = !sim.dead && warning ? .3 + Math.sin(t * 12) * .15 : 0;
     const p = sim.player, swingTime = p.attackDuration - p.attackTime - p.attackImpact;
     this.slash.position.set(p.x + Math.sin(p.facing) * .7, groundHeight(p.x, p.z) + 1.1, p.z + Math.cos(p.facing) * .7);
     this.slash.rotation.set(p.attackWeapon === 'crowbar' && p.attackHeavy ? 0 : -Math.PI * .45, p.facing + (p.attackWeapon === 'crowbar' && p.attackHeavy ? Math.PI / 2 : 0), p.combo % 2 ? -.3 : .3);
@@ -304,7 +329,7 @@ export class Engine {
     this.slash.material.color.set(p.attackHeavy ? '#ffd18c' : p.attackWeapon === 'umbrella' ? '#dfbfff' : '#bfe6ff');
     this.slash.material.opacity = p.attackTime > 0 && swingTime > -.045 && swingTime < .16 ? Math.sin((swingTime + .045) / .205 * Math.PI) * (p.attackHeavy ? .65 : .3) : 0;
     if (!sim.paused) this.hitLife = Math.max(0, this.hitLife - dt);
-    const burst = this.hitLife / this.hitDuration; this.hitBurst.material.opacity = burst * .8;
+    const burst = this.hitLife / this.hitDuration; this.hitBurst.material.opacity = sim.dead ? 0 : burst * .8;
     this.hitBurst.scale.setScalar((1 - burst) * (this.hitHeavy ? 6 : 3) + 1); this.hitBurst.quaternion.copy(this.camera.quaternion);
     this.updateCamera(dt);
     this.renderer.render(this.scene, this.camera); this.updateMarkers(dt);
@@ -321,7 +346,7 @@ export class Engine {
     this.desiredCamera.lerp(this.target, 1 - fraction);
     const blend = instant || fraction < 1 ? 1 : 1 - Math.exp(-dt * 7);
     this.camera.position.lerp(this.desiredCamera, blend);
-    if (!this.settings.reducedMotion && this.shake > 0) { this.camera.position.x += (Math.random() - .5) * this.shake; this.camera.position.y += (Math.random() - .5) * this.shake; }
+    if (!this.settings.reducedMotion && !this.systemReducedMotion.matches && this.shake > 0) { this.camera.position.x += (Math.random() - .5) * this.shake; this.camera.position.y += (Math.random() - .5) * this.shake; }
     const safe = cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight);
     this.camera.position.lerp(this.target, 1 - safe);
     this.shake = Math.max(0, this.shake - dt * .5);
@@ -407,15 +432,18 @@ export class Engine {
     monster.root.visible = true; this.monster = monster;
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = true;
   }
-  /** Swap the complete urban outfit; cached models avoid rebuilding geometry on every wardrobe visit. */
-  setSkin(skin: Skin) {
-    if (skin === this.simulation.progress.skin) return;
+  /** Cache at most two complete outfits; private resources can be safely evicted. */
+  private syncHunter() {
+    const { skin, gender = 'male' } = this.simulation.progress, key = `${skin}:${gender}`;
+    if (this.hunter.root.name === `hunter:${skin}:${gender}`) return;
     this.hunter.root.visible = false;
-    let hunter = this.hunters.get(skin);
-    if (!hunter) { hunter = createHunter(this.materials, skin); this.hunters.set(skin, hunter); this.scene.add(hunter.root); }
+    let hunter = this.hunters.get(key);
+    if (!hunter) { hunter = createHunter(this.materials, skin, gender); this.hunters.set(key, hunter); this.scene.add(hunter.root); }
     hunter.root.visible = true; this.hunter = hunter;
-    this.simulation.setSkin(skin); this.publish();
+    for (const [oldKey, old] of this.hunters) if (this.hunters.size > 2 && oldKey !== key) { this.scene.remove(old.root); disposeHero(old.root); this.hunters.delete(oldKey); }
   }
+  setSkin(skin: Skin) { if (!this.simulation.setSkin(skin)) return false; this.syncHunter(); this.publish(); return true; }
+  setGender(gender: Gender) { if (!this.simulation.setGender(gender)) return false; this.syncHunter(); this.publish(); return true; }
   /** A bounded cache of at most twelve authored companion outfits. */
   private syncCompanion() {
     const sim = this.simulation, key = `${sim.progress.pet}:${sim.petGrowth.skin}`;
@@ -435,8 +463,22 @@ export class Engine {
     this.companion.position.set(start.x, groundHeight(start.x,start.z), start.z);
     this.audio.setWeather(this.simulation.weather); this.updateCamera(.1,true); this.publish();
   }
+  retryEncounter() {
+    if (!this.simulation.dead) return false;
+    this.blur();
+    this.world.updateStreaming(this.simulation.recoveryOrigin, true);
+    if (!this.simulation.retryEncounter()) return false;
+    this.world.updateStreaming(this.simulation.player, true);
+    const p = this.simulation.player;
+    const start = resolveCircle({ x: p.x - 2.2, z: p.z + 1.1 }, .3, this.simulation.colliders, this.simulation.boxColliders);
+    this.companion.position.set(start.x, groundHeight(start.x, start.z), start.z);
+    this.yaw = p.facing + Math.PI; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance;
+    this.shake = this.hitLife = 0; this.hitReactions = [];
+    this.damage.forEach(d => d.element.remove()); this.damage = [];
+    this.updateCamera(.1, true); this.publish(); return true;
+  }
   reset() {
-    if (this.simulation.dead) { this.returnToCamp(); return; }
+    if (this.simulation.dead) { this.retryEncounter(); return; }
     if (this.simulation.questPhase !== 'complete') return;
     this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance; this.elapsed = 0; this.shake = 0;
     this.damage.forEach(d => d.element.remove()); this.damage = []; this.hitLife = 0; this.hitReactions = [];

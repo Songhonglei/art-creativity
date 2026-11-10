@@ -1,11 +1,13 @@
+import { combatLevel, HERO_MAX_LEVEL, heroUpgradeCost, heroUpgradeReward, skinUnlocked } from './heroProgress';
 import { attackSpec, DODGE } from './combat';
 import { chooseDodge } from './dodge';
 import { PETS, PET_NAMES, PET_IDS, PET_SKINS, newPets, readPets, petStats, gainPetXp, availablePoints } from './pets';
 import { emptyPetEffects, readCheckpoint } from './persistence';
 import { petRoute } from './petNavigation';
+import { findRecoveryPoint, RECOVERY } from './recovery';
 export { PETS, PET_NAMES } from './pets';
 export const CAMP = { x: -18, z: 31.2 };
-import type { GameEvent, InputState, MonsterAction, MonsterKind, Notification, Pet, PetAttribute, PetEffects, Point, Progress, Resource, Skin, Snapshot, Weather, Weapon } from './types';
+import type { GameEvent, InputState, MonsterAction, MonsterKind, Notification, Pet, PetAttribute, PetEffects, Point, Progress, Resource, Gender, Skin, Snapshot, Weather, Weapon } from './types';
 import { moveCircle, resolveCircle, hasLineOfSight } from './collision';
 import type { BoxCollider, CircleCollider } from './collision';
 import { CHUNK_SIZE, districtKind, districtKindLabel, districtName } from './districts';
@@ -33,11 +35,7 @@ export const WEAPONS: { id: Weapon; name: string; desc: string; unlockLevel: num
   { id: 'baton', name: '钛合金伸缩棍', desc: '快速连击 · 三节伸缩', unlockLevel: 1 },
   { id: 'umbrella', name: '霓虹长柄战术伞', desc: '攻守均衡 · 侠义三级解锁', unlockLevel: 3 },
 ];
-export const SKINS: { id: Skin; name: string; desc: string; palette: string[] }[] = [
-  { id: 'nightwatch', name: '夜鹰巡衣', desc: '藏青长风衣 · 铜扣连帽', palette: ['#28475f', '#3f8d91', '#bd8d4e'] },
-  { id: 'magnolia', name: '白玉兰礼装', desc: '月白长外套 · 酒红玉兰金饰', palette: ['#d8d2bd', '#8f3648', '#d2ac59'] },
-  { id: 'neon', name: '霓虹行者', desc: '紫黑短披风 · 青色光导护目镜', palette: ['#29263e', '#3fe2dc', '#784dba'] },
-];
+export { SKINS } from './heroProgress';
 export const weaponUnlocked = (weapon: Weapon, level: number) => (WEAPONS.find(w => w.id === weapon)?.unlockLevel ?? 99) <= level;
 
 export interface HuntSite extends Point { kind: UrbanKind; name: string }
@@ -61,14 +59,14 @@ export const monsterBehavior = (kind: MonsterKind) => kind === 'cat' || kind ===
   : kind === 'ebike' || kind === 'racer' ? 'vehicle' : kind === 'hooligan' || kind === 'robber' ? 'bruiser' : 'elite';
 
 export const DEFAULT_PROGRESS: Progress = {
-  version: 3, parts: 2, cash: 350, level: 1, weapon: 'crowbar', hunts: 0, pet: 'orangeCat', skin: 'nightwatch', pets: newPets(), weaponLevel: 0,
+  version: 3, parts: 2, cash: 350, level: 1, weapon: 'crowbar', hunts: 0, pet: 'orangeCat', skin: 'nightwatch', gender: 'male', pets: newPets(), weaponLevel: 0,
 };
 export function readProgress(raw: string | null): Progress {
   try {
     const p = JSON.parse(raw || 'null');
     if (!p || (p.version !== 3 && p.version !== 2 && p.version !== 1)) return clone(DEFAULT_PROGRESS);
     const number = (n: unknown, fallback: number, max = 99999) => typeof n === 'number' && Number.isFinite(n) ? clamp(Math.floor(n), 0, max) : fallback;
-    const level = clamp(number(p.level, 1), 1, 5);
+    const level = clamp(number(p.level, 1), 1, HERO_MAX_LEVEL);
     const requestedWeapon = p.weapon === 'baton' || p.weapon === 'umbrella' ? p.weapon as Weapon : 'crowbar';
     const progress: Progress = {
       version: 3,
@@ -76,7 +74,8 @@ export function readProgress(raw: string | null): Progress {
       weapon: weaponUnlocked(requestedWeapon, level) ? requestedWeapon : 'crowbar',
       hunts: number(p.hunts, 0, 999),
       pet: p.pet === 'corgi' || p.pet === 'shiba' ? p.pet : 'orangeCat',
-      skin: p.skin === 'magnolia' || p.skin === 'neon' ? p.skin : 'nightwatch',
+      skin: skinUnlocked(p.skin, level) ? p.skin : 'nightwatch',
+      gender: p.gender === 'female' ? 'female' : 'male',
       pets: readPets(p.version === 3 ? p.pets : null, p.version === 3 ? 1 : [1, 4, 7][clamp(number(p.petLevel, 1), 1, 3) - 1]), weaponLevel: clamp(number(p.weaponLevel, 0), 0, 3),
     };
     if (p.version === 3) progress.patrol = readCheckpoint(p.patrol, progress);
@@ -109,6 +108,7 @@ export class Simulation {
   saveStatus: Snapshot['saveStatus'] = 'idle';
   attackCooldown = 0; healingCooldown = 0; petCooldown = 0; notifications: Notification[] = [];
   rescueAvailable = true; rescueTime = 0; death: Snapshot['death'] = null;
+  retryOrigin: Point | undefined; recoveryProtection = 0;
   petEffects: PetEffects = emptyPetEffects();
   petGuide: Point[] = []; petSupply: Resource | null = null; petAnimation = 0;
   private guideRefresh = 0; private checkpointTimer = 0; private rewarded = new Set<string>();
@@ -156,6 +156,7 @@ export class Simulation {
       resources: this.resources.map(r => ({ ...r })), potions: this.potions, petCooldown: this.petCooldown, healingCooldown: this.healingCooldown,
       rescueAvailable: this.rescueAvailable, rescueTime: this.rescueTime, dead: this.dead, death: this.death ? { ...this.death } : null,
       effects: { ...this.petEffects }, rewarded: [...this.rewarded],
+      retryOrigin: this.retryOrigin ? { ...this.retryOrigin } : undefined, recoveryProtection: this.recoveryProtection,
     };
     this.save(this.progress);
   }
@@ -170,6 +171,7 @@ export class Simulation {
     this.potions = c.potions; this.petCooldown = c.petCooldown; this.healingCooldown = c.healingCooldown;
     this.rescueAvailable = c.rescueAvailable; this.rescueTime = c.rescueTime; this.dead = c.dead || (c.player.health <= 0 && !c.rescueTime); this.death = c.death;
     this.petEffects = { ...c.effects }; this.rewarded = new Set(c.rewarded);
+    this.retryOrigin = c.retryOrigin; this.recoveryProtection = c.recoveryProtection ?? 0;
     if (this.petEffects.guideTime > 0) { const goal = this.guideGoal(); this.petGuide = goal ? petRoute(this.player, goal, this.colliders, this.boxColliders) : []; if (this.petGrowth.level >= 3) this.petSupply = this.resources.find(r => !r.collected && (r.kind === 'snack' || r.kind === 'parts') && distance(r, this.player) <= this.petStats.range && hasLineOfSight(this.player,r,this.boxColliders)) ?? null; }
   }
   returnToCamp() {
@@ -181,12 +183,37 @@ export class Simulation {
     if (this.monster.health > 0) { this.monster.action = 'idle'; this.monster.timer = 2; }
     return this.rest();
   }
-  get maxHealth() { return 100 + (this.progress.level - 1) * 18; }
+  get recoveryOrigin(): Point {
+    return this.retryOrigin ?? (this.questPhase === 'hunting' ? huntSite(this.hunt) : this.player);
+  }
+  retryEncounter() {
+    if (!this.dead) return false;
+    const origin = { ...this.recoveryOrigin };
+    if (this.monster.health > 0) {
+      this.setMonsterForHunt(this.hunt);
+      Object.assign(this.monster, { action: 'idle', timer: 2, enraged: false, chargeX: 0, chargeZ: 0, attackCount: 0 });
+    }
+    const threats = [...this.streetEnemies.filter(m => m.health > 0), ...(this.monster.health > 0 ? [this.monster] : [])];
+    const point = findRecoveryPoint(origin, threats, this.colliders, this.boxColliders, this.player.facing);
+    this.dead = false; this.death = null; this.retryOrigin = undefined;
+    this.combat = this.mainCombat = this.streetEngaged = this.locked = false;
+    Object.assign(this.player, point ?? CAMP, { health: this.maxHealth, stamina: 100, invulnerable: RECOVERY.protectionSeconds,
+      facing: point ? Math.atan2(origin.x - point.x, origin.z - point.z) : Math.PI,
+      attackTime: 0, dodgeTime: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0, moving: false, sprinting: false, combo: 0 });
+    this.attackCooldown = this.healingCooldown = this.comboTimer = this.idleHeal = 0; this.pendingStrike = false; this.monsterHit = false;
+    this.potions = Math.max(5, this.potions); this.rescueAvailable = true; this.rescueTime = 0;
+    this.recoveryProtection = RECOVERY.protectionSeconds;
+    for (const m of this.streetEnemies) if (m.health > 0) Object.assign(m, { action: 'idle', timer: 2, attackDone: false, chargeX: 0, chargeZ: 0 });
+    this.notifications = []; this.noticeTimes.clear(); this.rescueNoticeId = null;
+    if (!point) this.notify('已回到安全营地', '附近没有安全落脚处，调查和收益都保留。');
+    this.event({ type: 'revive' }); this.persist(); return true;
+  }
+  get maxHealth() { return 100 + (combatLevel(this.progress.level) - 1) * 18; }
   get rosterEntry() { return ROSTER[this.hunt % ROSTER.length]; }
   get monsterName() { return this.rosterEntry.name; }
   get monsterTitle() { return this.rosterEntry.title; }
   get nextMonsterHealth() { return this.rosterEntry.hp + Math.floor(this.progress.hunts / ROSTER.length) * 220 + Math.min(this.progress.hunts % ROSTER.length, 4) * 60; }
-  get attackDamage() { return (this.progress.weapon === 'crowbar' ? 44 : this.progress.weapon === 'umbrella' ? 38 : 30) + (this.progress.level - 1) * 13 + this.progress.weaponLevel * 5; }
+  get attackDamage() { return (this.progress.weapon === 'crowbar' ? 44 : this.progress.weapon === 'umbrella' ? 38 : 30) + (combatLevel(this.progress.level) - 1) * 13 + this.progress.weaponLevel * 5; }
   get questReward() { return Math.round((800 + this.hunt * 100) * (this.elite ? 1.5 : 1)); }
   get elite() { return this.hunt > 0 && (this.hunt + 1) % 4 === 0 || this.rosterEntry.kind === 'official'; }
   get targetRevealed() { return this.tracked >= 3 || this.questPhase === 'harvest' || this.questPhase === 'complete'; }
@@ -241,6 +268,7 @@ export class Simulation {
   tick(dt: number, input: InputState) {
     if (this.paused || this.dead) return;
     dt = clamp(dt, 0, 0.05); this.time += dt; this.weatherTime += dt;
+    this.recoveryProtection = Math.max(0, this.recoveryProtection - dt);
     if (this.weatherTime >= WEATHER_DURATION) this.cycleWeather();
     this.notifications = this.notifications.filter(n => {
       if (this.time - (this.noticeTimes.get(n.id) ?? 0) < 6) return true;
@@ -285,7 +313,9 @@ export class Simulation {
     if (p.sprinting) p.stamina = Math.max(0, p.stamina - dt * this.staminaCost(13));
     else if (p.dodgeTime <= 0 && !p.attackTime) p.stamina = Math.min(100, p.stamina + dt * (this.weather === '雾霾' ? 17 : 21) + dt * (this.progress.pet === 'corgi' ? this.petStats.regen : 0));
     this.updateMonster(dt);
+    if (this.dead || this.rescueTime > 0) return;
     this.updateStreetThreats(dt);
+    if (this.dead || this.rescueTime > 0) return;
     this.combat = this.mainCombat || this.streetEngaged;
     if (this.monster.health > 0 && p.dodgeTime <= 0 && p.knockbackTime <= 0 && this.monster.action !== 'charge') {
       const dx = p.x - this.monster.x, dz = p.z - this.monster.z, d = Math.hypot(dx, dz);
@@ -382,14 +412,14 @@ export class Simulation {
     let point = { x: p.x - 12 - slot * 2, z: p.z - 7 + slot * 6 };
     for (let attempt = 0; attempt < 28; attempt++) {
       const angle = seed * Math.PI * 2 + attempt * 2.39996;
-      const radius = 13 + (attempt % 6) * 2.6;
+      const radius = (this.recoveryProtection > 0 ? 20 : 13) + (attempt % 6) * 2.6;
       const candidate = { x: p.x + Math.sin(angle) * radius, z: p.z + Math.cos(angle) * radius };
       if (Math.abs(candidate.x - riverX(candidate.z)) < 8.7) continue;
       if (this.boxColliders.some(b => Math.abs(candidate.x - b.x) < b.halfWidth + .7 && Math.abs(candidate.z - b.z) < b.halfDepth + .7)) continue;
       if (this.colliders.some(c => distance(candidate, c) < c.radius + .7)) continue;
       point = candidate; break;
     }
-    const maxHealth = 150 + ROSTER.indexOf(entry) * 24 + (this.progress.level - 1) * 12;
+    const maxHealth = 150 + ROSTER.indexOf(entry) * 24 + (combatLevel(this.progress.level) - 1) * 12;
     this.streetEnemies[slot] = {
       id: serial, slot, kind: entry.kind, x: point.x, z: point.z, facing: seed * Math.PI * 2,
       health: maxHealth, maxHealth, action: 'idle', timer: initial ? 1.2 + slot * .8 : 1,
@@ -436,6 +466,7 @@ export class Simulation {
         m.x = moved.x; m.z = moved.z; dist = distance(m, p);
         if (dist < (behavior === 'vehicle' ? 1.9 : 1.55) && !m.attackDone) {
           this.hurt(behavior === 'vehicle' ? 15 : behavior === 'skirmisher' ? 9 : 12, m); m.attackDone = true;
+          if (this.dead || this.rescueTime > 0) return;
         }
         if (m.timer <= 0) { m.action = 'recover'; m.timer = behavior === 'vehicle' ? 2.2 : 1.55; }
       } else if ((m.action === 'recover' || m.action === 'stagger' || m.action === 'guard') && m.timer <= 0) {
@@ -509,7 +540,7 @@ export class Simulation {
     const p = this.player;
     if (p.invulnerable > 0 || this.dead || this.rescueTime > 0) return;
     const guard = this.progress.pet === 'orangeCat' ? this.petStats.guard : 0;
-    let damage = Math.max(5, amount - (this.progress.level - 1) * 3 - guard);
+    let damage = Math.max(5, amount - (combatLevel(this.progress.level) - 1) * 3 - guard);
     if (this.petEffects.shieldTime > 0) { const absorbed = Math.min(damage, this.petEffects.shield); this.petEffects.shield -= absorbed; damage -= absorbed; }
     if (damage <= 0) { this.event({ type: 'pet' }); this.persist(); return; }
     p.health = Math.max(0, p.health - damage); p.invulnerable = .8;
@@ -526,8 +557,10 @@ export class Simulation {
         this.rescueNoticeId = this.notify(`${PET_NAMES[this.progress.pet]}正在救你`, '稍候就能站起来，本轮救援已用完。', 'warning'); this.event({ type: 'pet' });
       } else {
         const kind = source && 'kind' in source ? source.kind : null;
+        this.retryOrigin = this.mainCombat ? { ...huntSite(this.hunt) } : { x: p.x, z: p.z };
         this.death = { source: ROSTER.find(entry => entry.kind === kind)?.name ?? '街区袭击', damage: Math.round(damage) };
         this.dead = true; this.combat = false; this.mainCombat = false; this.streetEngaged = false;
+        this.recoveryProtection = 0; this.event({ type: 'fall' });
       }
     } else if (this.progress.pet === 'orangeCat' && p.health < this.maxHealth * .3 && this.petEffects.autoCooldown <= 0) {
       p.health = Math.min(this.maxHealth, p.health + this.maxHealth * (.08 + (this.petGrowth.level === 10 ? .05 : 0)));
@@ -713,12 +746,12 @@ export class Simulation {
   /** 简化升级：单一侠义等级，只消耗零件 + 现金。 */
   levelUp() {
     const level = this.progress.level;
-    const cost = { parts: 3 + level, cash: level * 400 };
-    if (level >= 5 || this.progress.parts < cost.parts || this.progress.cash < cost.cash) return false;
+    const cost = heroUpgradeCost(level);
+    if (level >= HERO_MAX_LEVEL || this.progress.parts < cost.parts || this.progress.cash < cost.cash) return false;
     this.progress.parts -= cost.parts; this.progress.cash -= cost.cash;
     this.progress.level++;
-    this.player.health = Math.min(this.maxHealth, this.player.health + 18);
-    this.persist(); this.event({ type: 'forge' }); this.notify('侠义提升', `你的侠义等级升至 ${this.progress.level} 级，攻防兼备。`, 'success'); return true;
+    this.player.health = Math.min(this.maxHealth, this.player.health + (level < 5 ? 18 : 0));
+    this.persist(); this.event({ type: 'forge' }); this.notify('侠义提升', `升至 ${this.progress.level} 级 · ${heroUpgradeReward(this.progress.level)}`, 'success'); return true;
   }
   equip(weapon: Weapon) {
     if (this.combat || this.player.attackTime > 0 || !weaponUnlocked(weapon, this.progress.level)) return false;
@@ -730,7 +763,15 @@ export class Simulation {
     this.petEffects = { ...emptyPetEffects(), autoCooldown: this.petEffects.autoCooldown }; this.petGuide = []; this.petSupply = null;
     this.progress.pet = pet; this.persist(); return true;
   }
+  get canChangeAppearance() { return !this.combat && !this.dead && this.rescueTime <= 0 && this.recoveryProtection <= 0 && this.player.attackTime <= 0 && this.player.dodgeTime <= 0; }
+  setGender(gender: Gender) {
+    if (!this.canChangeAppearance || (gender !== 'male' && gender !== 'female')) return false;
+    if (gender === this.progress.gender) return true;
+    this.progress.gender = gender; this.persist(); return true;
+  }
   setSkin(skin: Skin) {
+    if (!this.canChangeAppearance || !skinUnlocked(skin, this.progress.level)) return false;
+    if (skin === this.progress.skin) return true;
     this.progress.skin = skin; this.persist(); return true;
   }
   toggleLock() {
@@ -738,6 +779,7 @@ export class Simulation {
     this.locked = !this.locked; if (this.locked) this.notify('锁定目标', '盯住它周旋。再按 Q 解除锁定。');
   }
   newHunt() {
+    this.retryOrigin = undefined; this.recoveryProtection = 0;
     this.hunt = this.progress.hunts; this.rescueAvailable = true; this.rescueTime = 0; this.death = null; this.petEffects = emptyPetEffects(); this.petGuide = []; this.petSupply = null; this.rewarded.clear();
     this.pendingStrike = false; this.player = { x: 0, z: 20, facing: Math.PI, health: this.maxHealth, stamina: 100, attackTime: 0, attackHeavy: false, attackWeapon: 'crowbar' as Weapon, attackDuration: 0, attackImpact: 0, dodgeTime: 0, dodgeDuration: DODGE.duration, dodgeSide: 1, invulnerable: 0, sprinting: false, moving: false, combo: 0, knockbackTime: 0, knockbackX: 0, knockbackZ: 0 };
     this.monster = { x: 8, z: -12, facing: -0.85, health: 0, maxHealth: 0, action: 'idle', timer: 4, enraged: false, chargeX: 0, chargeZ: 0, attackCount: 0, kind: this.monster.kind };
@@ -777,7 +819,7 @@ export class Simulation {
         action: m.action, distance: distance(m, this.player),
       })),
       streetActive: this.streetEnemies.filter(m => m.health > 0).length,
-      streetDefeated: this.streetDefeated, encounter,
+      streetDefeated: this.streetDefeated, encounter, recoveryProtection: this.recoveryProtection,
     };
   }
 }

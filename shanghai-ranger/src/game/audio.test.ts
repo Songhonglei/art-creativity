@@ -154,6 +154,19 @@ describe('城市声景', () => {
     audio.setVolume(.45, true); audio.unlock(); expect(Context.instances).toHaveLength(1);
   });
 
+  it('死亡与复活音一次性发声，静音和音量0不增加任何音源', () => {
+    audio.setVolume(.45, false); audio.play({ type: 'fall' }); audio.play({ type: 'revive' });
+    expect(Context.instances).toHaveLength(0);
+    audio.setVolume(.45, true); audio.unlock(); const ctx = Context.latest;
+    const before = ctx.oscillators.length;
+    audio.play({ type: 'fall' }); expect(ctx.oscillators.length).toBe(before + 1);
+    audio.play({ type: 'revive' }); expect(ctx.oscillators.length).toBe(before + 4);
+    audio.setVolume(.45, false); const muted = ctx.oscillators.length;
+    audio.play({ type: 'fall' }); audio.play({ type: 'revive' }); expect(ctx.oscillators).toHaveLength(muted);
+    audio.setVolume(0, true); audio.play({ type: 'fall' }); audio.play({ type: 'revive' });
+    expect(ctx.oscillators).toHaveLength(muted);
+  });
+
   it('关闭声音会立即归零并断开输出，而非只让低频缓慢淡出', () => {
     audio.unlock(); audio.setCityFeature('taxi', 0); audio.setMood('暴雨', true, true, '老城');
     const ctx = Context.latest, master = ctx.gains[0];

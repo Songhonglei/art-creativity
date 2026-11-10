@@ -1,0 +1,229 @@
+{
+  "version": 3,
+  "parts": 37,
+  "cash": 3200,
+  "level": 10,
+  "weapon": "crowbar",
+  "hunts": 0,
+  "pet": "corgi",
+  "skin": "magnolia",
+  "gender": "female",
+  "pets": {
+    "orangeCat": {
+      "level": 1,
+      "xp": 0,
+      "attributes": {
+        "guard": 0,
+        "vigor": 0,
+        "specialty": 0
+      },
+      "trait": null,
+      "skin": "cat-original"
+    },
+    "corgi": {
+      "level": 1,
+      "xp": 0,
+      "attributes": {
+        "guard": 0,
+        "vigor": 0,
+        "specialty": 0
+      },
+      "trait": null,
+      "skin": "corgi-original"
+    },
+    "shiba": {
+      "level": 1,
+      "xp": 0,
+      "attributes": {
+        "guard": 0,
+        "vigor": 0,
+        "specialty": 0
+      },
+      "trait": null,
+      "skin": "shiba-original"
+    }
+  },
+  "weaponLevel": 0,
+  "patrol": {
+    "hunt": 0,
+    "phase": "tracking",
+    "tracked": 0,
+    "time": 0.7137000000000011,
+    "weather": "晴夜",
+    "weatherTime": 0.7137000000000011,
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 126,
+      "stamina": 100,
+      "invulnerable": 0
+    },
+    "monster": {
+      "x": 8,
+      "z": -12,
+      "facing": -0.85,
+      "health": 420,
+      "maxHealth": 420,
+      "action": "idle",
+      "timer": 2,
+      "enraged": false,
+      "chargeX": 0,
+      "chargeZ": 0,
+      "attackCount": 0,
+      "kind": "cat"
+    },
+    "street": [
+      {
+        "x": 6.904302780956482,
+        "z": 8.984982836650838,
+        "kind": "cat",
+        "facing": 2.5816941357348284,
+        "health": 174,
+        "maxHealth": 174,
+        "action": "idle",
+        "timer": 2,
+        "enraged": false,
+        "chargeX": 0,
+        "chargeZ": 0,
+        "attackCount": 0,
+        "id": 0,
+        "slot": 0,
+        "respawn": 0,
+        "attackDone": false
+      },
+      {
+        "x": -1.1560910980372572,
+        "z": 7.0515076795389415,
+        "kind": "hooligan",
+        "facing": 3.230640375340976,
+        "health": 270,
+        "maxHealth": 270,
+        "action": "idle",
+        "timer": 2,
+        "enraged": false,
+        "chargeX": 0,
+        "chargeZ": 0,
+        "attackCount": 0,
+        "id": 1,
+        "slot": 1,
+        "respawn": 0,
+        "attackDone": false
+      },
+      {
+        "x": -8.316136317560348,
+        "z": 10.007909290456087,
+        "kind": "ebike",
+        "facing": 3.83570418289162,
+        "health": 222,
+        "maxHealth": 222,
+        "action": "idle",
+        "timer": 2,
+        "enraged": false,
+        "chargeX": 0,
+        "chargeZ": 0,
+        "attackCount": 0,
+        "id": 2,
+        "slot": 2,
+        "respawn": 0,
+        "attackDone": false
+      }
+    ],
+    "streetSerial": 3,
+    "streetDefeated": 0,
+    "resources": [
+      {
+        "id": "clue-1",
+        "kind": "clue",
+        "x": 1.2,
+        "z": 12.8,
+        "collected": false
+      },
+      {
+        "id": "clue-2",
+        "kind": "clue",
+        "x": 3.6,
+        "z": 5.2,
+        "collected": false
+      },
+      {
+        "id": "clue-3",
+        "kind": "clue",
+        "x": 7.1,
+        "z": -2.3,
+        "collected": false
+      },
+      {
+        "id": "snack-1",
+        "kind": "snack",
+        "x": 5,
+        "z": 4,
+        "collected": false
+      },
+      {
+        "id": "snack-2",
+        "kind": "snack",
+        "x": 11,
+        "z": -7,
+        "collected": false
+      },
+      {
+        "id": "snack-3",
+        "kind": "snack",
+        "x": -12,
+        "z": -14,
+        "collected": false
+      },
+      {
+        "id": "parts-1",
+        "kind": "parts",
+        "x": 11,
+        "z": 5,
+        "collected": false
+      },
+      {
+        "id": "parts-2",
+        "kind": "parts",
+        "x": 5,
+        "z": -14,
+        "collected": false
+      },
+      {
+        "id": "parts-3",
+        "kind": "parts",
+        "x": 12,
+        "z": 28,
+        "collected": false
+      },
+      {
+        "id": "event-1",
+        "kind": "event",
+        "x": 11,
+        "z": -1,
+        "collected": false
+      }
+    ],
+    "potions": 5,
+    "petCooldown": 0,
+    "healingCooldown": 0,
+    "rescueAvailable": true,
+    "rescueTime": 0,
+    "dead": false,
+    "death": null,
+    "effects": {
+      "autoCooldown": 0,
+      "shield": 0,
+      "shieldTime": 0,
+      "economyTime": 0,
+      "markTime": 0,
+      "markTarget": null,
+      "markHits": 0,
+      "markSecond": false,
+      "guideTime": 0,
+      "guideTarget": null,
+      "guideChained": false
+    },
+    "rewarded": [],
+    "recoveryProtection": 0
+  }
+}

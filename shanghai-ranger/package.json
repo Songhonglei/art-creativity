@@ -1,6 +1,6 @@
 {
   "name": "shanghai-ranger",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",

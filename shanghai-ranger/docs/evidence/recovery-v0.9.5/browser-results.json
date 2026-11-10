@@ -1,0 +1,59 @@
+{
+  "death_pose": {
+    "z": -1.42,
+    "elapsed": 1.3926666666666676
+  },
+  "death_timing_clock": "Playwright foreground clock; excludes rendering stalls",
+  "death_timing_ms": 1500,
+  "frozen_and_focus": true,
+  "retry": {
+    "hp": 100,
+    "max": 100,
+    "tracked": 3,
+    "collected": true,
+    "full": true,
+    "enraged": false,
+    "protection": 1.92,
+    "cash": 350,
+    "parts": 2,
+    "pets": "{\"orangeCat\":{\"level\":1,\"xp\":0,\"attributes\":{\"guard\":0,\"vigor\":0,\"specialty\":0},\"trait\":null,\"skin\":\"cat-original\"},\"corgi\":{\"level\":1,\"xp\":0,\"attributes\":{\"guard\":0,\"vigor\":0,\"specialty\":0},\"trait\":null,\"skin\":\"corgi-original\"},\"shiba\":{\"level\":1,\"xp\":0,\"attributes\":{\"guard\":0,\"vigor\":0,\"specialty\":0},\"trait\":null,\"skin\":\"shiba-original\"}}",
+    "cd": 0,
+    "events": [
+      "hurt",
+      "fall",
+      "revive"
+    ],
+    "moving": true,
+    "point": {
+      "x": -0.8559999999999861,
+      "z": -27.33904195182999
+    },
+    "boxes": 0
+  },
+  "upgrade_and_return": true,
+  "reload_no_free_refill": true,
+  "tablet": true,
+  "mobile": {
+    "left": 12,
+    "right": 363,
+    "bottom": 800,
+    "width": 375,
+    "overflow": false,
+    "buttons": [
+      {
+        "text": "再试一次",
+        "h": 50
+      },
+      {
+        "text": "去强化",
+        "h": 50
+      }
+    ],
+    "animation": "none",
+    "reduced": true
+  },
+  "landscape": true,
+  "save_failure_and_retry": true,
+  "death_reload": true,
+  "page_errors": []
+}
