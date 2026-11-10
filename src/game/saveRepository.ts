@@ -36,14 +36,14 @@ export async function openSaveRepository(storage: GameStorage) {
     try { if (raw === null) return false; const value = JSON.parse(raw); return (value?.format !== undefined && value.format !== 1) || (value?.progress?.version !== undefined && ![1, 2, 3].includes(value.progress.version)); }
     catch { return false; }
   });
-  if (future) throw new SaveReadError('存档来自其他版本。原存档未覆盖，请使用对应版本或从文件恢复。', originals);
+  if (future) throw new SaveReadError('存档来自其他版本。原存档未覆盖，请使用对应版本，或粘贴有效存档恢复。', originals);
   let progress: Progress, notice = '', migration: string | null = null;
   if (valid.length) {
     valid.sort((a, b) => b.data.savedAt - a.data.savedAt);
     progress = valid[0].data.progress;
     if (valid[0].slot === SAVE_SLOTS.backup && (valid.length < 2 || valid[0].data.savedAt > valid[1].data.savedAt)) notice = '已从最近有效备份恢复进度。';
   } else if (primary !== null || backup !== null) {
-    throw new SaveReadError('存档暂时无法读取，原始内容已保留。请导出留存，或从有效存档文件恢复。', originals);
+    throw new SaveReadError('存档暂时无法读取，原始内容已保留。请留存原始内容，或粘贴有效存档恢复。', originals);
   } else {
     migration = await storage.get(SAVE_KEY); originals[SAVE_KEY] = migration;
     try { progress = readProgress(migration); } catch (error) { throw new SaveReadError(error instanceof Error ? error.message : '旧存档无法读取。', originals); }

@@ -42,7 +42,7 @@
 }
 
 }
-@media(max-width:800px),(pointer:coarse){
+@media(max-width:800px),(pointer:coarse),(max-height:560px) and (min-width:600px){
   .game-shell .topbar{
   height:112px;
   padding:8px 12px;
@@ -846,7 +846,7 @@
   color:var(--ui-muted);
   font-size:14px
 }
-@media(max-width:800px),(pointer:coarse){
+@media(max-width:800px),(pointer:coarse),(max-height:560px) and (min-width:600px){
   .game-shell .main-nav{
   height:auto;
   top:auto;
@@ -902,7 +902,7 @@
 .game-shell>.save-warning{top:110px}
 :root{--ui-safe-top:var(--safe-area-inset-top,0px);--ui-safe-bottom:var(--safe-area-inset-bottom,0px);--ui-safe-left:var(--safe-area-inset-left,0px);--ui-safe-right:var(--safe-area-inset-right,0px)}
 @supports(padding-top:env(safe-area-inset-top)){:root{--ui-safe-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));--ui-safe-bottom:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px));--ui-safe-left:var(--safe-area-inset-left,env(safe-area-inset-left,0px));--ui-safe-right:var(--safe-area-inset-right,env(safe-area-inset-right,0px))}}
-@media(max-width:800px),(pointer:coarse){
+@media(max-width:800px),(pointer:coarse),(max-height:560px) and (min-width:600px){
 .game-shell .topbar{height:calc(112px + var(--ui-safe-top));padding-top:calc(8px + var(--ui-safe-top));padding-left:calc(12px + var(--ui-safe-left));padding-right:calc(12px + var(--ui-safe-right))}
 .game-shell .main-nav{left:calc(12px + var(--ui-safe-left));right:calc(12px + var(--ui-safe-right))}
 .game-shell .hunter-status{top:calc(124px + var(--ui-safe-top));left:calc(12px + var(--ui-safe-left))}.game-shell .quest-tracker{top:calc(272px + var(--ui-safe-top));left:calc(12px + var(--ui-safe-left))}
