@@ -2,23 +2,27 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, Compass, GearSix, MapTrifold, PawPrint, Question, SpeakerHigh, SpeakerSlash, Wrench } from '@phosphor-icons/react';
 import { Engine } from './game/engine';
 import type { Shortcut } from './game/engine';
-import { Simulation, PETS, ROSTER } from './game/simulation';
+import { Simulation, PETS, ROSTER, SAVE_KEY, readProgress } from './game/simulation';
 import type { Pet, Settings, Snapshot } from './game/types';
 import { Emblem, SkylineArt } from './components/Emblem';
 import { Hud, Key } from './components/Hud';
 import { Modal, ResultOverlay } from './components/Modals';
+import { createGameStorage } from './game/storage';
+import type { GameStorage, MiniToolHost } from './game/storage';
+import { version as APP_VERSION } from '../package.json';
 
-export type ModalName = 'map' | 'guide' | 'forge' | 'settings' | 'help';
+export type ModalName = 'map' | 'guide' | 'forge' | 'settings' | 'help' | 'pets';
 const DEFAULT_SETTINGS: Settings = { sound: true, volume: .45, soundscape: 'neon', quality: 'high', sensitivity: 1, reducedMotion: false, enemyHealthBars: true };
-function loadSettings(): Settings {
-  try { const s = JSON.parse(localStorage.getItem('nightwatch-settings') || 'null'); if (!s) return DEFAULT_SETTINGS; return { sound: typeof s.sound === 'boolean' ? s.sound : true, volume: typeof s.volume === 'number' ? Math.max(0, Math.min(1, s.volume)) : .45, soundscape: s.soundscape === 'jazz' || s.soundscape === 'river' || s.soundscape === 'radio' ? s.soundscape : 'neon', quality: s.quality === 'balanced' || s.quality === 'low' ? s.quality : 'high', sensitivity: typeof s.sensitivity === 'number' ? Math.max(.3, Math.min(2, s.sensitivity)) : 1, reducedMotion: s.reducedMotion === true, enemyHealthBars: s.enemyHealthBars !== false }; } catch { return DEFAULT_SETTINGS; }
+function loadSettings(raw: string | null): Settings {
+  try { const s = JSON.parse(raw || 'null'); if (!s) return DEFAULT_SETTINGS; return { sound: typeof s.sound === 'boolean' ? s.sound : true, volume: typeof s.volume === 'number' ? Math.max(0, Math.min(1, s.volume)) : .45, soundscape: s.soundscape === 'jazz' || s.soundscape === 'river' || s.soundscape === 'radio' ? s.soundscape : 'neon', quality: s.quality === 'balanced' || s.quality === 'low' ? s.quality : 'high', sensitivity: typeof s.sensitivity === 'number' ? Math.max(.3, Math.min(2, s.sensitivity)) : 1, reducedMotion: s.reducedMotion === true, enemyHealthBars: s.enemyHealthBars !== false }; } catch { return DEFAULT_SETTINGS; }
 }
 
 export default function App() {
   const sceneRef = useRef<HTMLDivElement>(null), engineRef = useRef<Engine | null>(null), modalRef = useRef<ModalName | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot>(() => new Simulation().snapshot());
   const [modal, setModal] = useState<ModalName | null>(null), [ready, setReady] = useState(false), [error, setError] = useState('');
-  const [loading, setLoading] = useState(8), [settings, setSettings] = useState<Settings>(loadSettings);
+  const [loading, setLoading] = useState(8), [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const storageRef = useRef<GameStorage | null>(null), settingsRevision = useRef(0);
   const [settingsSaved, setSettingsSaved] = useState(true);
   const [welcome, setWelcome] = useState(true), [dismissedResult, setDismissedResult] = useState(false);
   const [compactHud, setCompactHud] = useState(false);
@@ -26,19 +30,31 @@ export default function App() {
   const settingsRef = useRef(settings); settingsRef.current = settings; modalRef.current = modal;
   const open = useCallback((name: ModalName) => setModal(current => current === name ? null : name), []);
   const shortcut = useCallback((key: Shortcut) => { if (key === 'escape') setModal(current => current ? null : 'settings'); else open(key); }, [open]);
-  const persistSettings = useCallback((value: Settings) => {
-    try { localStorage.setItem('nightwatch-settings', JSON.stringify(value)); setSettingsSaved(true); }
-    catch { setSettingsSaved(false); }
+  const persistSettings = useCallback(async (value: Settings) => {
+    if (!storageRef.current) return;
+    const revision = ++settingsRevision.current;
+    try { await storageRef.current.set('nightwatch-settings', JSON.stringify(value)); if (revision === settingsRevision.current) setSettingsSaved(true); }
+    catch { if (revision === settingsRevision.current) setSettingsSaved(false); }
   }, []);
   useEffect(() => {
     if (!sceneRef.current) return;
-    let engine: Engine | undefined;
-    try {
-      engine = new Engine(sceneRef.current, settingsRef.current, { snapshot: setSnapshot, ready: () => setReady(true), error: setError, shortcut, progress: setLoading });
-      engineRef.current = engine;
-      if (import.meta.env.DEV) (window as unknown as { __nightwatch: Engine | undefined }).__nightwatch = engine;
-    } catch (e) { setError(e instanceof Error ? e.message : '你的浏览器无法启动3D街区。'); }
-    return () => { engine?.dispose(); engineRef.current = null; if (import.meta.env.DEV) delete (window as unknown as { __nightwatch?: Engine }).__nightwatch; };
+    let engine: Engine | undefined, cancelled = false;
+    void (async () => {
+      try {
+        let browser: Storage | undefined; try { browser = window.localStorage; } catch { /* Native storage can still work. */ }
+        const storage = await createGameStorage((window as Window & { xhs?: MiniToolHost }).xhs, browser);
+        const [saved, savedSettings] = await Promise.all([storage.get(SAVE_KEY), storage.get('nightwatch-settings')]);
+        if (cancelled || !sceneRef.current) return;
+        storageRef.current = storage;
+        const loaded = loadSettings(savedSettings); settingsRef.current = loaded; setSettings(loaded);
+        const progress = readProgress(saved);
+        if (progress.patrol?.dead || progress.patrol?.phase === 'complete' || (progress.patrol?.rescueTime ?? 0) > 0) setWelcome(false);
+        engine = new Engine(sceneRef.current, loaded, { snapshot: setSnapshot, ready: () => setReady(true), error: setError, shortcut, progress: setLoading }, { progress, save: p => storage.set(SAVE_KEY, JSON.stringify(p)), label: storage.label });
+        engineRef.current = engine;
+        if (import.meta.env.DEV) (window as unknown as { __nightwatch: Engine | undefined }).__nightwatch = engine;
+      } catch (e) { if (!cancelled) setError(e instanceof Error ? e.message : '暂时无法读取本地存档，请重新加载后重试。'); }
+    })();
+    return () => { cancelled = true; engine?.dispose(); engineRef.current = null; storageRef.current = null; if (import.meta.env.DEV) delete (window as unknown as { __nightwatch?: Engine }).__nightwatch; };
   }, [shortcut]);
   const result = snapshot.dead || (snapshot.questPhase === 'complete' && !dismissedResult);
   useEffect(() => { if (snapshot.questPhase === 'tracking') setDismissedResult(false); }, [snapshot.questPhase]);
@@ -57,7 +73,7 @@ export default function App() {
     });
   };
   const reset = () => { setDismissedResult(false); setModal(null); engineRef.current?.reset(); };
-  const saveWarning = (progressFailed || !settingsSaved) && <aside className="save-warning" role="alert"><div><strong>{progressFailed ? settingsSaved ? '进度未保存' : '进度和设置未保存' : '设置未保存'}</strong><p>{progressFailed ? '进度仅本次有效，刷新后会丢失未保存的成长。' : '当前设置仅本次有效，刷新后会恢复原设置。'}</p><small>请检查浏览器存储权限或可用空间，再重试。</small></div><button onClick={retrySave}>重试保存</button></aside>;
+  const saveWarning = (progressFailed || !settingsSaved) && <aside className="save-warning" role="alert"><div><strong>{progressFailed ? settingsSaved ? '进度未保存' : '进度和设置未保存' : '设置未保存'}</strong><p>{progressFailed ? '进度仅本次有效，刷新后会丢失未保存的成长。' : '当前设置仅本次有效，刷新后会恢复原设置。'}</p><small>请检查存储权限或可用空间，恢复后重试。</small></div><button onClick={retrySave}>重试保存</button></aside>;
   const currentTarget = ROSTER[snapshot.progress.hunts % ROSTER.length];
   return <main className={`game-shell ${ready ? 'is-ready' : ''} ${settings.reducedMotion ? 'reduced-motion' : ''} ${compactHud ? 'hud-compact' : ''}`}>
     <div className="scene-container" ref={sceneRef} />
@@ -69,8 +85,9 @@ export default function App() {
         <button className={modal === 'map' ? 'active' : ''} onClick={() => open('map')} aria-label="街区地图"><MapTrifold size={16} /><span>街区地图</span><Key>M</Key></button>
         <button className={modal === 'guide' ? 'active' : ''} onClick={() => open('guide')} aria-label="夜巡手册"><BookOpen size={16} /><span>夜巡手册</span><Key>G</Key></button>
         <button className={modal === 'forge' ? 'active' : ''} onClick={() => open('forge')} aria-label="强化所"><Wrench size={16} /><span>强化所</span><Key>F</Key>{snapshot.progress.parts >= 4 && <i className="forge-ready-dot" />}</button>
+        <button className={modal === 'pets' ? 'active' : ''} onClick={() => open('pets')} aria-label="江湖宠物"><PawPrint size={16} /><span>宠物</span><Key>P</Key></button>
       </nav>
-      <div className="top-actions"><button className="hud-toggle" onClick={() => setCompactHud(value => !value)} aria-label={compactHud ? '显示完整状态界面' : '精简状态界面'} aria-pressed={compactHud}>{compactHud ? '完整' : '精简'}</button><span className="solo-label"><span />单人夜巡</span><button onClick={() => { const sound = !settings.sound; engineRef.current?.audio.setVolume(settings.volume, sound); if (sound) engineRef.current?.audio.unlock(); setSettings({ ...settings, sound }); }} aria-label={settings.sound ? '关闭声音' : '开启声音'} title={settings.sound ? '关闭声音' : '开启声音'}>{settings.sound ? <SpeakerHigh size={19} /> : <SpeakerSlash size={19} />}</button><span className="action-divider" /><button onClick={() => open('settings')} aria-label="打开设置" title="设置"><GearSix size={20} /></button></div>
+      <div className="top-actions"><button className="hud-toggle" onClick={() => setCompactHud(value => !value)} aria-label={compactHud ? '显示完整状态界面' : '精简状态界面'} aria-pressed={compactHud}>{compactHud ? '完整' : '精简'}</button><span className="solo-label"><span />v{APP_VERSION}</span><button onClick={() => { const sound = !settings.sound; engineRef.current?.audio.setVolume(settings.volume, sound); if (sound) engineRef.current?.audio.unlock(); setSettings({ ...settings, sound }); }} aria-label={settings.sound ? '关闭声音' : '开启声音'} title={settings.sound ? '关闭声音' : '开启声音'}>{settings.sound ? <SpeakerHigh size={19} /> : <SpeakerSlash size={19} />}</button><span className="action-divider" /><button onClick={() => open('settings')} aria-label="打开设置" title="设置"><GearSix size={20} /></button></div>
     </header>
     {ready && <Hud s={snapshot} engine={engineRef.current} open={open} settings={settings} paused={Boolean(modal) || welcome || result || !ready} />}
 
@@ -89,9 +106,9 @@ export default function App() {
         <div className="target-card"><PawPrint size={15} /><span>{snapshot.questDistrict} · {snapshot.monsterElite ? '精英夜' : '街坊委托'}<strong>{currentTarget.title} · 悬赏 {snapshot.questReward} 元</strong></span></div>
         <div className="pet-select" role="radiogroup" aria-label="选择你的江湖宠物">
           <span className="pet-select-label"><PawPrint size={13} />选一只宠物陪你夜巡</span>
-          <div className="pet-picker">{PETS.map(p => <button key={p.id} role="radio" aria-checked={pet === p.id} className={pet === p.id ? 'active' : ''} onClick={() => setPet(p.id)}><span className={`pet-face pet-${p.id}`} /><span>{p.name}</span><small>{p.desc}</small></button>)}</div>
+          <div className="pet-picker">{PETS.map(p => <button key={p.id} role="radio" disabled={snapshot.combat && p.id !== snapshot.progress.pet} aria-checked={pet === p.id} className={pet === p.id ? 'active' : ''} onClick={() => setPet(p.id)}><span className={`pet-face pet-${p.id}`} /><span>{p.name}</span><small>{p.desc}</small></button>)}</div>
         </div>
-        <button className="primary-button" onClick={() => { if (engineRef.current && pet !== engineRef.current.simulation.progress.pet) engineRef.current.setPet(pet); setWelcome(false); engineRef.current?.audio.unlock(); }}>开始夜巡 <ArrowRight size={18} /></button>
+        <button className="primary-button" onClick={() => { if (engineRef.current && pet !== engineRef.current.simulation.progress.pet) engineRef.current.setPet(pet); setWelcome(false); engineRef.current?.audio.unlock(); }}>{snapshot.time > 0 || snapshot.tracked > 0 ? '继续夜巡' : '开始夜巡'} <ArrowRight size={18} /></button>
         <p className="nightwatch-controls">WASD 移动 · J 攻击 · 空格 闪避 · E 交互 · C 宠物技</p>
       </div>
     </section>}
@@ -100,8 +117,8 @@ export default function App() {
     {modal && <Modal key={modal} modal={modal} s={snapshot} engine={engineRef.current} settings={settings} setSettings={setSettings} saveWarning={saveWarning} close={() => setModal(null)} open={open} />}
     {result && !modal && <ResultOverlay s={snapshot} saveWarning={saveWarning} retry={reset} forge={() => { setDismissedResult(true); setModal('forge'); }} continueHunt={() => setDismissedResult(true)} />}
     {!ready && !error && <div className="loading-screen"><div className="loading-brand"><Emblem /><span className="eyebrow">沪上游侠</span><h1>夜巡</h1><p>一座等你守护的夜色街区。</p><div className="loading-track"><span style={{ transform: `scaleX(${loading / 100})` }} /></div><div className="loading-caption"><span>正在进入上海夜色街区</span><span>{loading}%</span></div><small>江湖路远，一碗馄饨热。</small></div></div>}
-    {error && <div className="loading-screen"><div className="error-content"><Emblem /><h2>夜巡还需片刻。</h2><p>{error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载<ArrowRight size={17} /></button><small>请使用支持 WebGL 2 的浏览器进入3D街区。</small></div></div>}
+    {error && <div className="loading-screen"><div className="error-content"><Emblem /><h2>暂时无法进入夜巡</h2><p>{error}</p><button className="primary-button" onClick={() => location.reload()}>重新加载<ArrowRight size={17} /></button>{!error.includes('存档') && <small>请使用支持 WebGL 2 的浏览器进入3D街区。</small>}</div></div>}
     {!modal && !result && saveWarning}
-    <div className="sr-only" aria-live="polite">{snapshot.questPhase === 'complete' ? snapshot.saveStatus === 'saved' ? '本轮夜巡完成，奖励已入账并自动存档。' : '本轮夜巡完成，奖励已结算，进度尚未保存。' : snapshot.dead ? '你倒下了，宠物把你拖回了大排档。可以重新开始。' : ''}</div>
+    <div className="sr-only" aria-live="polite">{snapshot.questPhase === 'complete' ? snapshot.saveStatus === 'saved' ? '本轮夜巡完成，奖励已入账并自动存档。' : snapshot.saveStatus === 'saving' ? '本轮夜巡完成，正在保存进度。' : '本轮夜巡完成，奖励已结算，进度尚未保存。' : snapshot.dead ? '你倒下了，本轮救援已用完。可回大排档恢复，调查进度保留。' : ''}</div>
   </main>;
 }

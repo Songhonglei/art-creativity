@@ -58,6 +58,10 @@ licenses = {}
 for path in sorted(Path('public').rglob('*.txt')):
     licenses[str(path.relative_to('public'))] = path.read_text()
 Path('dist-tool/fonts/licenses.json').write_text(json.dumps(licenses, ensure_ascii=False, indent=2) + '\n')
+version = json.loads(Path('package.json').read_text())['version']
+Path('dist-tool/version.json').write_text(json.dumps({'name': '沪上游侠', 'version': version}, ensure_ascii=False) + '\n')
+if f'content="{version}"' not in Path('dist-tool/index.html').read_text():
+    raise SystemExit('入口与 package.json 版本不一致，停止打包。')
 for path in Path('dist-tool').rglob('.DS_Store'):
     path.unlink()
 PY

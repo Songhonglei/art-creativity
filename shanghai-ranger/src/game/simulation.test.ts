@@ -27,7 +27,7 @@ describe('本地存档', () => {
     expect(p.cash).toBe(350);
     expect(p.pet).toBe('orangeCat');
     const migrated = readProgress(JSON.stringify({ version: 1, parts: 7, cash: 900, level: 2, hunts: 3, pet: 'corgi', weapon: 'baton' }));
-    expect(migrated).toMatchObject({ version: 2, parts: 7, cash: 900, level: 2, hunts: 3, pet: 'corgi', weapon: 'baton', petLevel: 1, weaponLevel: 0 });
+    expect(migrated).toMatchObject({ version: 3, parts: 7, cash: 900, level: 2, hunts: 3, pet: 'corgi', weapon: 'baton', weaponLevel: 0 });
     expect(readProgress(JSON.stringify({ ...DEFAULT_PROGRESS, skin: 'invalid' })).skin).toBe('nightwatch');
     expect(readProgress(JSON.stringify({ ...DEFAULT_PROGRESS, weapon: 'umbrella' })).weapon).toBe('crowbar');
   });
@@ -271,7 +271,7 @@ describe('城中祸害遭遇战', () => {
     expect(save).toHaveBeenCalled();
   });
   it('战败不丢材料，重整旗鼓再战', () => {
-    const sim = new Simulation(); sim.progress.parts = 9; sim.hurt(500);
+    const sim = new Simulation(); sim.progress.parts = 9; sim.rescueAvailable = false; sim.hurt(500);
     expect(sim.dead).toBe(true); expect(sim.attack()).toBe(false);
     sim.newHunt();
     expect(sim.dead).toBe(false); expect(sim.player.health).toBe(sim.maxHealth);
@@ -350,17 +350,17 @@ describe('第二轮：跨城区委托与成长', () => {
   });
   it('三种宠物主动技都有实际效果与冷却', () => {
     const sim = new Simulation(); sim.player.health = 50;
-    expect(sim.petSkill()).toBe(true); expect(sim.player.health).toBe(64); expect(sim.player.invulnerable).toBeGreaterThan(1); expect(sim.petCooldown).toBe(24);
+    expect(sim.petSkill()).toBe(true); expect(sim.player.health).toBe(62); expect(sim.player.invulnerable).toBeGreaterThan(1); expect(sim.petCooldown).toBe(24);
     expect(sim.petSkill()).toBe(false);
     sim.setPet('corgi'); sim.petCooldown = 0; sim.player.stamina = 10; expect(sim.petSkill()).toBe(true); expect(sim.player.stamina).toBe(54);
-    sim.setPet('shiba'); sim.petCooldown = 0; expect(sim.petSkill()).toBe(true); expect(sim.notifications.at(-1)?.title).toBe('柴犬寻踪');
+    sim.setPet('shiba'); sim.petCooldown = 0; expect(sim.petSkill()).toBe(true); expect(sim.notifications.at(-1)?.title).toBe('柴大侠寻踪');
   });
-  it('橘猫被动减伤、宠物训练和兵器精修会消耗材料并存档', () => {
+  it('橘猫被动减伤、宠物经验成长免费，兵器精修消耗材料并存档', () => {
     const guarded = new Simulation(); guarded.hurt(23); expect(guarded.player.health).toBe(80);
     const save = vi.fn(), progress = { ...DEFAULT_PROGRESS, parts: 50, cash: 10000 }, sim = new Simulation(progress, undefined, save);
-    expect(sim.trainPet()).toBe(true); expect(sim.progress).toMatchObject({ petLevel: 2, parts: 47, cash: 9500 });
+    expect(sim.awardPetXp('test-investigation', 40)).toBe(true); expect(sim.progress.pets.orangeCat.level).toBe(2); expect(sim.progress).toMatchObject({ parts: 50, cash: 10000 });
     const damage = sim.attackDamage; expect(sim.refineWeapon()).toBe(true);
-    expect(sim.progress).toMatchObject({ weaponLevel: 1, parts: 43, cash: 8900 }); expect(sim.attackDamage).toBe(damage + 5); expect(save).toHaveBeenCalledTimes(2);
+    expect(sim.progress).toMatchObject({ weaponLevel: 1, parts: 46, cash: 9400 }); expect(sim.attackDamage).toBe(damage + 5); expect(save).toHaveBeenCalledTimes(1);
   });
   it('第四夜是精英委托，血量与现金、零件悬赏同步提高', () => {
     const progress = { ...DEFAULT_PROGRESS, hunts: 3 }, sim = new Simulation(progress);

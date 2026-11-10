@@ -1,0 +1,143 @@
+{
+  "version": "0.9.0",
+  "date": "2026-11-10",
+  "environment": "Ego Chromium, desktop and CDP mobile emulation; not a real mobile device or Xiaohongshu container",
+  "breakpoints": [
+    {
+      "width": 375,
+      "height": 812,
+      "documentOverflow": false,
+      "petPanelOverflow": false,
+      "petButtonsUnder44px": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "documentOverflow": false,
+      "petPanelOverflow": false,
+      "petButtonsUnder44px": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "documentOverflow": false,
+      "petPanelOverflow": false,
+      "petButtonsUnder44px": []
+    },
+    {
+      "width": 1440,
+      "height": 1000,
+      "documentOverflow": false,
+      "petPanelOverflow": false,
+      "petButtonsUnder44px": []
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "documentOverflow": false,
+      "petPanelOverflow": false,
+      "petButtonsUnder44px": []
+    }
+  ],
+  "touch": {
+    "method": "CDP Input.dispatchTouchEvent; simultaneous joystick and pet button",
+    "moving": true,
+    "staminaAfter": 100,
+    "skillCooldown": 19.9248,
+    "economyRemaining": 5.9248,
+    "cameraContacts": 0,
+    "menuClearedTouch": true
+  },
+  "rescue": {
+    "firstLethal": {
+      "dead": false,
+      "rescueSeconds": 0.7,
+      "healthAfter": 30,
+      "failureDialog": false
+    },
+    "secondLethal": {
+      "source": "野猫",
+      "actualDamage": 80,
+      "returnPosition": {
+        "x": -18,
+        "z": 31.2
+      },
+      "trackedPreserved": 2,
+      "targetHealthPreserved": 333,
+      "collectedCluesPreserved": 2
+    },
+    "reload": {
+      "cooldownBefore": 18.5644,
+      "cooldownAfter": 18.2471,
+      "targetHealth": 333,
+      "tracked": 2,
+      "skin": "shiba-inspector"
+    }
+  },
+  "shiba": {
+    "guideFootprints": 28,
+    "guideNodes": 4,
+    "firstHitTargetHp": 431,
+    "secondHitTargetHp": 308,
+    "markedHitsRemaining": 0,
+    "initialTargetHp": 500
+  },
+  "nativeStorageMock": {
+    "clientBuild": 9462004,
+    "label": "小工具本地缓存",
+    "pendingState": "saving",
+    "failedWriteKeptMemorySkin": true,
+    "failedWriteDidNotReplaceSavedSkin": true,
+    "visibleSaveWarning": true,
+    "retrySavedCurrentSkin": true,
+    "readFailureEngineCreated": false,
+    "readFailureWrites": 0,
+    "readFailureOldSaveUnchanged": true,
+    "realContainerTested": false
+  },
+  "productionH5": {
+    "classicIife": true,
+    "cspNetworkBlocked": true,
+    "devEngineExposed": false,
+    "version": "0.9.0",
+    "orangeCatLevel": 7,
+    "allocatedAttributes": {
+      "guard": 1,
+      "vigor": 0,
+      "specialty": 5
+    },
+    "lockedLv10SkinDisabled": true,
+    "activeSkin": "cat-red-scarf",
+    "cluesCollectedThroughKeyE": 1,
+    "shieldAfterKeyC": 8,
+    "muteOutputConnected": false,
+    "runtimeErrors": [],
+    "httpErrors": [],
+    "sampleRender": {
+      "calls": 189,
+      "triangles": 100078,
+      "geometries": 173,
+      "textures": 21,
+      "quality": "low",
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    "finalCampBoundaryInteraction": null,
+    "finalCampRest": {
+      "health": 100,
+      "rescueAvailable": true,
+      "trackedPreserved": 1,
+      "cooldownStillRemaining": 21.53164333333335
+    }
+  },
+  "combatReadOnly": {
+    "visibleMessage": "脱战后可调整",
+    "deployDisabled": true,
+    "attributesDisabled": true,
+    "timeBefore": 440.86303333331,
+    "timeAfter": 440.86303333331,
+    "cooldown": 13
+  }
+}
