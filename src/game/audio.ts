@@ -237,6 +237,8 @@ export class GameAudio {
       case 'attack': this.noise(e.heavy ? .32 : .16, e.weapon === 'baton' ? 2400 : 1600, e.heavy ? .3 : .17); this.tone(e.heavy ? 105 : 180, .18, 'triangle', e.heavy ? .12 : .06, 60); break;
       case 'hit': this.noise(e.heavy ? .25 : .13, e.blocked ? 2600 : 1000, e.heavy ? .52 : .32); this.tone(e.blocked ? 620 : e.heavy ? 65 : 100, e.heavy ? .28 : .16, 'triangle', e.heavy ? .4 : .25, e.blocked ? 280 : 28); this.tone(780, .1, 'sine', .1, 180); break;
       case 'hurt': this.noise(.3, 480, .3); this.tone(130, .25, 'sawtooth', .12, 35); break;
+      case 'fall': this.noise(.22, 260, .13); this.tone(92, .6, 'sine', .07, 44); break;
+      case 'revive': [294, 392, 587].forEach((f, i) => this.tone(f, .28, 'sine', .045, f, i * .07)); break;
       case 'dodge': this.noise(.24, 850, .22); break;
       case 'roar': {
         const range = e.kind === 'ebike' || e.kind === 'racer' ? 16 : 12;

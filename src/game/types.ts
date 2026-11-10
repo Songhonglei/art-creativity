@@ -1,6 +1,7 @@
 export type Weather = '晴夜' | '雾霾' | '暴雨';
 export type Weapon = 'baton' | 'crowbar' | 'umbrella';
-export type Skin = 'nightwatch' | 'magnolia' | 'neon';
+export type Skin = 'nightwatch' | 'magnolia' | 'neon' | 'wutong-warden' | 'riverside-sentinel' | 'shanghai-paragon';
+export type Gender = 'male' | 'female';
 export type Pet = 'orangeCat' | 'corgi' | 'shiba';
 export type PetAttribute = 'guard' | 'vigor' | 'specialty';
 export interface PetGrowth { level: number; xp: number; attributes: Record<PetAttribute, number>; trait: 'first' | 'second' | null; skin: string }
@@ -13,7 +14,7 @@ export interface CityFeature extends Point { kind: CityFeatureKind; label: strin
 export interface Resource extends Point { id: string; kind: ResourceKind; collected: boolean }
 export interface Progress {
   version: 3; parts: number; cash: number; level: number;
-  weapon: Weapon; hunts: number; pet: Pet; skin: Skin;
+  weapon: Weapon; hunts: number; pet: Pet; skin: Skin; gender?: Gender;
   pets: Record<Pet, PetGrowth>; weaponLevel: number;
   patrol?: PatrolCheckpoint;
 }
@@ -34,6 +35,7 @@ export interface PatrolCheckpoint {
   resources: Resource[]; potions: number; petCooldown: number; healingCooldown: number;
   rescueAvailable: boolean; rescueTime: number; dead: boolean; death: { source: string; damage: number } | null;
   effects: PetEffects; rewarded: string[];
+  retryOrigin?: Point; recoveryProtection?: number;
 }
 export type Soundscape = 'neon' | 'jazz' | 'river' | 'radio';
 export interface StreetThreat extends Point {
@@ -48,7 +50,7 @@ export interface Settings {
   sound: boolean; volume: number; soundscape: Soundscape; quality: 'high' | 'balanced' | 'low'; sensitivity: number; reducedMotion: boolean; enemyHealthBars: boolean;
 }
 export interface GameEvent {
-  type: 'hit' | 'hurt' | 'attack' | 'dodge' | 'gather' | 'roar' | 'victory' | 'weather' | 'heal' | 'forge' | 'step' | 'pet';
+  type: 'hit' | 'hurt' | 'attack' | 'dodge' | 'gather' | 'roar' | 'victory' | 'weather' | 'heal' | 'forge' | 'step' | 'pet' | 'fall' | 'revive';
   value?: number; x?: number; z?: number; kind?: MonsterKind; heavy?: boolean; blocked?: boolean; weapon?: Weapon;
 }
 export interface Notification { id: number; title: string; description: string; kind: 'info' | 'success' | 'warning' }
@@ -69,5 +71,6 @@ export interface Snapshot {
   death: { source: string; damage: number } | null;
   streetThreats: StreetThreat[]; streetActive: number; streetDefeated: number;
   encounter: Encounter | null;
+  recoveryProtection: number;
 }
 export interface InputState { x: number; z: number; sprint: boolean }

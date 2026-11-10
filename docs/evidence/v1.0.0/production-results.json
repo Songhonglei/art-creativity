@@ -1,0 +1,100 @@
+{
+  "H5": {
+    "port": 5194,
+    "viewport": [
+      1440,
+      1000
+    ],
+    "appearance": {
+      "gender": "female",
+      "skin": "wutong-warden",
+      "level": 4,
+      "health": 108,
+      "maxHealth": 154
+    },
+    "recovered": {
+      "health": 172,
+      "stamina": 100,
+      "tracked": 3,
+      "cash": 2400,
+      "parts": 12,
+      "petCooldown": 10.908000000000001
+    },
+    "moveAndReload": true,
+    "final": {
+      "version": "v1.0.0",
+      "errors": [],
+      "external": [],
+      "httpErrors": [],
+      "overflow": false,
+      "audio": {
+        "soundscape": "neon",
+        "scoreStep": 0,
+        "scoreVoices": 0,
+        "root": 110,
+        "cityKind": "taxi",
+        "cityLevel": 0.10187001288886728,
+        "ambientVoices": 0,
+        "ambientCount": 0,
+        "lastAmbient": null,
+        "environmentActive": true,
+        "enabled": false,
+        "volume": 0.45,
+        "outputConnected": false,
+        "masterLevel": 0,
+        "context": "locked"
+      },
+      "skin": "shanghai-paragon",
+      "gender": "female"
+    }
+  },
+  "IIFE": {
+    "port": 5195,
+    "viewport": [
+      375,
+      812
+    ],
+    "appearance": {
+      "gender": "female",
+      "skin": "wutong-warden",
+      "level": 4,
+      "health": 108,
+      "maxHealth": 154
+    },
+    "recovered": {
+      "health": 172,
+      "stamina": 100,
+      "tracked": 3,
+      "cash": 2400,
+      "parts": 12,
+      "petCooldown": 10.868095
+    },
+    "moveAndReload": true,
+    "final": {
+      "version": "v1.0.0",
+      "errors": [],
+      "external": [],
+      "httpErrors": [],
+      "overflow": false,
+      "audio": {
+        "soundscape": "neon",
+        "scoreStep": 0,
+        "scoreVoices": 0,
+        "root": 110,
+        "cityKind": "taxi",
+        "cityLevel": 0.09115070974823661,
+        "ambientVoices": 0,
+        "ambientCount": 0,
+        "lastAmbient": null,
+        "environmentActive": true,
+        "enabled": false,
+        "volume": 0.45,
+        "outputConnected": false,
+        "masterLevel": 0,
+        "context": "locked"
+      },
+      "skin": "shanghai-paragon",
+      "gender": "female"
+    }
+  }
+}

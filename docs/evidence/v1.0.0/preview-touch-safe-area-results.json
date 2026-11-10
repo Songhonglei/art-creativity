@@ -1,0 +1,37 @@
+{
+  "verticalScroll": {
+    "before": 0,
+    "after": 145
+  },
+  "horizontalAngle": 0.96,
+  "worldCameraUnchanged": true,
+  "safeAreas": {
+    "375x812": {
+      "overflow": false,
+      "rect": {
+        "x": 12,
+        "y": 56,
+        "width": 351,
+        "height": 710,
+        "top": 56,
+        "right": 363,
+        "bottom": 766,
+        "left": 12
+      }
+    },
+    "844x390": {
+      "overflow": false,
+      "rect": {
+        "x": 56,
+        "y": 12,
+        "width": 732,
+        "height": 345,
+        "top": 12,
+        "right": 788,
+        "bottom": 357,
+        "left": 56
+      }
+    }
+  },
+  "errors": []
+}

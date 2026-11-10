@@ -80,16 +80,16 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
       {marker && objective && <g transform={`translate(${marker.x} ${marker.y})`}>
         <circle r="10" fill={objective === nextClue ? '#776738' : '#8d4a48'} stroke="#ffe0a8" strokeWidth="1" />
         {objective === nextClue ? <path d="M0-6 5 0 0 6-5 0Z" fill="#ffe0a8" /> : <path d="m-5-5 2 6 3 5 3-5 2-6-5 3Z" fill="#ffd7ab" />}
-        {large && objectiveDistance > 123 && <text x="13" y="3" fill="#ffd7ab" fontSize="8" stroke="#151a2b" strokeWidth="2" paintOrder="stroke">{Math.round(objective === nextClue ? Math.hypot(objective.x - snapshot.player.x, objective.z - snapshot.player.z) : snapshot.monsterDistance)}m</text>}
+        {large && objectiveDistance > 123 && <text x="13" y="3" fill="#ffd7ab" fontSize="12" stroke="#151a2b" strokeWidth="2" paintOrder="stroke">{Math.round(objective === nextClue ? Math.hypot(objective.x - snapshot.player.x, objective.z - snapshot.player.z) : snapshot.monsterDistance)}m</text>}
       </g>}
       <g transform={`translate(${center.x} ${center.y}) rotate(${-snapshot.facing * 180 / Math.PI})`}><circle r="10" fill="#dfe6ff" fillOpacity=".15" /><path d="M0 7-4-5 0-2 4-5Z" fill="#f4ecff" stroke="#141830" strokeWidth="1" /></g>
-      {large && <g fontFamily="Manrope" fill="#dfe6ff" fontSize="7" letterSpacing="1">
+      {large && <g fontFamily="GameChineseSans, sans-serif" fill="#dfe6ff" fontSize="12" letterSpacing="1">
         {Math.abs(snapshot.player.x) < 170 && Math.abs(snapshot.player.z) < 170 && <>{label(13.5, -10, '外滩 THE BUND', 12, -8)}{label(-18, 42, '城隍庙夜市', -16, 13)}{label(49, -45, '陆家嘴', 12, -12)}{label(-10, 5, '南京路', -10, 15)}</>}
       </g>}
     </g>
     <circle cx="150" cy="150" r="139" fill="none" stroke="#aebadd" strokeOpacity=".45" strokeWidth=".8" />
     <path d="M150 1v8M150 291v8M1 150h8M291 150h8" stroke="#c4d0f2" strokeWidth="1" />
-    <text x="150" y="24" textAnchor="middle" fontFamily="Manrope" fontSize="11" fill="#f2f4ff" fontWeight="700">北</text>
-    {large && <text x="150" y="282" textAnchor="middle" fontFamily="GameChineseDisplay, sans-serif" fontSize="8" fill="#e8c76a">委托 · {snapshot.questDistrict}</text>}
+    <text x="150" y="24" textAnchor="middle" fontFamily="GameChineseSans, sans-serif" fontSize="12" fill="#f2f4ff" fontWeight="700">北</text>
+    {large && <text x="150" y="282" textAnchor="middle" fontFamily="GameChineseDisplay, sans-serif" fontSize="12" fill="#e8c76a">委托 · {snapshot.questDistrict}</text>}
   </svg>;
 }

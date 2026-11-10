@@ -1,0 +1,15 @@
+{
+  "before": {
+    "warnings": 1,
+    "modal": false,
+    "hud": false,
+    "focus": "重试保存",
+    "body": "暂时无法进入夜巡图形连接中断，请重新加载。已保存的进度可以恢复。进度未保存进度仅本次有效，刷新后会丢失未保存的成长。请检查存储权限或可用空间，恢复后重试。重试保存重新加载请使用支持 WebGL 2 的浏览器进入3D街区。"
+  },
+  "after": {
+    "skin": "magnolia",
+    "gender": "female",
+    "errors": []
+  },
+  "savedBeforeReload": true
+}
