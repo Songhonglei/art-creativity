@@ -1,12 +1,16 @@
 # 沪上游侠：环境准备与完整验证方案
 
-编制日期：2026-11-10（北京时间）；修订2，适配收尾优化代码。共65项用例，新增14项并修订既有存储／性能预期。本文件是待执行方案，平台／真机用例均待实际执行；本次仅更新方案和核验现有包，不新增平台通过结论。
+编制日期：2026-11-10（北京时间）；修订3，增加从GitHub下载源码并自行打包的默认路线，适配收尾优化代码。共65项用例，保留修订2新增的14项回归及存储／性能预期。本文件是待执行方案，平台／真机用例均待实际执行；本方案不新增平台通过结论；新执行Agent须保存本轮构建与实测证据。
 
 目标：在本机完成小红书平台模拟器、Android 模拟器、iOS 模拟器验证，并补齐 Android／iPhone 小红书客户端实测。输出可追溯的结果、问题和剩余边界，供后续修复与发布决策使用。
 
-## 1. 先锁定测试对象
+## 1. 下载源码、打包并锁定测试对象
 
-| 项目 | 本次基线 |
+**默认从GitHub下载源码后自行打包，再用自己生成的同一ZIP验证。GitHub不提供这里记录的本机历史ZIP。** 仓库为[Songhonglei/art-creativity](https://github.com/Songhonglei/art-creativity)，当前验证分支为 `feature/shanghai-ranger-v1.0.0`（[PR #2](https://github.com/Songhonglei/art-creativity/pull/2)，尚未合入main），项目在仓库的 `shanghai-ranger/` 子目录。不能下载main后误验旧版。
+
+下表仅记录这台Mac此前已验收的收尾包，供同机复用／历史对照；远端Agent的实际路径、提交、ZIP大小与散列以本轮构建记录为准，**不要创建或依赖表中的作者目录**。
+
+| 项目 | 本机历史参考基线 |
 | --- | --- |
 | 正确源码目录 | `/Users/songhonglei/space/output/shanghai-ranger-v1-20261110` |
 | 分支 | `feature/v1.0.0-hero-ui`；开始执行时重新核对，不自行切换或重置 |
@@ -22,7 +26,7 @@
 
 开始时重新读取正确源码目录的 `AGENTS.md`、`CURRENT-STATUS.md`和最新收尾验收报告，核对Git状态、ZIP散列及包内manifest。245项／13文件、两包六尺寸84状态等属于收尾修复已有本地验收；84状态基于259f17a，最终83dc188另补焦点验证；这些不是本次新跑，也不代表平台／真机通过。首次v1的228项和字体A检查保留为历史证据。
 
-本次核验现有收尾包的大小、SHA256、ZIP完整性，43文件逐一匹配构建清单及当前dist-tool；检查83dc188到当前HEAD只有文档／证据变化，源码工作树干净；目录审计43文件、ZIP体积审计均0警告。因此**无需重新打包，直接使用已验收收尾包**。核验回执见同目录 `PACKAGE-CHECK.json`。ZIP审计脚本只查体积，内容结论来自目录审计和逐文件散列核对，不能混称ZIP脚本完整内容审计。
+本次核验现有收尾包的大小、SHA256、ZIP完整性，43文件逐一匹配构建清单及当前dist-tool；检查83dc188到当前HEAD只有文档／证据变化，源码工作树干净；目录审计43文件、ZIP体积审计均0警告。因此当时在同一台Mac可直接复用已验收包；**从GitHub接手的Agent须执行下方源码打包步骤**。核验回执见同目录 `PACKAGE-CHECK.json`。ZIP审计脚本只查体积，内容结论来自目录审计和逐文件散列核对，不能混称ZIP脚本完整内容审计。
 
 同一份最终ZIP用于平台模拟器、Android小红书和iPhone小红书。直接解压该ZIP提供静态预览，用于两个系统模拟器的浏览器测试；不要把开发服务器、旧dist-tool或重建产物当成这份ZIP。
 
@@ -30,9 +34,118 @@
 
 如果源码、包或平台要求发生变化：先记录差异与新散列，保存旧证据；新建测试轮次，不混用前后产物的通过结果。平台重新分发时尽可能记录对应上传回执与包的映射；拿不到平台端散列时明确说明，只记录可验证的本地散列和上传记录。已使用旧包的Agent可以保留环境准备结果，但受代码变化影响的用例必须在新包复测，不能仅改报告里的包名。
 
+### 1.1 下载与构建
+
+需要Git、Bash、Python3、zip，以及Node.js 22.16或以上版本（建议与CI一致使用Node 22）。macOS／Linux可直接执行；Windows使用WSL，iOS模拟器仍需Mac。先准备这些基础工具，再在**同一Bash会话**执行下列完整命令。全程使用新目录；构建脚本会重建该副本的`dist-tool`，不会触碰作者工作区。
+
+```bash
+set -euo pipefail
+for validation_tool in git bash python3 node npm zip; do
+  command -v "$validation_tool"
+done
+node -e 'const [major,minor]=process.versions.node.split(".").map(Number); if(major<22||(major===22&&minor<16)){throw Error("需要Node.js 22.16或以上版本")}'
+
+VALIDATION_ROOT="$(mktemp -d "$HOME/shanghai-ranger-validation.XXXXXX")"
+git clone --depth 1 --single-branch \
+  --branch feature/shanghai-ranger-v1.0.0 \
+  https://github.com/Songhonglei/art-creativity.git "$VALIDATION_ROOT/repo"
+cd "$VALIDATION_ROOT/repo"
+VALIDATION_COMMIT="$(git rev-parse HEAD)"
+git checkout --detach "$VALIDATION_COMMIT"
+cd shanghai-ranger
+VALIDATION_PROJECT="$PWD"
+# 先阅读此副本的AGENTS.md、CURRENT-STATUS.md及最新验收，再继续安装和构建。
+VALIDATION_RUN="$(TZ=Asia/Shanghai date +%Y%m%d-%H%M%S)"
+VALIDATION_EVIDENCE="$PWD/docs/evidence/platform-validation/$VALIDATION_RUN"
+mkdir -p "$VALIDATION_EVIDENCE"
+VALIDATION_ZIP="$PWD/output/沪上游侠-v1.0.0-小红书小工具-源码验证-$VALIDATION_RUN.zip"
+
+# 仓库已内置Builder；不需要作者电脑上的Skill路径。
+npm ci 2>&1 | tee "$VALIDATION_EVIDENCE/npm-ci.log"
+npm run assets:check 2>&1 | tee "$VALIDATION_EVIDENCE/assets-check.log"
+npm test 2>&1 | tee "$VALIDATION_EVIDENCE/tests.log"
+npm run build 2>&1 | tee "$VALIDATION_EVIDENCE/h5-build.log"
+MINITOOL_BUILDER_DIR="$PWD/scripts/minitool" \
+  bash scripts/build-tool.sh "$VALIDATION_ZIP" \
+  2>&1 | tee "$VALIDATION_EVIDENCE/offline-build.log"
+```
+
+记录下`VALIDATION_PROJECT`、`VALIDATION_COMMIT`、`VALIDATION_EVIDENCE`和`VALIDATION_ZIP`，后续命令继续使用同一会话；换会话时从记录恢复实际路径。先阅读下载副本的`AGENTS.md`、`CURRENT-STATUS.md`、本方案与最新收尾验收。GitHub单仓库提交与本机独立项目提交是两套历史，**不要在GitHub副本执行`git checkout 83dc188`**；以本次实际完整仓库提交为准。
+
+`npm ci`必须使用现有lock，不运行`npm update`或`npm audit fix`来改变验证对象。命令失败就保存日志、定位原因，不能跳过测试／审计继续上传。CLI、Android或Xcode不是打ZIP的依赖。若平台官方口令要求更新构建规则，先明确差异、另建新包和记录，不能冒充原基线。
+
+### 1.2 核验新包并生成本轮产物清单
+
+在上述同一Bash会话继续执行。它验证ZIP完整性、根入口、manifest及ZIP与`dist-tool`逐文件一致，然后生成本轮`artifact.json`，不覆盖历史`PACKAGE-CHECK.json`。
+
+```bash
+python3 - "$VALIDATION_ZIP" "$VALIDATION_EVIDENCE/artifact.json" <<'PYARTIFACT'
+from pathlib import Path
+from datetime import datetime, timezone, timedelta
+import hashlib, json, os, subprocess, sys, zipfile
+project = Path.cwd()
+archive = Path(sys.argv[1]).resolve()
+receipt = Path(sys.argv[2]).resolve()
+sha256 = lambda data: hashlib.sha256(data).hexdigest()
+with zipfile.ZipFile(archive) as bundle:
+    assert bundle.testzip() is None, 'ZIP完整性检查失败'
+    names = [entry.filename for entry in bundle.infolist() if not entry.is_dir()]
+    assert len(names) == len(set(names)), 'ZIP含重名文件'
+    assert all(not Path(name).is_absolute() and '..' not in Path(name).parts for name in names)
+    assert {'index.html', 'mini_tool.json', 'version.json', 'app.js', 'shanghai-ranger.css'} <= set(names)
+    assert json.loads(bundle.read('version.json'))['version'] == '1.0.0'
+    manifest = json.loads(bundle.read('mini_tool.json'))
+    assert set(manifest) == {'is_high_consumption_scene'}
+    assert manifest['is_high_consumption_scene'] is False
+    directory_names = {str(path.relative_to(project / 'dist-tool'))
+                       for path in (project / 'dist-tool').rglob('*') if path.is_file()}
+    assert set(names) == directory_names, 'ZIP与构建目录文件列表不一致'
+    files = {}
+    for name in names:
+        data = bundle.read(name)
+        assert data == (project / 'dist-tool' / name).read_bytes(), name
+        files[name] = sha256(data)
+tracked_changes = subprocess.check_output(
+    ['git', 'status', '--porcelain', '--untracked-files=no'], text=True)
+assert not tracked_changes, '构建改动了已跟踪源码，请先核对差异'
+versions = {tool: subprocess.check_output([tool, '--version'], text=True).strip()
+            for tool in ['node', 'npm', 'python3']}
+result = {
+    'builtAt': datetime.now(timezone(timedelta(hours=8))).isoformat(),
+    'repository': 'https://github.com/Songhonglei/art-creativity',
+    'sourceCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+    'projectPath': str(project), 'buildEnvironment': dict(versions, platform=os.uname().sysname),
+    'zip': str(archive), 'zipBytes': archive.stat().st_size,
+    'zipSha256': sha256(archive.read_bytes()), 'fileCount': len(files), 'files': files,
+    'zipMatchesDistTool': True, 'trackedSourceUnchanged': True,
+}
+receipt.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps({key: result[key] for key in
+                 ['sourceCommit', 'zip', 'zipBytes', 'zipSha256', 'fileCount']}, ensure_ascii=False))
+PYARTIFACT
+```
+
+Builder已经执行目录审计和ZIP体积审计；ZIP脚本仅检查体积，不能将其单独写成完整内容审计。这里的逐文件核对补充证明ZIP与已审计目录一致。当前同源预期约43文件、1.81MiB，仅供异常定位；**源码重新构建的ZIP时间戳／工具版本可能导致散列和字节数不同，不强制等于作者历史ZIP**。若同源码的解压文件散列也不同，先比较Node/npm、依赖、构建参数及文件差异再决定是否继续，不自动当作相同内容。
+
+文档命令已在独立GitHub下载副本实跑：源码提交`0b1cd09`、Node 24.19.0，资产检查、245项／13文件测试、H5与IIFE构建及两级审计通过；43个解压文件散列与历史收尾包一致，ZIP本身散列因打包元数据不同而改变。见同目录`SOURCE-BUILD-CHECK.json`。保留既有Vite大chunk提示；此次仅证明源码打包路线可执行，不是平台／真机通过。
+
+新包作为独立测试轮次：将所有用例的`artifact_sha256`绑定本轮`artifact.json`；报告写实际提交、工具版本、构建日志和ZIP散列，不能把旧包已通过结论直接搬过来。65项用例中的“最终包／收尾优化包”在源码自建路线下都指**本次生成并核验的ZIP**。
+
+### 1.3 使用自己生成的包验证
+
+将`VALIDATION_ZIP`指定的本轮ZIP上传到平台模拟器，再用同一预览版本完成Android／iPhone小红书验证；不得另建一次包给另一端。系统模拟器浏览器预览也从这份ZIP解压：
+
+```bash
+python3 -m zipfile -e "$VALIDATION_ZIP" "$VALIDATION_EVIDENCE/preview"
+python3 -m http.server 4173 --bind 127.0.0.1 \
+  --directory "$VALIDATION_EVIDENCE/preview"
+```
+
+保持预览服务运行，在另一个终端／浏览器操作。4173若占用就选空闲端口并记录，不停止别人服务。Android Emulator通常访问`http://10.0.2.2:4173/`，iOS Simulator通常访问`http://127.0.0.1:4173/`；以本轮实际连通性为准。真机小红书走平台预览，不用本机开发服务器代替宿主。后文“正确源码目录／正确源码目录下”统一指本轮`VALIDATION_PROJECT`；表中的Mac历史路径仅供追溯。
+
 ## 2. 范围、授权与协作
 
-本方案供用户在另一个 Agent 中启动任务。文档本身不执行安装或上传；`START-HERE.md` 提供可由用户发送的任务指令。
+本方案供用户在另一个 Agent 中启动任务，包含下载源码、安装构建依赖、自行打包与验证。文档本身不执行安装或上传；`START-HERE.md` 提供可由用户发送的任务指令。
 
 启动任务后，在用户已授权的环境准备、测试上传和预览范围内直接推进。沿用现有平台账号与作品；缺少影响结果的账号、作品或设备信息时集中询问。测试上传可能改变作品草稿，应先只读确认当前作品和版本；无法保留现有草稿时先说明具体影响，再取得针对该影响的决定。
 
@@ -108,7 +221,7 @@
 
 按以下顺序推进；缺某台手机时继续完成其他可执行环境，不因等待扫码停掉整个任务。
 
-1. **基线**：核对源码、包、现有证据；建立本轮证据目录和测试环境表。
+1. **基线与构建**：先按第1.1–1.2节下载锁定源码、安装依赖、跑测试与构建审计，生成本轮ZIP和artifact.json，再建立测试环境表；同机明确复用历史包时才走第1节旧包核验路线。
 2. **10分钟内可判定的冒烟**：平台导入→可玩→真实保存→关闭重进读回→一次交战→倒地再战→打开声音再静音。若出现白屏、存档丢失、无法操作，先记录阻断问题，不继续做无意义的长时压力测试。
 3. **系统兼容**：AND-SIM／IOS-SIM 同包浏览器测试；条件允许则做 Android App 路线。
 4. **功能矩阵**：按第6节逐项，模拟器筛问题，真机复核触控、原生桥接和生命周期。
@@ -127,8 +240,8 @@ P0：启动、数据与核心操作阻断。P1：主要功能／兼容／稳定�
 
 | ID | 优先级 | 环境 | 操作与通过条件 |
 | --- | --- | --- | --- |
-| VAL-E01 | P0 | LOCAL | 核对源码版本、Git dirty、ZIP 大小／SHA256；解压检查入口、manifest、字体、许可、资源完整。与基线不符先说明差异，不覆盖旧包。 |
-| VAL-E02 | P1 | LOCAL | 先核对收尾轮245项测试／构建的证据与源码映射；相同代码及依赖不重复无增量检查。更换环境、改代码／依赖或证据无法对应时，在正确源码目录运行相关测试、`npm run assets:check`、`npm run build`及离线构建审计。重建需新文件和散列，不替换锁定基线。 |
+| VAL-E01 | P0 | LOCAL | 按第1节锁定下载源码提交和本轮ZIP散列；解压检查入口、manifest、字体、许可及逐文件一致性。源码自建包不强制匹配本机历史ZIP散列；差异须可解释，不覆盖旧包。 |
+| VAL-E02 | P1 | LOCAL | 新下载环境按第1.1节实际完成npm ci、资产检查、测试、H5／离线构建审计，保存本轮日志与artifact.json；历史245项不能替代本轮结果。完成后相同源码与环境不重复无增量检查；改代码／依赖另建轮次。 |
 | VAL-E03 | P0 | XHS-SIM | 确认小工具作品／环境／source／预览包一致，最终 ZIP 可导入、加载并进入可玩场景；保存脱敏平台回执。 |
 | VAL-E04 | P0 | 全运行端 | 新档冷启动3次、退出后暖启动3次，分别记录页面可见和核心操作可用时间；无白屏、循环加载、缺资源和致命脚本错误。冷／暖和缓存条件明示，不能通过清用户数据制造冷启动。 |
 | VAL-E05 | P1 | 全运行端 | 首次字体完成加载后核对「沪上游侠」「梧桐巡守」「江畔司夜」「申城守望」；标题保留字体A轮廓；新增备份／恢复文案无缺字，子集正文与补充字体正常；24张WebP肖像／缩略图全部显示，无空白／拉伸，全部包内资源可加载。 |
@@ -309,7 +422,7 @@ R／O／PFR是收尾审查编号，均已完成实现与本地验收；本表要
 
 ## 8. 数据、证据和结果格式
 
-所有本轮证据放在**正确源码目录**：`docs/evidence/platform-validation/<北京时间YYYYMMDD-HHmm>/`。只新增文件，不覆盖旧报告。详细原始回执、临时调试信息留本地，加入Git前脱敏并确认无授权材料。
+所有本轮证据放在**本轮项目目录`VALIDATION_PROJECT`**（GitHub副本的`shanghai-ranger/`，不是作者Mac路径）：`docs/evidence/platform-validation/<北京时间YYYYMMDD-HHmm>/`。只新增文件，不覆盖旧报告。详细原始回执、临时调试信息留本地，加入Git前脱敏并确认无授权材料。
 
 ```text
 <run>/
@@ -379,6 +492,8 @@ R／O／PFR是收尾审查编号，均已完成实现与本地验收；本表要
 任务结束记录本轮新增工具、磁盘占用、仍运行的服务与模拟器。关闭本轮不再需要的临时服务；不卸载用户已有工具，不删除测试证据或已保存的AVD；有修改的临时配置列出恢复方式。验证完成不等于允许送审或正式发布。
 
 ## 10. 来源与后续更新
+
+从GitHub接手时，以下项目资料均读取下载副本`shanghai-ranger/`下的同名相对文件；作者Mac绝对路径和个人Skill路径仅作历史来源，不能要求另一台电脑具备这些路径。源码打包只依赖仓库内置`scripts/minitool`；平台登录／上传按当前官方入口另行准备。
 
 项目本地依据（均应在执行时回读）：
 
