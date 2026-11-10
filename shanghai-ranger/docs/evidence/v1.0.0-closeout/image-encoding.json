@@ -1,0 +1,146 @@
+[
+  {
+    "name": "outfit-magnolia-female.webp",
+    "pngBytes": 24638,
+    "webpBytes": 12602,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-magnolia-male.webp",
+    "pngBytes": 24542,
+    "webpBytes": 12524,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-neon-female.webp",
+    "pngBytes": 22757,
+    "webpBytes": 11418,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-neon-male.webp",
+    "pngBytes": 22684,
+    "webpBytes": 11380,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-nightwatch-female.webp",
+    "pngBytes": 24056,
+    "webpBytes": 12016,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-nightwatch-male.webp",
+    "pngBytes": 23914,
+    "webpBytes": 11942,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-riverside-sentinel-female.webp",
+    "pngBytes": 25096,
+    "webpBytes": 12862,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-riverside-sentinel-male.webp",
+    "pngBytes": 25001,
+    "webpBytes": 12758,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-shanghai-paragon-female.webp",
+    "pngBytes": 26795,
+    "webpBytes": 13956,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-shanghai-paragon-male.webp",
+    "pngBytes": 26700,
+    "webpBytes": 13852,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-wutong-warden-female.webp",
+    "pngBytes": 24626,
+    "webpBytes": 12700,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "outfit-wutong-warden-male.webp",
+    "pngBytes": 24537,
+    "webpBytes": 12632,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-magnolia-female.webp",
+    "pngBytes": 37422,
+    "webpBytes": 17650,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-magnolia-male.webp",
+    "pngBytes": 35573,
+    "webpBytes": 17042,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-neon-female.webp",
+    "pngBytes": 43191,
+    "webpBytes": 20524,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-neon-male.webp",
+    "pngBytes": 41263,
+    "webpBytes": 19622,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-nightwatch-female.webp",
+    "pngBytes": 40906,
+    "webpBytes": 18828,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-nightwatch-male.webp",
+    "pngBytes": 39119,
+    "webpBytes": 17918,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-riverside-sentinel-female.webp",
+    "pngBytes": 40416,
+    "webpBytes": 18524,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-riverside-sentinel-male.webp",
+    "pngBytes": 38620,
+    "webpBytes": 17818,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-shanghai-paragon-female.webp",
+    "pngBytes": 40919,
+    "webpBytes": 18776,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-shanghai-paragon-male.webp",
+    "pngBytes": 39118,
+    "webpBytes": 18074,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-wutong-warden-female.webp",
+    "pngBytes": 40061,
+    "webpBytes": 18100,
+    "rgbaIdentical": true
+  },
+  {
+    "name": "portrait-wutong-warden-male.webp",
+    "pngBytes": 38214,
+    "webpBytes": 17442,
+    "rgbaIdentical": true
+  }
+]

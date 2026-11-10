@@ -1,0 +1,69 @@
+[
+  {
+    "case": "logic before visual completion",
+    "stats": {
+      "loaded": 0,
+      "pending": 25,
+      "lastWorkMs": 3.4000000059604645,
+      "maxWorkMs": 3.4000000059604645,
+      "detail": "high",
+      "center": "5,5"
+    },
+    "boxes": 87,
+    "circles": 290
+  },
+  {
+    "case": "retained chunks rebuild detail with same colliders",
+    "before": {
+      "boxes": 87,
+      "circles": 290
+    },
+    "after": {
+      "boxes": 87,
+      "circles": 290
+    },
+    "stats": {
+      "loaded": 25,
+      "pending": 0,
+      "lastWorkMs": 1.2000000178813934,
+      "maxWorkMs": 4,
+      "detail": "balanced",
+      "center": "5,5"
+    }
+  },
+  {
+    "case": "low keeps only near chunks",
+    "stats": {
+      "loaded": 9,
+      "pending": 0,
+      "lastWorkMs": 1.300000011920929,
+      "maxWorkMs": 4,
+      "detail": "low",
+      "center": "5,5"
+    }
+  },
+  {
+    "case": "20 chunk crossings bounded",
+    "stats": {
+      "loaded": 9,
+      "pending": 0,
+      "lastWorkMs": 0.09999999403953552,
+      "maxWorkMs": 6.199999988079071,
+      "detail": "low",
+      "center": "24,5"
+    },
+    "children": 9
+  },
+  {
+    "case": "sliced update time",
+    "samples": 72,
+    "p50": 2.7000000178813934,
+    "p95": 3.5,
+    "max": 4.5,
+    "note": "browser software run; includes generator steps, not render or FPS; atomic step may exceed 3ms"
+  },
+  {
+    "case": "dispose",
+    "children": 0
+  }
+]
