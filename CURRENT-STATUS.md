@@ -11,4 +11,6 @@
 - 综合审查R01–R08、O01–O03与9项性能实施已完成，本地验收见[收尾验收](docs/V1_0_0_CLOSEOUT_VERIFICATION.md)。245项测试、六尺寸两包84状态与故障恢复检查通过；核心调用降低25%的建议目标未达，真机与长时性能仍待测。
 - 最新离线包为 `output/沪上游侠-v1.0.0-小红书小工具-收尾优化.zip`（1896197字节，1.81MiB），旧字体A包保留；新包未提交平台。
 
+- [平台与设备验证方案](docs/validation-handoff-20261110/PLAN.md)已更新至修订2，含65项用例及[接手指令](docs/validation-handoff-20261110/START-HERE.md)；[包核验回执](docs/validation-handoff-20261110/PACKAGE-CHECK.json)确认收尾优化ZIP与43文件构建清单一致，无需重打包。方案不代表平台或真机已通过。
+
 [README](README.md)提供操作与构建命令；[v0.9.5历史验收](docs/V0_9_5_VERIFICATION.md)、[宠物美术历史验收](docs/PET_VISUAL_REVISION_2026_11_10.md)保留。资料索引说明见[OPENVIKING](docs/OPENVIKING.md)，注册工作区仍为原目录，不自动将本隔离工作树注册或扩展白名单。
