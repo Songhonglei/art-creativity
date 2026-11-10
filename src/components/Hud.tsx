@@ -109,7 +109,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
     <div className="map-hud">
       <div className="map-heading"><Compass size={13} /><span>上海 · 动态夜巡</span><span className="map-region">{districtName(s.player.x, s.player.z)}</span></div>
       <button className="minimap-button" onClick={() => open('map')} aria-label="打开街区地图"><WorldMap snapshot={s} /><span className="map-expand"><MapTrifold size={12} /><Key>M</Key></span></button>
-      <div className="map-caption"><span className="map-day-dot" />第 {String(s.progress.hunts + 1).padStart(2, '0')} 夜<span>21:{String(24 + Math.floor(s.time / 60) % 36).padStart(2, '0')}</span><span>夜巡中</span></div>
+      <div className="map-caption"><span className="map-day-dot" />第 {String(s.hunt + 1).padStart(2, '0')} 夜<span>21:{String(24 + Math.floor(s.time / 60) % 36).padStart(2, '0')}</span><span>夜巡中</span></div>
     </div>
 
     <div className="world-title"><div><span />上海 · {districtName(s.player.x, s.player.z)}<span /></div><h2>{s.combat ? '看清路数，沉着出手' : districtName(s.player.x, s.player.z)}</h2><p>{s.combat ? '稳住阵脚，看清它的路数。' : s.weather === '暴雨' ? '雨落申城，霓虹在积水里摇晃。' : s.weather === '雾霾' ? '雾漫街巷，跟紧身边的伙伴。' : '十里洋场夜色深，侠客独行守霓虹。'}</p></div>
@@ -129,7 +129,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
 
     <div className="bottom-controls"><span><Key>W A S D</Key>移动</span><span><Key>拖动</Key>环顾</span><span><Key><MouseLeftClick size={12} /></Key>攻击</span><span><Key>SPACE</Key>闪避</span><span><Key>E</Key>交互</span><button onClick={() => open('help')}><Key>H</Key>全部操作<ArrowRight size={12} /></button></div>
     <div className="camera-tools"><button onClick={() => engine?.resetCamera()} aria-label="镜头归位" title="镜头归位 (V)" disabled={paused}><Compass size={18} /><span>归位</span></button><small>拖动环顾 · 双指缩放</small></div>
-    <span className="expedition-code">沪上夜巡 <i /> 001 — SH</span>
+    <span className="expedition-code">沪上夜巡 <i /> {String(s.hunt + 1).padStart(3, '0')} — SH</span>
 
     {s.interact && <button className="interact-prompt" {...actionHandlers('interact')}><Key>E</Key><span><strong>{s.interact.label}</strong><small>{s.interact.detail}</small></span><CaretRight size={18} /></button>}
 

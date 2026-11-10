@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import type { Snapshot } from '../game/types';
 import { CHUNK_SIZE, chunkCoordinate, chunkKey, districtLayout, isAuthoredChunk } from '../game/districts';
 import type { UrbanKind } from '../game/architecture';
@@ -20,18 +20,20 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
     x: center.x + (rawObjective.x - center.x) / objectiveDistance * 123,
     y: center.y + (rawObjective.y - center.y) / objectiveDistance * 123,
   } : rawObjective;
-  const cx = chunkCoordinate(snapshot.player.x), cz = chunkCoordinate(snapshot.player.z), chunks: { x: number; z: number }[] = [];
-  for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) chunks.push({ x: cx + dx, z: cz + dz });
-  const roads: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  for (const i of [-2, -1, 0, 1, 2]) {
-    const vertical = toMap((cx + i) * CHUNK_SIZE, snapshot.player.z).x;
-    const horizontal = toMap(snapshot.player.x, (cz + i) * CHUNK_SIZE).y;
-    roads.push({ x1: vertical, y1: 0, x2: vertical, y2: 300 }, { x1: 0, y1: horizontal, x2: 300, y2: horizontal });
-  }
-  const riverPoints: string[] = [];
-  for (let z = snapshot.player.z - 105; z <= snapshot.player.z + 105; z += 7) {
-    const point = toMap(riverX(z), z); riverPoints.push(`${point.x},${point.y}`);
-  }
+  const cx = chunkCoordinate(snapshot.player.x), cz = chunkCoordinate(snapshot.player.z);
+  // The city geometry changes only at chunk boundaries; moving the hero translates
+  // the cached layer instead of rebuilding every building and road at HUD frequency.
+  const city = useMemo(() => {
+    const map = (x: number, z: number) => ({ x: 150 + (x - cx * CHUNK_SIZE) * 1.58, y: 147 + (z - cz * CHUNK_SIZE) * 1.58 });
+    const blocks = [];
+    for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) {
+      const x = cx + dx, z = cz + dz, layout = districtLayout(x, z);
+      if (!isAuthoredChunk(x, z)) blocks.push(<g key={chunkKey(x, z)}>{layout.buildings.map((b, i) => { const p = map(b.x, b.z); return <rect key={i} x={p.x - b.halfWidth * 1.58} y={p.y - b.halfDepth * 1.58} width={b.halfWidth * 3.16} height={b.halfDepth * 3.16} rx="1.5" fill={DISTRICT_COLORS[layout.kind]} stroke="#b4c0d6" strokeOpacity=".2" strokeWidth=".6"/>; })}</g>);
+    }
+    const roads = [-2, -1, 0, 1, 2].map(i => { const x = map((cx + i) * CHUNK_SIZE, cz * CHUNK_SIZE).x, y = map(cx * CHUNK_SIZE, (cz + i) * CHUNK_SIZE).y; return [<line key={`v${i}`} x1={x} y1={-80} x2={x} y2={380} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9"/>, <line key={`h${i}`} x1={-80} y1={y} x2={380} y2={y} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9"/>]; });
+    const river: string[] = []; for (let z = cz * CHUNK_SIZE - 150; z <= cz * CHUNK_SIZE + 150; z += 7) { const p = map(riverX(z), z); river.push(`${p.x},${p.y}`); }
+    return <>{blocks}{roads}<polyline points={river.join(' ')} fill="none" stroke="#101a30" strokeWidth="17"/><polyline points={river.join(' ')} fill="none" stroke="#40538c" strokeOpacity=".8" strokeWidth="9"/></>;
+  }, [cx, cz]);
   const camp = toMap(-18, 29);
   const label = (x: number, z: number, text: string, dx = 0, dy = 0) => {
     const p = toMap(x, z);
@@ -54,18 +56,7 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
     <circle cx="150" cy="150" r="145" fill="#101322" fillOpacity=".85" stroke="#7d8cbd" strokeOpacity=".6" strokeWidth=".7" />
     <g clipPath={`url(#${id}clip)`}>
       <circle cx="150" cy="150" r="140" fill={`url(#${id}paper)`} />
-      {chunks.map(({ x, z }) => {
-        const layout = districtLayout(x, z);
-        return <g key={chunkKey(x, z)}>
-          {!isAuthoredChunk(x, z) && layout.buildings.map((b, i) => {
-            const p = toMap(b.x, b.z);
-            return <rect key={i} x={p.x - b.halfWidth * scale} y={p.y - b.halfDepth * scale} width={b.halfWidth * 2 * scale} height={b.halfDepth * 2 * scale} rx="1.5" fill={DISTRICT_COLORS[layout.kind]} stroke="#b4c0d6" strokeOpacity=".2" strokeWidth=".6" />;
-          })}
-        </g>;
-      })}
-      {roads.map((line, i) => <line key={i} {...line} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9" />)}
-      <polyline points={riverPoints.join(' ')} fill="none" stroke="#101a30" strokeWidth="17" />
-      <polyline points={riverPoints.join(' ')} fill="none" stroke="#40538c" strokeOpacity=".8" strokeWidth="9" />
+      <g transform={`translate(${-(snapshot.player.x - cx * CHUNK_SIZE) * scale} ${-(snapshot.player.z - cz * CHUNK_SIZE) * scale})`}>{city}</g>
       <circle cx="150" cy="150" r="140" fill={`url(#${id}grid)`} />
       {route && <polyline points={route} fill="none" stroke="#f0cf7e" strokeOpacity=".72" strokeWidth="1.5" strokeDasharray="4 4" />}
       {snapshot.resources.filter(r => !r.collected && r.kind !== 'clue').map(r => {

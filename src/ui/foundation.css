@@ -1,0 +1,657 @@
+/* v1.0.0 Shanghai patrol UI. Baseline restored from verified H5; later fixes below. */
+:root{
+  --gold:#d7b56d;
+  --cream:#f2eadb;
+  --ink:#111d2a;
+  --ui-panel:#1a2a38;
+  --ui-muted:#bac6c6;
+  --ui-jade:#79bcb2;
+  --ui-line:#5c625b;
+  --ui-error:#df9298
+}
+.game-shell{
+  color:var(--cream);
+  font-family:GameChineseSans,system-ui,sans-serif;
+  font-size:14px;
+  background:var(--ink)
+}
+.game-shell h1,.game-shell h2,.game-shell h3,.game-shell h4,
+.game-shell .brand strong,.game-shell .hunter-name>strong,.game-shell .monster-status strong{
+  font-family:NightTitle,GameChineseSans,sans-serif!important;
+  font-weight:400!important;
+  font-style:normal;
+  font-synthesis:none;
+  letter-spacing:.025em
+}
+.game-shell h1,.game-shell h2,.game-shell h3,.game-shell h4{
+  color:var(--cream);
+}
+.game-shell button,.game-shell input,.game-shell select{
+  font-family:GameChineseSans,system-ui,sans-serif!important;
+  font-size:14px;
+  letter-spacing:0
+}
+.game-shell p,.game-shell li,.game-shell label{
+  font-size:14px;
+  line-height:1.65
+}
+.game-shell small,.game-shell kbd,.game-shell .eyebrow,.game-shell .muted,.game-shell .text-button,.game-shell .local-save-note,.game-shell .preview-label,.game-shell .setting-row{
+  font-size:12px!important;
+  line-height:1.5;
+  letter-spacing:.035em
+}
+.game-shell small,.game-shell .muted{
+  color:var(--ui-muted)
+}
+.game-shell button{
+  cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s;
+  min-height:44px;
+  min-width:44px;
+  touch-action:manipulation
+}
+.game-shell button:disabled{
+  cursor:default;
+  opacity:.58
+}
+.game-shell button:focus-visible,.game-shell input:focus-visible,.game-shell select:focus-visible{
+  outline:3px solid var(--ui-jade);
+  outline-offset:3px
+}
+.game-shell button:hover:not(:disabled){
+  border-color:var(--gold)
+}
+.game-shell select{
+  min-height:44px;
+  max-width:100%;
+  background:#111d2a;
+  color:var(--cream);
+  border:1px solid #7e826f;
+  border-radius:4px;
+  padding:6px 10px
+}
+.game-shell input[type=range]{
+  min-height:44px;
+  accent-color:var(--ui-jade)
+}
+.game-shell .primary-button{
+  background:var(--gold);
+  color:#17232b;
+  border:1px solid #e2c68d;
+  box-shadow:inset 0 0 0 3px rgba(23,35,43,.14);
+  font-size:15px;
+  font-weight:650;
+  border-radius:3px;
+  min-height:50px;
+  padding:12px 18px;
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .primary-button:hover:not(:disabled){
+  background:#e4c88d;
+  color:#17232b;
+  transform:none
+}
+.game-shell .text-button{
+  color:var(--gold);
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .eyebrow{
+  color:var(--ui-muted)
+}
+.game-shell .gold{
+  color:var(--gold)
+}
+.game-shell .topbar{
+  height:90px;
+  padding:12px 24px;
+  grid-gap:20px;
+  gap:20px;
+  background:linear-gradient(rgba(17,29,42,.96),rgba(17,29,42,.67));
+  border-bottom:1px solid #d7b56d40;
+  align-items:center
+}
+.game-shell .brand{
+  min-width:156px;
+  grid-gap:10px;
+  gap:10px
+}
+.game-shell .brand>svg{
+  width:40px;
+  height:48px;
+  color:var(--gold)
+}
+.game-shell .brand strong{
+  font-size:30px;
+  line-height:1.2;
+  color:var(--cream)
+}
+.game-shell .brand small{
+  font-size:14px!important;
+  line-height:1.2;
+  color:var(--gold)
+}
+.game-shell .brand-tagline{
+  font-size:10px;
+  letter-spacing:.08em;
+  color:var(--ui-muted)
+}
+.game-shell .main-nav{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .main-nav>button{
+  height:46px;
+  grid-gap:8px;
+  gap:8px;
+  padding:8px 12px;
+  font-size:14px;
+  border-radius:3px;
+  color:var(--ui-muted)
+}
+.game-shell .main-nav>button.active{
+  color:var(--gold);
+  background:rgba(215,181,109,.08);
+  border-color:rgba(215,181,109,.396)
+}
+.game-shell .main-nav kbd{
+  display:none
+}
+.game-shell .top-actions{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .top-actions>button{
+  width:44px;
+  height:44px;
+  border:1px solid #d7b56d40;
+  border-radius:3px
+}
+.game-shell .solo-label{
+  font-size:12px;
+  white-space:nowrap
+}
+.game-shell .action-divider{
+  display:none
+}
+.game-shell .hud-toggle{
+  font-size:12px!important
+}
+.game-shell .hunter-status{
+  top:112px;
+  left:24px;
+  grid-gap:12px;
+  gap:12px;
+  width:290px;
+  padding:12px;
+  background:rgba(17,29,42,.85);
+  border:1px solid #d7b56d45;
+  border-radius:4px
+}
+.game-shell .hunter-sigil{
+  width:64px;
+  height:72px;
+  flex-shrink:0;
+  border:1px solid #d7b56d75;
+  border-radius:5px;
+  background:#25404a;
+  overflow:hidden;
+  transform:none;
+  padding:0
+}
+.hero-portrait{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block
+}
+.game-shell .hunter-details{
+  min-width:0;
+  flex:1
+}
+.game-shell .hunter-name{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .hunter-name strong{
+  font-size:18px
+}
+.game-shell .hunter-name>span{
+  font-size:12px;
+  white-space:nowrap
+}
+.game-shell .vital-line{
+  margin-top:8px;
+  grid-gap:7px;
+  gap:7px
+}
+.game-shell .vital-line>span{
+  font-size:12px;
+  white-space:nowrap
+}
+.game-shell .vital{
+  height:6px
+}
+.game-shell .vital.health>i{
+  background:#d69485
+}
+.game-shell .vital.stamina>i{
+  background:#79bcb2
+}
+.game-shell .companion-status{
+  min-height:44px;
+  font-size:12px;
+  grid-gap:6px;
+  gap:6px;
+  padding:5px 0;
+  color:var(--ui-muted);
+  text-align:left
+}
+.game-shell .companion-status small,.game-shell .companion-line{
+  display:none
+}
+.game-shell .quest-tracker{
+  top:292px;
+  left:24px;
+  width:260px
+}
+.game-shell .quest-tracker h1{
+  font-size:44px;
+  line-height:1.15;
+  margin:14px 0
+}
+.game-shell .quest-tracker .eyebrow,.game-shell .quest-tracker .quest-subtitle,.game-shell .quest-tracker .quest-difficulty,.game-shell .quest-tracker .quest-steps{
+  font-size:12px
+}
+.game-shell .quest-steps>div{
+  font-size:13px;
+  min-height:34px
+}
+.game-shell .step-icon{
+  width:24px;
+  height:24px
+}
+.game-shell .step-icon svg{
+  width:15px;
+  height:15px
+}
+.game-shell .quest-difficulty svg{
+  width:14px
+}
+.game-shell .weather-widget{
+  top:112px;
+  right:24px;
+  width:240px;
+  background:rgba(17,29,42,.85);
+  border:1px solid #d7b56d45;
+  padding:14px;
+  border-radius:4px
+}
+.game-shell .weather-main h3{
+  font-size:25px
+}
+.game-shell .weather-widget p{
+  font-size:12px
+}
+.game-shell .weather-meta{
+  font-size:12px;
+  flex-wrap:wrap;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .temperature{
+  font-size:23px
+}
+.game-shell .compass-strip{
+  top:111px
+}
+.game-shell .compass-mark>span{
+  font-size:12px
+}
+.game-shell .compass-mark.major>span{
+  font-size:13px
+}
+.game-shell .monster-status{
+  top:162px;
+  width:360px;
+  max-width:calc(100vw - 32px);
+  width:min(360px,calc(100vw - 32px));
+  background:rgba(17,29,42,.91);
+  padding:12px;
+  border:1px solid #d7b56d66;
+  border-radius:4px
+}
+.game-shell .monster-status strong{
+  font-size:20px
+}
+.game-shell .monster-status p,.game-shell .monster-status small{
+  font-size:12px!important
+}
+.game-shell .monster-status>div>b{
+  font-size:22px
+}
+.game-shell .map-hud{
+  left:24px;
+  bottom:72px;
+  width:180px;
+  background:rgba(17,29,42,.85);
+  border:1px solid #d7b56d45;
+  padding:8px
+}
+.game-shell .minimap-button{
+  width:162px;
+  height:148px
+}
+.game-shell .map-heading,.game-shell .map-caption{
+  font-size:12px;
+  grid-gap:6px;
+  gap:6px
+}
+.game-shell .map-region,.game-shell .map-caption>span:last-child{
+  display:none
+}
+.game-shell .equipment-hud{
+  right:24px;
+  bottom:82px;
+  width:284px
+}
+.game-shell .weapon-label{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .weapon-label strong{
+  font-size:18px
+}
+.game-shell .weapon-tier{
+  font-size:12px
+}
+.game-shell .quick-items{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .quick-item{
+  width:50px;
+  height:64px;
+  padding:6px;
+  min-width:0;
+  border:1px solid #d7b56d70;
+  border-radius:4px;
+  background:rgba(17,29,42,.91)
+}
+.game-shell .quick-item.selected{
+  border-color:var(--gold);
+  background:rgba(52,77,80,.91)
+}
+.game-shell .quick-item .quick-label{
+  font-size:12px;
+  line-height:1.2
+}
+.game-shell .item-count{
+  font-size:12px;
+  background:#111d2a
+}
+.game-shell .item-key,.game-shell .item-caption,.game-shell .sharpness{
+  display:none
+}
+.game-shell .bottom-controls{
+  bottom:20px;
+  grid-gap:20px;
+  gap:20px
+}
+.game-shell .bottom-controls>span{
+  font-size:12px;
+  grid-gap:7px;
+  gap:7px
+}
+.game-shell kbd{
+  background:#1a2a38;
+  border:1px solid #8e947d;
+  color:var(--cream);
+  border-radius:3px;
+  min-height:22px;
+  padding:2px 5px
+}
+.game-shell .world-title{
+  bottom:110px
+}
+.game-shell .world-title h2{
+  font-size:29px
+}
+.game-shell .world-title p{
+  font-size:12px
+}
+.game-shell .world-title>div{
+  font-size:12px
+}
+.game-shell .expedition-code{
+  display:none
+}
+.game-shell .street-patrol-count{
+  font-size:12px;
+  top:auto;
+  bottom:310px;
+  left:auto;
+  right:24px
+}
+.game-shell .street-patrol-count small{
+  display:none
+}
+.game-shell .camera-tools{
+  bottom:18px;
+  right:24px
+}
+.game-shell .camera-tools small{
+  display:none
+}
+.game-shell .camera-tools button{
+  padding:8px 12px;
+  background:rgba(17,29,42,.91);
+  border:1px solid #d7b56d75;
+  font-size:12px
+}
+.game-shell .help-corner{
+  left:24px;
+  bottom:16px;
+  width:44px;
+  height:44px;
+  border-color:rgba(215,181,109,.5)
+}
+.game-shell .notifications{
+  top:320px;
+  right:24px;
+  width:260px
+}
+.game-shell .notice{
+  background:rgba(26,42,56,.95);
+  border:1px solid #d7b56d66;
+  border-radius:4px;
+  padding:12px;
+  grid-gap:10px;
+  gap:10px
+}
+.game-shell .notice strong{
+  font-size:14px
+}
+.game-shell .notice p{
+  font-size:12px
+}
+.game-shell .notice-icon{
+  color:var(--ui-jade)
+}
+.game-shell .interact-prompt{
+  bottom:200px;
+  padding:12px 16px;
+  background:rgba(17,29,42,.937);
+  border:1px solid var(--gold);
+  border-radius:4px
+}
+.game-shell .interact-prompt strong{
+  font-size:16px
+}
+.game-shell .pet-buff-status{
+  font-size:12px
+}
+.game-shell .nightwatch-start{
+  top:112px;
+  right:8%;
+  bottom:40px;
+  left:8%;
+  transform:none;
+  border:1px solid #d7b56d65;
+  border-radius:5px;
+  overflow:hidden;
+  grid-template-columns:1fr 1.12fr;
+  box-shadow:0 25px 80px rgba(6,16,22,.7)
+}
+.game-shell .nightwatch-page{
+  background:linear-gradient(145deg,#223d48,#142531);
+  border-color:rgba(215,181,109,.314);
+  padding:32px
+}
+.game-shell .nightwatch-notes{
+  background:#182b37;
+  padding:28px 32px;
+  overflow-y:auto
+}
+.game-shell .nightwatch-start h1{
+  font-size:72px;
+  font-size:clamp(60px,7vw,94px);
+  line-height:1.08;
+  color:var(--cream);
+  text-shadow:none;
+  margin:30px 0 18px
+}
+.game-shell .nightwatch-start h2{
+  font-size:30px;
+  margin:12px 0
+}
+.game-shell .nightwatch-tab{
+  font-size:12px;
+  border-color:var(--gold);
+  color:var(--gold)
+}
+.game-shell .nightwatch-notes>span{
+  font-size:12px;
+  color:var(--gold)
+}
+.game-shell .nightwatch-notes p{
+  color:var(--ui-muted)
+}
+.game-shell .nightwatch-seal{
+  font-size:12px;
+  border-radius:4px;
+  border-color:var(--gold);
+  color:var(--gold);
+  padding:13px 10px;
+  transform:rotate(5deg)
+}
+.game-shell .nightwatch-specimen svg{
+  height:180px
+}
+.game-shell .nightwatch-specimen small{
+  font-size:12px!important
+}
+.game-shell .nightwatch-deck{
+  font-size:14px
+}
+.game-shell .nightwatch-controls{
+  font-size:12px!important
+}
+.game-shell .target-card{
+  margin-top:14px;
+  padding:10px 12px;
+  border-color:rgba(215,181,109,.314);
+  color:var(--ui-muted);
+  background:rgba(17,29,42,.4);
+  font-size:12px
+}
+.game-shell .target-card strong{
+  display:block;
+  color:var(--cream);
+  font-size:14px;
+  margin-top:4px
+}
+.selection-label{
+  display:block;
+  font-size:12px;
+  margin-bottom:8px;
+  color:var(--ui-muted)
+}
+.gender-select{
+  margin-top:18px
+}
+.gender-picker{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-gap:8px;
+  gap:8px
+}
+.gender-picker>button{
+  display:flex;
+  align-items:center;
+  grid-gap:10px;
+  gap:10px;
+  padding:6px 12px;
+  background:#111d2a;
+  border:1px solid #737c70;
+  border-radius:4px;
+  color:var(--cream);
+  height:64px
+}
+.gender-picker .hero-portrait{
+  width:48px;
+  height:50px;
+  border-radius:3px
+}
+.gender-picker>button>svg:last-child{
+  margin-left:auto;
+  color:var(--gold)
+}
+.gender-picker>button.active{
+  border-color:var(--gold);
+  background:#354b49
+}
+.game-shell .pet-select{
+  margin-top:16px;
+  padding-top:14px;
+  border-color:rgba(215,181,109,.27)
+}
+.game-shell .pet-select-label{
+  font-size:12px;
+  letter-spacing:0;
+  color:var(--ui-muted);
+  margin-bottom:8px
+}
+.game-shell .pet-picker{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .pet-picker>button{
+  min-width:0;
+  min-height:94px;
+  padding:8px 5px;
+  font-size:14px;
+  border:1px solid #737c70;
+  border-radius:4px;
+  background:#111d2a;
+  color:var(--cream)
+}
+.game-shell .pet-picker>button.active{
+  border-color:var(--gold);
+  background:#354b49;
+  box-shadow:none
+}
+.game-shell .pet-picker small{
+  font-size:12px!important
+}
+.game-shell .pet-face{
+  width:27px;
+  height:27px
+}
+.game-shell .nightwatch-notes>.primary-button{
+  width:100%;
+  margin-top:16px
+}

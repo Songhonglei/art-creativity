@@ -1,0 +1,21 @@
+{
+  "fonts": [
+    {
+      "name": "zh-sans",
+      "originalBytes": 642204,
+      "originalCodepoints": 2406,
+      "candidateBytes": 280296,
+      "candidateCodepoints": 1092,
+      "sourceCodepointsRemoved": 0
+    },
+    {
+      "name": "zh-serif",
+      "originalBytes": 838656,
+      "originalCodepoints": 2406,
+      "candidateBytes": 362800,
+      "candidateCodepoints": 1092,
+      "sourceCodepointsRemoved": 0
+    }
+  ],
+  "note": "Temporary analysis subsets only, not application assets or approved deliverables. Full source characters plus ASCII; font-family roles, license naming and all UI glyphs still require implementation-stage verification."
+}

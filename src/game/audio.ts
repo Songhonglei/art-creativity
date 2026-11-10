@@ -28,10 +28,11 @@ export class GameAudio {
   private musicTimer: ReturnType<typeof setInterval> | null = null;
   private outputConnected = false;
   private disposed = false;
+  private background = false;
   enabled = true; volume = .45;
 
   unlock() {
-    if (this.disposed || !this.enabled || this.volume <= 0) return;
+    if (this.disposed || this.background || !this.enabled || this.volume <= 0) return;
     if (!this.ctx) {
       try {
         this.ctx = new AudioContext(); this.master = this.ctx.createGain(); this.master.gain.value = 0;
@@ -42,7 +43,7 @@ export class GameAudio {
         this.moodKey = ''; this.applyMood(); this.setVolume(this.volume, this.enabled);
       } catch { this.dispose(); return; }
     }
-    if (this.ctx.state === 'suspended') void this.ctx.resume().catch(() => { });
+    if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') void this.ctx.resume().catch(() => { });
     if (this.musicTimer === null) this.musicTimer = setInterval(() => this.updateMusic(), 100);
     this.updateMusic();
   }
@@ -100,7 +101,7 @@ export class GameAudio {
 
   /** Schedule against the audio clock, including while a settings dialog pauses the game. */
   updateMusic() {
-    if (!this.ctx || this.ctx.state !== 'running' || !this.enabled || this.volume <= 0) return;
+    if (this.background || !this.ctx || this.ctx.state !== 'running' || !this.enabled || this.volume <= 0) return;
     const now = this.ctx.currentTime;
     if (this.nextNote < now) this.nextNote = now + .02;
     const profile = SOUNDSCAPES[this.soundscape];
@@ -156,6 +157,13 @@ export class GameAudio {
 
   setEnvironmentActive(active: boolean) {
     this.environmentActive = active; if (!active) this.stopAmbience();
+  }
+  setBackground(hidden: boolean) {
+    this.background = hidden;
+    if (hidden) {
+      if (this.musicTimer !== null) clearInterval(this.musicTimer); this.musicTimer = null;
+      this.stopScore(); this.stopAmbience(); void this.ctx?.suspend().catch(() => {});
+    } else this.unlock();
   }
   setCityFeature(kind: CityFeatureKind | null, distance: number) {
     this.ambience.setCity(kind, distance); this.trimAmbience();

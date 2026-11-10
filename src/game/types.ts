@@ -47,6 +47,7 @@ export interface Encounter {
   enraged: boolean; elite: boolean; street: boolean;
 }
 export interface Settings {
+  autoQuality?: boolean;
   sound: boolean; volume: number; soundscape: Soundscape; quality: 'high' | 'balanced' | 'low'; sensitivity: number; reducedMotion: boolean; enemyHealthBars: boolean;
 }
 export interface GameEvent {
@@ -55,6 +56,7 @@ export interface GameEvent {
 }
 export interface Notification { id: number; title: string; description: string; kind: 'info' | 'success' | 'warning' }
 export interface Snapshot {
+  hunt: number;
   saveStatus: 'idle' | 'saving' | 'saved' | 'failed';
   health: number; maxHealth: number; stamina: number; potions: number;
   monsterHealth: number; monsterMaxHealth: number; monsterAction: MonsterAction;
