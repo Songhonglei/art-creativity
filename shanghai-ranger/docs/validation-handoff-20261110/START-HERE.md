@@ -1,28 +1,20 @@
-# 发给另一个 Agent 的启动指令
+# 发给验证 Agent 的启动指令
 
-以下整段可以直接发送给负责环境准备和验证的 Agent：
+以下整段可直接发送，支持从GitHub下载源码后自行打包：
 
 ```text
-请执行《沪上游侠：环境准备与完整验证方案》：
-/Users/songhonglei/space/沪上游侠/docs/validation-handoff-20261110/PLAN.md
+请按以下GitHub验证方案执行，使用修订3（65项用例，含源码下载和打包步骤）：
+https://github.com/Songhonglei/art-creativity/blob/feature/shanghai-ranger-v1.0.0/shanghai-ranger/docs/validation-handoff-20261110/PLAN.md
 
-本次授权：在这台Mac准备官方Android和iOS模拟器环境，完成小红书小工具平台模拟器、Android模拟器、iOS模拟器验证，并组织Android手机和iPhone的小红书客户端完整实测；可执行必要的测试上传与生成真机预览，不提交审核、不正式发布、不覆盖真实玩家存档。环境安装、登录、上传与用例执行逐步记录。应用代码发现问题先报告，修复范围再按我的后续指令处理。
+从 https://github.com/Songhonglei/art-creativity 下载 feature/shanghai-ranger-v1.0.0 分支，项目在 shanghai-ranger/ 子目录；不要下载main当作本次v1.0.0。读下载副本的AGENTS.md、CURRENT-STATUS.md、最新收尾验收和验证方案，锁定实际完整提交，使用新目录自行打包；不依赖作者电脑的路径或本机历史ZIP。
 
-正确源码目录是：
-/Users/songhonglei/space/output/shanghai-ranger-v1-20261110
-不要在仍是v0.9.5且有未提交改动的 /Users/songhonglei/space/沪上游侠 重建应用。
+按方案第1.1–1.2节准备Git/Bash/Python3/zip和Node 22.16+（建议Node22），运行npm ci、npm run assets:check、npm test、npm run build，再通过仓库内置scripts/minitool和scripts/build-tool.sh生成离线ZIP。保存构建日志，核对ZIP与dist-tool逐文件一致，生成本轮artifact.json记录实际源码提交、工具版本、包大小、SHA256和文件散列。历史ZIP散列只是参考，不要求新构建ZIP字节相同，也不能把历史通过结果搬到新包。
 
-测试包：
-/Users/songhonglei/space/output/shanghai-ranger-v1-20261110/output/沪上游侠-v1.0.0-小红书小工具-收尾优化.zip
-SHA256：244371d1125ea58d1410d1b869a0dd50359ed527bc8960d03abd51d365d0c3d4
+本次授权准备官方Android和iOS模拟器环境、下载源码并安装构建依赖和打包，完成小红书小工具平台模拟器、Android模拟器、iOS模拟器验证，并组织Android／iPhone真实小红书客户端实测；可执行必要的测试上传及生成预览，不提交审核、不正式发布、不覆盖真实玩家存档。免费本地工具正常安装，收费资源另行说明。应用缺陷先报告，业务代码修复按我的后续指令处理。
 
-本方案已更新为修订2，共65项用例，适配应用代码83dc188。当前收尾优化ZIP为1,896,197字节／43文件，已核验对应源码与构建目录，无需重复打包；字体A旧包仅作对照。若你已经开始旧轮验证，保留安装成果与旧轮证据，换新包重跑受影响用例，不能只改报告包名。
+使用本轮同一ZIP贯穿平台与手机验证，系统浏览器预览也从这份ZIP解压。iOS模拟器只承担Safari兼容性，不能代替iPhone小红书容器。重点补验坏档恢复、独立存储槽与回滚、超时写入、宠物滑动、矮屏／焦点、夜数、自动画质、分步街区、暂停绘制和缓存回收；固定画质对照关闭自动调节。缺旧内核、手机或无法量化时如实记录阻塞，不用mock、改UA或模拟器帧率代替真机证据。
 
-先读取方案、正确源码目录的AGENTS.md和docs/V1_0_0_CLOSEOUT_VERIFICATION.md，重新核对本机环境、Git状态与测试包散列。按需读取webapp-building-pro的小工具指南，平台source和作品以本次真实配置及只读查询为准；不要猜作品或新建测试作品。常规可逆步骤直接推进，账号、作品、手机缺失信息集中向我询问，等待期间继续其他可执行项目。不要重复询问我已明确授权的安装和测试上传。
-
-使用同一最终ZIP贯穿平台和手机验证。iOS模拟器只承担Safari兼容性，不承诺直接运行App Store版小红书；真实存档、多指、生命周期和长时性能必须单独验证。本次重点补验双副本坏档恢复、独立槽迁移与旧版回滚、超时写入屏障、宠物滑动、矮屏／备份焦点、当前夜数、自动画质、分步街区、暂停按需绘制及缓存回收。固定画质对照关闭自动调节，另跑自动开启场景。旧内核拿不到、手机未到位或无法量化的指标如实写阻塞，不用mock、现代浏览器改UA或模拟器帧率替代。
-
-每个用例×环境分别记录通过／失败／阻塞／不适用／待测，保留截图、录像、日志和设备信息。结果放到正确源码目录下 docs/evidence/platform-validation/<北京时间轮次>/，按方案交付REPORT.md及问题清单。验证结果与送审／发布状态分开，不把环境就绪或扫码成功写成验收通过。
+常规可逆步骤直接推进；缺账号、作品或手机时集中询问，等待时继续其他可执行项目。每个用例×环境单独记录状态和证据，结果保存在本轮项目目录 docs/evidence/platform-validation/<北京时间轮次>/，交付REPORT.md、问题清单、artifact.json、构建日志及实际测试ZIP路径。环境就绪、打包成功、扫码成功与验收通过分别报告。
 ```
 
-完整方案见 [PLAN.md](PLAN.md)。本文件是用户可发送的指令草稿；尚未执行安装、上传或平台验证。
+完整方案见 [PLAN.md](PLAN.md)。历史作者包与核验回执仅用于追溯；本文件不表示已执行构建或平台验证。
