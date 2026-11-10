@@ -23,11 +23,14 @@ export function Modal({ modal, s, engine, settings, setSettings, close, open, sa
     ref.current?.focus();
     const trap = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
-      const list = Array.from(ref.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input, select, summary, [tabindex="0"]') ?? []).filter(el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden');
+      const list = Array.from(ref.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]') ?? []).filter(el => {
+        const closed = el.closest('details:not([open])');
+        return (!closed || closed.querySelector('summary') === el) && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+      });
       if (!list?.length) return;
-      const first = list[0], last = list[list.length - 1];
-      if (e.shiftKey && (document.activeElement === first || document.activeElement === ref.current)) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && (document.activeElement === last || document.activeElement === ref.current)) { e.preventDefault(); first.focus(); }
+      const index = list.indexOf(document.activeElement as HTMLElement);
+      e.preventDefault();
+      list[index < 0 ? e.shiftKey ? list.length - 1 : 0 : (index + (e.shiftKey ? -1 : 1) + list.length) % list.length].focus();
     };
     document.addEventListener('keydown', trap); return () => { document.removeEventListener('keydown', trap); previous?.focus(); };
   }, [modal]);
