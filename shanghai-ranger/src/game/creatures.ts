@@ -6,6 +6,7 @@ import type { Pet, MonsterKind, Skin, Weapon } from './types';
 import type { Simulation } from './simulation';
 import { attackPose, dodgePose } from './combat';
 import { petSkin } from './pets';
+import { createCorgiAnatomy, createShibaAnatomy } from './petModels';
 
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const standard = (color: string, roughness = .82, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -362,135 +363,166 @@ export function createHunter(m: Materials, skin: Skin = 'nightwatch') {
   };
 }
 
-/** Modern city pets with readable markings, collars and separate paws. */
+/** Scene, turntable and gallery share these exact species-specific models. */
 export function createPet(pet: Pet, skinId = '') {
-  const skin = petSkin(pet, skinId);
-  const root = new THREE.Group(), darkEye = standard('#191b22', .2), glint = new THREE.MeshBasicMaterial({ color: '#fff8e8' });
-  const nose = standard('#30272a', .38), pink = standard('#d89591', .9), cream = standard('#f0dfc2', .96);
-  const isCat = pet === 'orangeCat', isCorgi = pet === 'corgi';
-  const fur = standard(isCat ? '#df8b3f' : isCorgi ? '#d5a05b' : '#bd7841', .96), marking = standard(isCat ? '#a85b27' : '#f0e5cf', .96);
-  const legHeight = isCorgi ? .1 : .16, bodyY = isCorgi ? .29 : .33;
-  ellipsoid(root, fur, [0, bodyY, -.03], [isCorgi ? .19 : .17, isCorgi ? .17 : .15, isCorgi ? .34 : .3]);
-  ellipsoid(root, fur, [0, bodyY + .025, .2], [.16, .16, .16]);
-  ellipsoid(root, cream, [0, bodyY - .075, .13], [.12, .09, .18]);
-  ellipsoid(root, fur, [0, bodyY + .15, .31], [.125, .115, .115]);
-  ellipsoid(root, cream, [0, bodyY + .1, isCat ? .38 : .405], [isCat ? .085 : .10, isCat ? .065 : .075, isCat ? .065 : .095]);
-  ellipsoid(root, nose, [0, bodyY + .13, isCat ? .435 : .49], [isCat ? .021 : .029, .018, .018]);
-  if (isCorgi) ellipsoid(root, cream, [0, bodyY + .22, .335], [.035, .09, .06]);
-  if (isCat) for (let i = 0; i < 3; i++) ellipsoid(root, marking, [0, bodyY + .13, .11 - i * .14], [.11, .025, .055]);
-  for (const side of [-1, 1]) {
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(isCorgi ? .075 : .05, isCorgi ? .16 : .115, 4), fur); ear.position.set(side * .075, bodyY + .28, .31); ear.rotation.z = side * -.1; root.add(ear);
-    const inner = new THREE.Mesh(new THREE.ConeGeometry(.028, .07, 4), pink); inner.position.set(side * .075, bodyY + .275, .327); root.add(inner);
-    ellipsoid(root, darkEye, [side * .052, bodyY + .17, .41], [.021, .023, .017]);
-    ellipsoid(root, glint, [side * .045, bodyY + .18, .424], [.006, .007, .005]);
-    for (const z of [-.16, .16]) {
-      capsule(root, fur, [side * .095, legHeight * .5 + .10, z], .035, legHeight);
-      ellipsoid(root, cream, [side * .095, .04, z + .025], [.04, .038, .055]);
-    }
-  }
-  const collar = new THREE.Mesh(new THREE.TorusGeometry(.105, .018, 6, 14), standard('#337d83', .6)); collar.position.set(0, bodyY + .08, .24); collar.rotation.x = Math.PI / 2.7; root.add(collar);
-  const tag = new THREE.Mesh(new THREE.OctahedronGeometry(.028), standard('#d2ac59', .35, .55)); tag.position.set(0, bodyY + .015, .34); root.add(tag);
-  if (pet === 'shiba') {
-    const tail = new THREE.Mesh(new THREE.TorusGeometry(.09, .032, 7, 16, Math.PI * 1.65), fur); tail.position.set(0, bodyY + .14, -.3); tail.rotation.set(.35, 0, 1.1); root.add(tail);
-    ellipsoid(root, cream, [.075, bodyY + .19, -.31], [.037, .037, .037]);
-  } else if (isCorgi) {
-    ellipsoid(root, fur, [0,bodyY+.07,-.36],[.065,.075,.08]); ellipsoid(root,cream,[0,bodyY+.10,-.40],[.05,.05,.055]);
-  } else {
-    root.add(taperedTube([v(0,bodyY+.06,-.28),v(.03,bodyY+.20,-.38),v(.10,bodyY+.34,-.37),v(.15,bodyY+.35,-.31)],[.034,.030,.025,.018],fur,6,12));
-    for (const side of [-1,1]) for (const offset of [-.015,.015]) root.add(taperedTube([v(side*.06,bodyY+.09+offset,.426),v(side*.15,bodyY+.10+offset,.43)],[.002,.001],cream,3,2));
-  }
-  dressPet(root, pet, skin.id, bodyY);
+  const skin = petSkin(pet, skinId), root = new THREE.Group();
+  const anatomy = pet === 'shiba' ? createShibaAnatomy() : pet === 'corgi' ? createCorgiAnatomy() : createCatAnatomy();
+  root.add(anatomy);
+  const bodyY = pet === 'shiba' ? .475 : pet === 'corgi' ? .285 : .33;
+  const outfit = new THREE.Group(); outfit.name = 'pet-outfit'; root.add(outfit);
+  dressPet(outfit, pet, skin.id, bodyY);
+  root.userData.designParts = outfit.userData.designParts;
   root.name = `pet-${pet}-${skin.id}`; root.userData.pet = pet; root.userData.skin = skin.id;
-  root.scale.setScalar(1.16); batchRigidParts(root); return root;
+  root.scale.setScalar(1.16); batchRigidParts(outfit); return root;
 }
 
-/** Nine authored accessory sets: no skin is a palette swap of another one. */
+function createCatAnatomy() {
+  const root=new THREE.Group(),fur=standard('#df8b3f',.96),stripe=standard('#a85b27',.96),cream=standard('#f0dfc2',.96);
+  const eye=standard('#191b22',.2),glint=new THREE.MeshBasicMaterial({color:'#fff8e8'}),nose=standard('#30272a',.38),pink=standard('#d89591',.9),y=.33;
+  ellipsoid(root,fur,[0,y,-.03],[.17,.15,.3]);ellipsoid(root,fur,[0,y+.025,.2],[.16,.16,.16]);
+  ellipsoid(root,cream,[0,y-.075,.13],[.12,.09,.18]);ellipsoid(root,fur,[0,y+.15,.31],[.125,.115,.115]);
+  ellipsoid(root,cream,[0,y+.10,.38],[.085,.065,.065]);ellipsoid(root,nose,[0,y+.13,.435],[.021,.018,.018]);
+  for(let i=0;i<3;i++)ellipsoid(root,stripe,[0,y+.13,.11-i*.14],[.11,.025,.055]);
+  for(const side of[-1,1]){
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(.05,.115,4),fur);ear.position.set(side*.075,y+.28,.31);ear.rotation.z=side*-.1;root.add(ear);
+    const inner=new THREE.Mesh(new THREE.ConeGeometry(.028,.07,4),pink);inner.position.set(side*.075,y+.275,.327);root.add(inner);
+    ellipsoid(root,eye,[side*.052,y+.17,.41],[.021,.023,.017]);ellipsoid(root,glint,[side*.045,y+.18,.424],[.006,.007,.005]);
+    for(const z of[-.16,.16]){capsule(root,fur,[side*.095,.18,z],.035,.16);ellipsoid(root,cream,[side*.095,.04,z+.025],[.04,.038,.055]);}
+    for(const offset of[-.015,.015])root.add(taperedTube([v(side*.06,y+.09+offset,.426),v(side*.15,y+.10+offset,.43)],[.002,.001],cream,3,2));
+  }
+  const collar=new THREE.Mesh(new THREE.TorusGeometry(.105,.018,6,14),standard('#337d83',.6));collar.position.set(0,y+.08,.24);collar.rotation.x=Math.PI/2.7;root.add(collar);
+  const tag=new THREE.Mesh(new THREE.OctahedronGeometry(.028),standard('#d2ac59',.35,.55));tag.position.set(0,y+.015,.34);root.add(tag);
+  root.add(taperedTube([v(0,y+.06,-.28),v(.03,y+.20,-.38),v(.10,y+.34,-.37),v(.15,y+.35,-.31)],[.034,.030,.025,.018],fur,6,12));
+  root.name='anatomy-orangeCat';batchRigidParts(root);return root;
+}
+
+/** Additive outfit construction: each rank retains and upgrades the previous rank's garment classes. */
 function dressPet(root: THREE.Group, pet: Pet, id: string, y: number) {
-  const definition = petSkin(pet, id), rank = definition.level;
-  root.userData.designParts = [];
-  if (rank === 1) return;
-  const cloth = standard(definition.colors[0], .96), accent = standard(definition.colors[1], .65), trim = standard(definition.colors[2], .5, .25);
-  const brass = standard('#d8b463', .38, .62), white = standard('#efe6cf', .9), leather = standard('#493a32', .85);
-  const record = (name: string) => root.userData.designParts.push(name);
-  const tile = (mat: THREE.Material, pos: number[], size: number[], name: string) => { record(name); return panel(root, mat, pos, size, .012); };
-  const ring = (mat: THREE.Material, pos: number[], radius: number, tube: number, name: string) => {
-    record(name); const mesh = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 5, 16), mat); mesh.position.set(...pos as [number, number, number]); root.add(mesh); return mesh;
+  const definition=petSkin(pet,id),rank=definition.level;
+  const parts:string[]=[];root.userData.designParts=parts;
+  const cloth=standard(definition.colors[0],.88),accent=standard(definition.colors[1],.75),trim=standard(definition.colors[2],.48,.35);
+  const gold=standard('#caa14e',.42,.56),cream=standard('#eee0bf',.9),leather=standard('#4c3b31',.85);
+  cloth.side=accent.side=trim.side=THREE.DoubleSide;
+  const tile=(m:THREE.Material,p:number[],size:number[],name:string)=>{parts.push(name);return panel(root,m,p,size,.012);};
+  const ring=(m:THREE.Material,p:number[],radius:number,tube:number,name:string)=>{
+    parts.push(name);const mesh=new THREE.Mesh(new THREE.TorusGeometry(radius,tube,5,16),m);mesh.position.set(p[0],p[1],p[2]);mesh.castShadow=true;root.add(mesh);return mesh;
   };
-  const fabric = (mat: THREE.Material, points: number[], name: string) => {
-    record(name); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(points, 3)); g.computeVertexNormals();
-    const material = mat.clone(); material.side = THREE.DoubleSide; const mesh = new THREE.Mesh(g, material); mesh.castShadow = true; root.add(mesh); return mesh;
+  const fabric=(m:THREE.Material,vertices:number[],name:string)=>{
+    parts.push(name);const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();
+    const mesh=new THREE.Mesh(geometry,m);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);return mesh;
   };
-  const cape = (name: string) => {
-    const sections = [{z:.15,w:.16,base:-.015,rise:.15},{z:-.02,w:.20,base:-.025,rise:.18},{z:-.18,w:.21,base:-.05,rise:.17},{z:-.30,w:.14,base:-.08,rise:.13}];
-    const points: number[] = [];
-    const sample = (i:number,j:number) => { const s=sections[i],a=-Math.PI/2+j*Math.PI/4;return [Math.sin(a)*s.w,y+s.base+Math.cos(a)*s.rise,s.z]; };
-    for(let i=0;i<sections.length-1;i++)for(let j=0;j<4;j++)points.push(...sample(i,j),...sample(i+1,j),...sample(i,j+1),...sample(i,j+1),...sample(i+1,j),...sample(i+1,j+1));
-    fabric(cloth,points,name);
-    for(const side of [-1,1])root.add(taperedTube(sections.map(s=>v(side*s.w,y+s.base,s.z)),[.007,.007,.007,.007],trim,4,10));
+  const line=(m:THREE.Material,points:number[][],radius:number,name:string)=>{
+    parts.push(name);root.add(taperedTube(points.map(p=>v(p[0],p[1],p[2])),points.map(()=>radius),m,4,Math.max(4,points.length*3)));
   };
-  const bottle = (x: number, z: number, name: string) => {
-    record(name); const body = new THREE.Mesh(new THREE.CylinderGeometry(.036,.034,.14,8), accent); body.position.set(x,y+.08,z); root.add(body);
-    tile(trim,[x,y+.16,z],[.045,.025,.045],`${name}-cap`);
-    tile(cloth,[x,y+.07,z+.032],[.065,.05,.016],`${name}-band`);
+  const jewel=(p:number[],size:number,name:string)=>{
+    parts.push(name);const mesh=new THREE.Mesh(new THREE.OctahedronGeometry(size),gold);mesh.position.set(p[0],p[1],p[2]);mesh.scale.z=.45;root.add(mesh);
   };
-  if (pet === 'orangeCat') {
-    if (rank === 4) {
-      fabric(cloth, [-.13,y+.11,.29, .13,y+.11,.29, 0,y-.10,.37], 'red-triangle-scarf');
-      ring(cloth,[0,y+.08,.30],.11,.026,'scarf-neck');
-      for (const side of [-1,1]) { const knot = ring(trim,[side*.025,y-.04,.39],.025,.009,'peace-knot-loop'); knot.scale.y=1.3; }
-      record('white-jade-pendant'); const jade = new THREE.Mesh(new THREE.OctahedronGeometry(.035),white); jade.position.set(0,y-.11,.39); root.add(jade);
-    } else if (rank === 7) {
-      for (const side of [-1,1]) { const shoulder = tile(cloth,[side*.145,y+.13,.10],[.08,.05,.18],'indigo-shoulder-guard'); shoulder.rotation.z=side*-.25; tile(trim,[side*.18,y+.10,.19],[.035,.06,.018],'copper-side-clasp'); }
-      tile(accent,[0,y+.02,.325],[.13,.13,.035],'heart-guard-plate');
-      const crest = new THREE.Mesh(new THREE.OctahedronGeometry(.04),brass); crest.position.set(0,y+.035,.352); root.add(crest); record('guard-crest');
-      tile(trim,[0,y+.17,.04],[.21,.018,.11],'shoulder-bridge');
-    } else {
-      cape('brocade-burgundy-cape');
-      for (const side of [-1,1]) {
-        const shoulder = tile(trim,[side*.16,y+.15,.12],[.11,.045,.17],'gold-edged-shoulder'); shoulder.rotation.z=side*-.2;
-        record('golden-bell'); ellipsoid(root,brass,[side*.07,y-.035,.36],[.037,.04,.037]);
-        ring(leather,[side*.07,y-.035,.389],.02,.004,'bell-seam');
-      }
-      fabric(accent,[-.08,y+.12,-.29, .08,y+.12,-.29, 0,y+.14,-.16],'embroidered-back-diamond');
+  /** Curved textile fitted over the back, with hanging sides and a shaped hem. */
+  const coat=(m:THREE.Material,width:number,length:number,drop:number,name:string,lift=0)=>{
+    const sections=[{z:.19,w:width*.75,base:.015,rise:.18},{z:-.025,w:width,base:-drop,rise:.21+drop},{z:-length*.65,w:width*.98,base:-drop-.015,rise:.20+drop},{z:-length,w:width*.78,base:-drop*.85,rise:.16+drop*.85}];
+    const points:number[]=[];
+    const at=(i:number,j:number)=>{const s=sections[i],a=-Math.PI/2+j*Math.PI/6;return[Math.sin(a)*s.w,y+s.base+Math.cos(a)*s.rise+lift,s.z];};
+    for(let i=0;i<sections.length-1;i++)for(let j=0;j<6;j++)points.push(...at(i,j),...at(i+1,j),...at(i,j+1),...at(i,j+1),...at(i+1,j),...at(i+1,j+1));
+    fabric(m,points,name);
+    for(const side of[-1,1])line(trim,sections.map(s=>[side*s.w,y+s.base+lift,s.z]),rank===10?.009:.006,`${name}-hem`);
+    line(trim,[[-width*.78,y-drop*.85+lift,-length],[0,y+.16+lift,-length],[width*.78,y-drop*.85+lift,-length]],.007,`${name}-rear-edge`);
+    return (z:number)=>{
+      for(let i=1;i<sections.length;i++)if(z>=sections[i].z){const a=sections[i-1],b=sections[i],t=(a.z-z)/(a.z-b.z);return y+lift+THREE.MathUtils.lerp(a.base+a.rise,b.base+b.rise,t);}
+      const last=sections[sections.length-1];return y+lift+last.base+last.rise;
+    };
+  };
+  const scarf=(long=false)=>{
+    const neckY=pet==='shiba'?y+.14:y+.085,neckZ=pet==='shiba'?.255:.28;
+    const collar=ring(cloth,[0,neckY,neckZ],pet==='corgi'?.13:.105,.018,'neck-scarf');collar.rotation.x=.25;
+    fabric(cloth,[-.10,neckY-.02,neckZ+.075,.10,neckY-.02,neckZ+.075,0,neckY-.15,neckZ+.095],'front-scarf');
+    if(long)fabric(cloth,[-.11,neckY-.01,.20,-.19,y+.12,-.13,-.25,y+.035,-.27,-.11,neckY-.01,.20,-.25,y+.035,-.27,-.18,y+.16,-.09],'scarf-tail');
+  };
+  const bottle=(x:number,z:number,name:string)=>{
+    parts.push(name);const body=new THREE.Mesh(new THREE.CylinderGeometry(.034,.032,.14,8),accent);body.position.set(x,y+.075,z);root.add(body);
+    tile(trim,[x,y+.155,z],[.041,.022,.041],`${name}-cap`);tile(cloth,[x,y+.065,z+.03],[.054,.045,.014],`${name}-band`);
+  };
+  if(pet!=='orangeCat'){
+    const collar=ring(rank===1?standard('#337d83',.7):leather,[0,y+.12,pet==='shiba'?.245:.27],pet==='shiba'?.10:.135,.014,'everyday-collar');collar.rotation.x=.18;
+    jewel([0,y+.04,.35],.023,'everyday-tag');
+  }
+  if(rank===1)return;
+
+  if(pet==='orangeCat'){
+    // Lv4 foundation: scarf and talisman remain present underneath later outfits.
+    scarf();jewel([0,y-.025,.365],.028,'peace-talisman');
+    if(rank===4){for(const side of[-1,1])ring(trim,[side*.019,y+.005,.37],.018,.006,'peace-knot');return;}
+    // Lv7 complete guardian vest and breastplate.
+    coat(cloth,.205,.285,.085,'guardian-jacket');
+    for(const side of[-1,1]){
+      const shoulder=tile(accent,[side*.145,y+.145,.12],[.09,.045,.18],'guardian-shoulder');shoulder.rotation.z=side*-.28;
+      tile(trim,[side*.18,y+.045,.10],[.025,.075,.04],'guardian-fastener');
+      tile(accent,[side*.12,y-.035,.23],[.065,.09,.08],'guardian-sleeve');
     }
-  } else if (pet === 'corgi') {
-    if (rank === 4) {
-      for (const side of [-1,1]) { root.add(taperedTube([v(side*.13,y-.03,.18),v(side*.12,y+.16,.02),v(-side*.12,y+.14,-.20)], [.018,.022,.018],cloth,5,6)); record('cross-harness'); }
-      bottle(-.21,-.10,'single-water-flask'); tile(trim,[0,y+.18,.02],[.06,.025,.055],'harness-buckle');
-    } else if (rank === 7) {
-      for (const side of [-1,1]) {
-        tile(cloth,[side*.20,y+.035,-.055],[.12,.19,.29],'orange-supply-pannier');
-        tile(accent,[side*.267,y+.035,-.035],[.012,.09,.025],'supply-cross-vertical');
-        tile(accent,[side*.268,y+.035,-.035],[.013,.025,.095],'supply-cross-horizontal');
-        tile(leather,[side*.20,y+.14,-.06],[.13,.025,.04],'pannier-strap');
-      }
-      tile(trim,[0,y+.17,-.06],[.32,.025,.09],'supply-saddle');
-    } else {
-      for (const side of [-1,1]) {
-        tile(cloth,[side*.20,y+.035,-.09],[.13,.19,.31],'olive-expedition-bag');
-        tile(trim,[side*.27,y+.04,-.13],[.018,.065,.04],'orange-bag-buckle'); bottle(side*.265,.075,'expedition-twin-flask');
-      }
-      record('rolled-blanket'); const roll = new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.36,10),accent); roll.rotation.z=Math.PI/2; roll.position.set(0,y+.23,-.16); root.add(roll);
-      for (const side of [-1,1]) { const band=ring(leather,[side*.105,y+.23,-.16],.068,.009,'blanket-binding'); band.rotation.y=Math.PI/2; }
+    tile(leather,[0,y+.015,.335],[.145,.15,.025],'breastplate-backing');
+    const shield=tile(rank===10?gold:trim,[0,y+.02,.355],[.12,.125,.025],'guardian-breastplate');shield.rotation.z=Math.PI/4;
+    jewel([0,y+.02,.38],.033,'guardian-crest');
+    if(rank===7)return;
+    // Lv10 keeps the entire jacket, plate and sleeves, then adds ceremonial tailoring.
+    const capeTop=coat(cloth,.235,.34,.12,'brocade-cape',.035);
+    for(const side of[-1,1]){
+      const shoulder=tile(gold,[side*.155,y+.18,.115],[.11,.03,.185],'gold-layered-pauldrons');shoulder.rotation.z=side*-.25;
+      tile(cloth,[side*.105,y+.13,.255],[.055,.115,.025],'ceremonial-standing-collar');
+      parts.push('guardian-bell');ellipsoid(root,gold,[side*.085,y-.075,.38],[.028,.032,.028]);ring(leather,[side*.085,y-.075,.405],.017,.003,'bell-seam');
+      line(gold,[[side*.12,y+.21,.13],[side*.165,y+.18,-.06],[side*.17,y+.09,-.25]],.007,'cape-braid');
     }
-  } else {
-    if (rank === 4) {
-      ring(cloth,[0,y+.09,.28],.115,.027,'blue-tracker-neck-scarf');
-      fabric(cloth,[-.12,y+.11,.22, -.17,y+.10,-.11, -.29,y+.06,-.22, -.12,y+.11,.22, -.29,y+.06,-.22, -.21,y+.13,-.03],'long-scarf-tail');
-      const compass = new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.016,12),brass); compass.rotation.x=Math.PI/2; compass.position.set(0,y+.015,.35); root.add(compass); record('compass-medallion');
-      const needle = tile(accent,[0,y+.015,.365],[.015,.065,.012],'compass-needle'); needle.rotation.z=.6;
-    } else if (rank === 7) {
-      cape('khaki-detective-short-coat');
-      record('deerstalker-crown'); ellipsoid(root,cloth,[0,y+.27,.31],[.13,.065,.12]);
-      for (const z of [.20,.43]) { const brim=tile(leather,[0,y+.245,z],[.19,.018,.08],'deerstalker-double-brim'); brim.rotation.x=z>.3 ? .12 : -.12; }
-      for (const x of [-.07,0,.07]) tile(accent,[x,y+.325,.31],[.012,.012,.13],'hat-check-stripe');
-      tile(leather,[.205,y+.015,-.08],[.055,.12,.15],'detective-notebook-pocket');
-    } else {
-      cape('ink-inspector-cloak');
-      for (const side of [-1,1]) { const collar=tile(cloth,[side*.10,y+.15,.22],[.06,.14,.12],'raised-inspector-collar'); collar.rotation.z=side*-.32; }
-      record('inspector-star-badge'); const badge=new THREE.Mesh(new THREE.OctahedronGeometry(.05),brass); badge.scale.set(1,1,.3); badge.position.set(-.075,y+.035,.35); root.add(badge);
-      ring(brass,[.052,y+.17,.434],.029,.005,'monocle-rim');
-      root.add(taperedTube([v(.079,y+.16,.434),v(.13,y+.07,.38),v(.10,y+.025,.31)],[.003,.003,.003],brass,4,7)); record('monocle-chain');
+    for(const z of[-.06,-.18,-.28]){parts.push('brocade-back-inlay');const pin=new THREE.Mesh(new THREE.OctahedronGeometry(.025),gold);pin.scale.y=.20;pin.position.set(0,capeTop(z)+.003,z);root.add(pin);}
+  }else if(pet==='corgi'){
+    // The expedition kit keeps the harness, two supply panniers and their white patches.
+    for(const side of[-1,1])line(cloth,[[side*.15,y-.045,.22],[side*.14,y+.17,.045],[-side*.14,y+.17,-.20]],.019,'cross-harness');
+    tile(trim,[0,y+.195,.045],[.065,.025,.055],'harness-buckle');
+    if(rank===4){bottle(.235,-.10,'water-flask');return;}
+    coat(cloth,.215,.30,.025,'supply-saddle-pad');
+    const center=.225,w=rank===10?.14:.12,h=rank===10?.22:.18,depth=rank===10?.32:.275;
+    for(const side of[-1,1]){
+      tile(cloth,[side*center,y+.025,-.075],[w,h,depth],'supply-pannier');
+      tile(accent,[side*center,y+h/2+.035,-.075],[w+.015,.035,depth+.012],'pannier-lid');
+      const x=side*(center+w/2+.008);
+      tile(cream,[x,y+.025,-.065],[.01,.085,.025],'supply-cross-vertical');tile(cream,[x,y+.025,-.065],[.012,.025,.085],'supply-cross-horizontal');
+      tile(leather,[side*center,y+.055,-.17],[w+.02,.11,.025],'reinforced-pack-strap');
+      tile(trim,[x,y+.065,-.17],[.018,.04,.045],'pack-buckle');
+      if(rank===10){line(trim,[[x,y-h/2+.025,.07],[x,y-h/2+.025,-.23],[x,y+h/2+.025,-.23]],.005,'pack-edge-piping');}
     }
+    bottle(.255,.15,'water-flask');
+    if(rank===7)return;
+    bottle(-.255,.15,'second-water-flask');
+    parts.push('rolled-expedition-blanket');const roll=new THREE.Mesh(new THREE.CylinderGeometry(.061,.061,.36,10),accent);roll.rotation.z=Math.PI/2;roll.position.set(0,y+.25,-.18);root.add(roll);
+    for(const side of[-1,1]){const binding=ring(leather,[side*.105,y+.25,-.18],.064,.008,'blanket-binding');binding.rotation.y=Math.PI/2;tile(trim,[side*.105,y+.315,-.18],[.034,.015,.04],'blanket-clasp');}
+    tile(accent,[0,y+.24,.045],[.11,.065,.095],'sealed-ration-tin');line(trim,[[-.052,y+.275,.045],[.052,y+.275,.045]],.006,'ration-tin-clasp');
+  }else{
+    scarf(true);
+    const compass=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.013,12),gold);compass.rotation.x=Math.PI/2;compass.position.set(0,y+.06,.36);root.add(compass);parts.push('compass-medallion');
+    const needle=tile(accent,[0,y+.06,.37],[.012,.047,.008],'compass-needle');needle.rotation.z=.55;
+    if(rank===4)return;
+    coat(cloth,.202,rank===10?.32:.285,rank===10?.125:.10,'detective-tailored-coat');
+    for(const side of[-1,1]){
+      const hem=y-(rank===10?.135:.105);
+      fabric(cloth,[side*.015,y+.11,.353,side*.115,y+.12,.295,side*.135,hem,.325,side*.015,y+.11,.353,side*.135,hem,.325,side*.012,hem,.375],'double-breasted-front');
+      fabric(accent,[side*.025,y+.115,.362,side*.115,y+.13,.302,side*.075,y-.015,.374],'detective-lapel');
+      line(trim,[[side*.012,y+.10,.368],[side*.012,hem,.38],[side*.13,hem,.33]],rank===10?.006:.004,'coat-front-piping');
+      for(const height of (rank===10?[.015,-.05,-.105]:[.005,-.065]))jewel([side*.04,y+height,.38],rank===10?.011:.008,'coat-buttons');
+      tile(leather,[side*.205,y-.045,-.08],[.035,.11,.135],'detective-pocket');
+      tile(trim,[side*.225,y-.02,-.065],[.012,.018,.035],'pocket-clasp');
+    }
+    // Both ranks retain a fitted deerstalker; the top rank adds a band, stitch and insignia.
+    parts.push('deerstalker-crown');ellipsoid(root,cloth,[0,.807,.27],[.13,.047,.12]);
+    for(const z of[.16,.39]){const brim=tile(leather,[0,.786,z],[.185,.015,.08],'deerstalker-brim');brim.rotation.x=z>.3?.12:-.12;}
+    for(const x of[-.065,0,.065])line(accent,[[x,.82,.18],[x,.852,.27],[x,.82,.36]],.004,'deerstalker-check-stitch');
+    for(const side of[-1,1])tile(cloth,[side*.12,.79,.255],[.027,.06,.09],'deerstalker-ear-flap');
+    if(rank===7)return;
+    const mantleTop=coat(cloth,.23,.23,.035,'inspector-shoulder-mantle',.048);
+    for(const side of[-1,1]){
+      const epaulette=tile(accent,[side*.15,y+.19,.14],[.08,.028,.13],'inspector-epaulette');epaulette.rotation.z=side*-.22;
+      jewel([side*.15,y+.21,.16],.018,'epaulette-pin');
+      tile(trim,[side*.16,y-.05,.17],[.06,.035,.035],'sleeve-rank-band');
+    }
+    line(gold,[[-.118,.816,.21],[0,.842,.175],[.118,.816,.21]],.007,'deerstalker-gold-band');
+    tile(accent,[0,.811,.383],[.04,.055,.018],'hat-insignia-backing');jewel([0,.818,.399],.018,'hat-insignia');jewel([-.063,y+.04,.365],.035,'inspector-breast-badge');
+    ring(gold,[.067,.714,.414],.025,.004,'monocle-rim');line(gold,[[.09,.71,.414],[.135,.62,.35],[.10,.54,.33]],.0028,'monocle-chain');
+    for(const z of[-.025,-.15])tile(gold,[0,mantleTop(z)+.003,z],[.045,.012,.045],'mantle-back-fastener');
   }
 }

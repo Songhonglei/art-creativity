@@ -1,0 +1,60 @@
+{
+  "version": "0.9.0",
+  "revision": "pet-visual-r2",
+  "files": 18,
+  "zipBytes": 2288207,
+  "zipMiB": 2.182,
+  "sha256": "ffb8f04d08ff5fd097b8d56d1e91f4e6d530f7422909d07950d90c8813f66b8d",
+  "zipEqualsH5": true,
+  "preview": "http://127.0.0.1:4174/?v=0.9.0&art=2",
+  "previewVersion": "0.9.0",
+  "tests": {
+    "files": 9,
+    "passed": 182
+  },
+  "browser": {
+    "productionClassicIife": true,
+    "runtimeErrors": [],
+    "httpErrors": [],
+    "previewRotation": true,
+    "worldYawPreserved": true,
+    "reloadSkins": {
+      "orangeCat": "cat-golden-bell",
+      "corgi": "corgi-expedition",
+      "shiba": "shiba-inspector"
+    },
+    "viewports": [
+      {
+        "width": 375,
+        "height": 812,
+        "overflow": false,
+        "petButtonsBelow44px": []
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "overflow": false,
+        "petButtonsBelow44px": []
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "overflow": false,
+        "petButtonsBelow44px": []
+      },
+      {
+        "width": 1440,
+        "height": 1000,
+        "overflow": false,
+        "petButtonsBelow44px": []
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "overflow": false,
+        "petButtonsBelow44px": []
+      }
+    ],
+    "realDeviceTested": false
+  }
+}

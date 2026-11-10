@@ -13,20 +13,20 @@ export const PET_SKINS: Record<Pet, PetSkin[]> = {
   orangeCat: [
     { id: 'cat-original', level: 1, name: '弄堂大橘', desc: '橘色虎斑 · 青铜项圈', colors: ['#df8b3f', '#337d83', '#d2ac59'] },
     { id: 'cat-red-scarf', level: 4, name: '平安红巾', desc: '朱红三角巾 · 白玉平安结', colors: ['#ac303f', '#efe1c1', '#c39948'] },
-    { id: 'cat-guardian', level: 7, name: '弄堂护卫', desc: '靛青护肩 · 黄铜护心片', colors: ['#284963', '#bb9555', '#84a4a2'] },
-    { id: 'cat-golden-bell', level: 10, name: '金铃守护', desc: '酒红锦披 · 双铃金边肩饰', colors: ['#762b46', '#ddbb67', '#e8cfa0'] },
+    { id: 'cat-guardian', level: 7, name: '弄堂护卫', desc: '靛青护卫短衣 · 护肩胸甲', colors: ['#284963', '#bb9555', '#84a4a2'] },
+    { id: 'cat-golden-bell', level: 10, name: '金铃守护', desc: '金边锦衣胸甲 · 护肩披风与双铃', colors: ['#762b46', '#ddbb67', '#e8cfa0'] },
   ],
   corgi: [
     { id: 'corgi-original', level: 1, name: '街角小基', desc: '黄背白胸 · 湖绿项圈', colors: ['#d5a05b', '#337d83', '#f0dfc2'] },
     { id: 'corgi-harness', level: 4, name: '轻装背带', desc: '湖绿交叉背带 · 便携水壶', colors: ['#308c86', '#d7ddd0', '#c49b58'] },
-    { id: 'corgi-supply', level: 7, name: '补给小队', desc: '橙色双侧包 · 白色缝章', colors: ['#cb692f', '#efe3c9', '#4a645f'] },
-    { id: 'corgi-expedition', level: 10, name: '远行伙伴', desc: '橄榄远行包 · 卷毯与双壶', colors: ['#596b43', '#c8ab79', '#df8443'] },
+    { id: 'corgi-supply', level: 7, name: '补给小队', desc: '完整鞍垫双侧包 · 补给壶与缝章', colors: ['#cb692f', '#efe3c9', '#4a645f'] },
+    { id: 'corgi-expedition', level: 10, name: '远行伙伴', desc: '加固双侧包 · 卷毯双壶与补给罐', colors: ['#596b43', '#c8ab79', '#df8443'] },
   ],
   shiba: [
     { id: 'shiba-original', level: 1, name: '赤柴认路', desc: '赤柴白腹 · 铜牌卷尾', colors: ['#bd7841', '#337d83', '#d2ac59'] },
     { id: 'shiba-tracker', level: 4, name: '寻踪围巾', desc: '靛蓝长围巾 · 黄铜罗盘章', colors: ['#385b8a', '#bfa35e', '#c9d7df'] },
-    { id: 'shiba-detective', level: 7, name: '街巷侦探', desc: '格纹猎鹿帽 · 卡其短衣', colors: ['#957b54', '#493d32', '#d1b986'] },
-    { id: 'shiba-inspector', level: 10, name: '沪上探长', desc: '深墨斗篷 · 探长章与观察镜', colors: ['#253a40', '#c7a35b', '#8eaaad'] },
+    { id: 'shiba-detective', level: 7, name: '街巷侦探', desc: '格纹猎鹿帽 · 翻领短衣与侧袋', colors: ['#957b54', '#493d32', '#d1b986'] },
+    { id: 'shiba-inspector', level: 10, name: '沪上探长', desc: '精装猎鹿帽 · 探长长衣肩披与单片镜', colors: ['#253a40', '#c7a35b', '#8eaaad'] },
   ],
 };
 const integer = (value: unknown, fallback: number, max: number) => typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(max, Math.floor(value))) : fallback;

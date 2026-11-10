@@ -1,0 +1,146 @@
+[
+  {
+    "pet": "orangeCat",
+    "skin": "cat-original",
+    "meshes": 9,
+    "triangles": 3356,
+    "outfitTriangles": 0,
+    "anatomySize": {
+      "x": 0.3400000035762787,
+      "y": 0.6953632573131472,
+      "z": 0.8644615660905838
+    }
+  },
+  {
+    "pet": "orangeCat",
+    "skin": "cat-red-scarf",
+    "meshes": 12,
+    "triangles": 3845,
+    "outfitTriangles": 489,
+    "anatomySize": {
+      "x": 0.3400000035762787,
+      "y": 0.6953632573131472,
+      "z": 0.8644615660905838
+    }
+  },
+  {
+    "pet": "orangeCat",
+    "skin": "cat-guardian",
+    "meshes": 14,
+    "triangles": 6233,
+    "outfitTriangles": 2877,
+    "anatomySize": {
+      "x": 0.3400000035762787,
+      "y": 0.6953632573131472,
+      "z": 0.8644615660905838
+    }
+  },
+  {
+    "pet": "orangeCat",
+    "skin": "cat-golden-bell",
+    "meshes": 14,
+    "triangles": 8501,
+    "outfitTriangles": 5145,
+    "anatomySize": {
+      "x": 0.3400000035762787,
+      "y": 0.6953632573131472,
+      "z": 0.8644615660905838
+    }
+  },
+  {
+    "pet": "corgi",
+    "skin": "corgi-original",
+    "meshes": 8,
+    "triangles": 4002,
+    "outfitTriangles": 168,
+    "anatomySize": {
+      "x": 0.4399999976158142,
+      "y": 0.7139999737264588,
+      "z": 1.0389165580272675
+    }
+  },
+  {
+    "pet": "corgi",
+    "skin": "corgi-harness",
+    "meshes": 11,
+    "triangles": 5078,
+    "outfitTriangles": 1244,
+    "anatomySize": {
+      "x": 0.4399999976158142,
+      "y": 0.7139999737264588,
+      "z": 1.0389165580272675
+    }
+  },
+  {
+    "pet": "corgi",
+    "skin": "corgi-supply",
+    "meshes": 12,
+    "triangles": 8978,
+    "outfitTriangles": 5144,
+    "anatomySize": {
+      "x": 0.4399999976158142,
+      "y": 0.7139999737264588,
+      "z": 1.0389165580272675
+    }
+  },
+  {
+    "pet": "corgi",
+    "skin": "corgi-expedition",
+    "meshes": 12,
+    "triangles": 11062,
+    "outfitTriangles": 7228,
+    "anatomySize": {
+      "x": 0.4399999976158142,
+      "y": 0.7139999737264588,
+      "z": 1.0389165580272675
+    }
+  },
+  {
+    "pet": "shiba",
+    "skin": "shiba-original",
+    "meshes": 9,
+    "triangles": 4876,
+    "outfitTriangles": 168,
+    "anatomySize": {
+      "x": 0.3690810203552246,
+      "y": 0.8820000244304538,
+      "z": 0.9188435673713684
+    }
+  },
+  {
+    "pet": "shiba",
+    "skin": "shiba-tracker",
+    "meshes": 11,
+    "triangles": 5387,
+    "outfitTriangles": 679,
+    "anatomySize": {
+      "x": 0.3690810203552246,
+      "y": 0.8820000244304538,
+      "z": 0.9188435673713684
+    }
+  },
+  {
+    "pet": "shiba",
+    "skin": "shiba-detective",
+    "meshes": 12,
+    "triangles": 8625,
+    "outfitTriangles": 3917,
+    "anatomySize": {
+      "x": 0.3690810203552246,
+      "y": 0.8820000244304538,
+      "z": 0.9188435673713684
+    }
+  },
+  {
+    "pet": "shiba",
+    "skin": "shiba-inspector",
+    "meshes": 12,
+    "triangles": 11377,
+    "outfitTriangles": 6669,
+    "anatomySize": {
+      "x": 0.3690810203552246,
+      "y": 0.8820000244304538,
+      "z": 0.9188435673713684
+    }
+  }
+]
