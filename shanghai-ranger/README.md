@@ -95,4 +95,6 @@ bash scripts/build-tool.sh
 
 ## 许可
 
+自有内容采用 [PolyForm Noncommercial 1.0.0](LICENSE)。非商业用途免费；许可证允许范围外的商用须先取得书面授权。第三方材料及历史版本的既有授权不变；[范围与商用联系](https://github.com/Songhonglei/art-creativity/blob/main/LICENSING.md)。
+
 字体和第三方依赖的许可随项目附带。

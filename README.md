@@ -2,6 +2,12 @@
 AI app development
 ## this app is designed to improve AI efficiency  of the whole world
 
+## 许可
+
+**非商业用途免费；许可证允许范围外的商用须先取得书面授权。**
+
+自有内容采用 [PolyForm Noncommercial 1.0.0](LICENSE)，属于源码公开的非商业许可。第三方材料及历史版本的既有授权不变。详见[许可说明与商用联系](LICENSING.md)。
+
 ## Projects
 
 - [Liquid Time · 流体时间](liquidtime/) — 全屏 WebGL 流体时钟。
