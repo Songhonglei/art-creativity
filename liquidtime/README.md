@@ -31,4 +31,4 @@ npx serve liquidtime
 
 ## License
 
-MIT
+自有内容采用 [PolyForm Noncommercial 1.0.0](LICENSE)。非商业用途免费；许可证允许范围外的商用须先取得书面授权。第三方材料及历史版本的既有授权不变；[范围与商用联系](../LICENSING.md)。
