@@ -1,0 +1,43 @@
+name: Shanghai Ranger
+on:
+  pull_request:
+    paths: ['shanghai-ranger/**', '.github/workflows/shanghai-ranger.yml', 'src/**', 'public/**', 'scripts/**', 'package*.json', 'vite*.ts']
+  push:
+    branches: [main, 'feature/shanghai-ranger-v1.0.0']
+    paths: ['shanghai-ranger/**', '.github/workflows/shanghai-ranger.yml', 'src/**', 'public/**', 'scripts/**', 'package*.json', 'vite*.ts']
+permissions:
+  contents: read
+concurrency:
+  group: ranger-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - id: project
+        shell: bash
+        run: |
+          if [ -f shanghai-ranger/package.json ]; then
+            echo 'dir=shanghai-ranger' >> "$GITHUB_OUTPUT"
+          else
+            echo 'dir=.' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ steps.project.outputs.dir }}/package-lock.json
+      - run: npm ci
+        working-directory: ${{ steps.project.outputs.dir }}
+      - run: npm run assets:check
+        working-directory: ${{ steps.project.outputs.dir }}
+      - run: npm test
+        working-directory: ${{ steps.project.outputs.dir }}
+      - run: npm run build
+        working-directory: ${{ steps.project.outputs.dir }}
+      - run: bash scripts/build-tool.sh "$RUNNER_TEMP/shanghai-ranger.zip"
+        working-directory: ${{ steps.project.outputs.dir }}
