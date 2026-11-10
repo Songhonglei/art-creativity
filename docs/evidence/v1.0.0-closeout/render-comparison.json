@@ -1,0 +1,821 @@
+[
+  {
+    "build": "fontA baseline",
+    "quality": "low",
+    "scene": "core",
+    "render": {
+      "calls": 217,
+      "triangles": 108274,
+      "geometries": 223,
+      "textures": 22
+    },
+    "stream": {
+      "loaded": 0,
+      "pending": 0,
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "low",
+    "scene": "camp",
+    "render": {
+      "calls": 172,
+      "triangles": 110378,
+      "geometries": 223,
+      "textures": 22
+    },
+    "stream": {
+      "loaded": 3,
+      "pending": 0,
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "low",
+    "scene": "outer",
+    "render": {
+      "calls": 97,
+      "triangles": 67872,
+      "geometries": 262,
+      "textures": 29
+    },
+    "stream": {
+      "loaded": 9,
+      "pending": 0,
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "balanced",
+    "scene": "core",
+    "render": {
+      "calls": 259,
+      "triangles": 122438,
+      "geometries": 265,
+      "textures": 27
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "balanced",
+    "scene": "camp",
+    "render": {
+      "calls": 175,
+      "triangles": 115482,
+      "geometries": 228,
+      "textures": 27
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "balanced",
+    "scene": "outer",
+    "render": {
+      "calls": 127,
+      "triangles": 79948,
+      "geometries": 293,
+      "textures": 31
+    },
+    "stream": {
+      "loaded": 25,
+      "pending": 0,
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "high",
+    "scene": "core",
+    "render": {
+      "calls": 516,
+      "triangles": 200738,
+      "geometries": 357,
+      "textures": 29
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "high",
+    "scene": "camp",
+    "render": {
+      "calls": 437,
+      "triangles": 194726,
+      "geometries": 319,
+      "textures": 29
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "fontA baseline",
+    "quality": "high",
+    "scene": "outer",
+    "render": {
+      "calls": 272,
+      "triangles": 133292,
+      "geometries": 424,
+      "textures": 33
+    },
+    "stream": {
+      "loaded": 25,
+      "pending": 0,
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "low",
+    "scene": "core",
+    "render": {
+      "calls": 214,
+      "triangles": 74250,
+      "geometries": 215,
+      "textures": 24
+    },
+    "stream": {
+      "loaded": 0,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3,
+      "detail": "low",
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "low",
+    "scene": "camp",
+    "render": {
+      "calls": 151,
+      "triangles": 74962,
+      "geometries": 215,
+      "textures": 24
+    },
+    "stream": {
+      "loaded": 3,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3,
+      "detail": "low",
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "low",
+    "scene": "outer",
+    "render": {
+      "calls": 87,
+      "triangles": 45640,
+      "geometries": 246,
+      "textures": 31
+    },
+    "stream": {
+      "loaded": 9,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3,
+      "detail": "low",
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "balanced",
+    "scene": "core",
+    "render": {
+      "calls": 257,
+      "triangles": 99886,
+      "geometries": 264,
+      "textures": 29
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3.9000000059604645,
+      "detail": "balanced",
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "balanced",
+    "scene": "camp",
+    "render": {
+      "calls": 154,
+      "triangles": 87778,
+      "geometries": 226,
+      "textures": 29
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3.9000000059604645,
+      "detail": "balanced",
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "balanced",
+    "scene": "outer",
+    "render": {
+      "calls": 123,
+      "triangles": 66660,
+      "geometries": 289,
+      "textures": 33
+    },
+    "stream": {
+      "loaded": 25,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3.9000000059604645,
+      "detail": "balanced",
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "high",
+    "scene": "core",
+    "render": {
+      "calls": 470,
+      "triangles": 184282,
+      "geometries": 359,
+      "textures": 31
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 3.2000000178813934,
+      "detail": "high",
+      "center": "0,0"
+    },
+    "player": {
+      "x": 0,
+      "z": 20,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "high",
+    "scene": "camp",
+    "render": {
+      "calls": 378,
+      "triangles": 174434,
+      "geometries": 321,
+      "textures": 31
+    },
+    "stream": {
+      "loaded": 16,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 5.300000011920929,
+      "detail": "high",
+      "center": "0,1"
+    },
+    "player": {
+      "x": -18,
+      "z": 31.2,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  },
+  {
+    "build": "closeout IIFE",
+    "quality": "high",
+    "scene": "outer",
+    "render": {
+      "calls": 270,
+      "triangles": 128324,
+      "geometries": 426,
+      "textures": 35
+    },
+    "stream": {
+      "loaded": 25,
+      "pending": 0,
+      "lastWorkMs": 0,
+      "maxWorkMs": 5.300000011920929,
+      "detail": "high",
+      "center": "5,5"
+    },
+    "player": {
+      "x": 240,
+      "z": 240,
+      "facing": 3.141592653589793,
+      "health": 172,
+      "stamina": 100,
+      "attackTime": 0,
+      "attackHeavy": false,
+      "attackWeapon": "crowbar",
+      "attackDuration": 0,
+      "attackImpact": 0,
+      "dodgeTime": 0,
+      "dodgeDuration": 0.36,
+      "dodgeSide": 1,
+      "invulnerable": 0,
+      "sprinting": false,
+      "moving": false,
+      "combo": 0,
+      "knockbackTime": 0,
+      "knockbackX": 0,
+      "knockbackZ": 0
+    },
+    "camera": {
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2
+    },
+    "visibleHero": true
+  }
+]
