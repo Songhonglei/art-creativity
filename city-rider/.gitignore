@@ -1,0 +1,17 @@
+# 本机设置、凭据与生成产物
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+__pycache__/
+*.py[cod]
+node_modules/
+.idea/
+.vscode/
+
+# 会话期间的审查 / 截图 / 基线产物（不随源码分发）
+/screenshots/
+/test-results/
+/tools/

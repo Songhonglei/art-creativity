@@ -41,6 +41,15 @@ AI を活用して制作した、創作 Web ページ、ブラウザゲーム、
 <p><a href="#run-locally">ローカルで実行</a> · <a href="liquidtime/">ソースと説明</a></p>
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+<a href="city-rider/"><img src="docs/images/city-rider.png" alt="City Rider のガレージ画面：9 都市の街並み、ライダーとロードバイクの選択" width="100%"></a>
+<h3>City Rider · 城市骑行侠</h3>
+<p>中国 9 都市の街並みを走るロードバイクのタイムトライアル。車列を避け、チェックポイントで時間を伸ばし、コインの連続取得で星を集め、完走すると表彰台のポスターを生成します。</p>
+<p><a href="#run-locally">ローカルで実行</a> · <a href="city-rider/">ソースと説明</a></p>
+</td>
+<td width="50%" valign="top"></td>
+</tr>
 </table>
 
 画像は `main` ブランチをローカルで実行したものです。Shanghai Ranger v1.0.0 は [PR #2](https://github.com/Songhonglei/art-creativity/pull/2) で開発中で、`main` には未統合です。
@@ -49,7 +58,7 @@ AI を活用して制作した、創作 Web ページ、ブラウザゲーム、
 
 ## ローカルで実行
 
-Liquid Time と Office Survival はフロントエンド依存パッケージのインストールが不要です。リポジトリを取得し、静的サーバーを起動します。
+Liquid Time、Office Survival、City Rider はフロントエンド依存パッケージのインストールが不要です。リポジトリを取得し、静的サーバーを起動します。
 
 ```bash
 git clone https://github.com/Songhonglei/art-creativity.git
@@ -57,7 +66,7 @@ cd art-creativity
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-[Liquid Time](http://127.0.0.1:8080/liquidtime/) または [Office Survival](http://127.0.0.1:8080/niuma-week-game/) を開きます。
+[Liquid Time](http://127.0.0.1:8080/liquidtime/)、[Office Survival](http://127.0.0.1:8080/niuma-week-game/)、または [City Rider](http://127.0.0.1:8080/city-rider/) を開きます。
 
 MBP—14 と Shanghai Ranger には Node.js 22.16 以降が必要です。別のターミナルでリポジトリのルートに移動し、対象プロジェクトの依存パッケージをインストールして起動します。
 
@@ -75,6 +84,7 @@ Shanghai Ranger を実行する場合は、代わりに `shanghai-ranger/` に�
 | --- | --- | --- |
 | [Shanghai Ranger](shanghai-ranger/) | 都市の夜間巡回、戦闘、ペット育成 | Vite + React + Three.js |
 | [Office Survival](niuma-week-game/) | 職場での選択と周回をまたぐ記録 | HTML / CSS / JavaScript |
+| [City Rider](city-rider/) | 9 都市のサイクリング、アイテムと表彰台ポスター | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 3D 機械レイアウトと部品の探索 | Vite + Three.js |
 | [Liquid Time](liquidtime/) | 流体時計と世界のタイムゾーン | HTML / CSS / WebGL |
 

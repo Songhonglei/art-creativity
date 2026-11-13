@@ -41,6 +41,15 @@
 <p><a href="#run-locally">本地体验</a> · <a href="liquidtime/">源码与说明</a></p>
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+<a href="city-rider/"><img src="docs/images/city-rider.png" alt="城市骑行侠车库：九城街景、骑手与公路车选择" width="100%"></a>
+<h3>城市骑行侠 · City Rider</h3>
+<p>九座中国城市的公路车骑行赛。躲车抢检查点，攒连击换星级，完赛生成一张能直接发出去的领奖台晒图。</p>
+<p><a href="#run-locally">本地体验</a> · <a href="city-rider/">源码与说明</a></p>
+</td>
+<td width="50%" valign="top"></td>
+</tr>
 </table>
 
 截图来自 `main` 分支的本地运行版本。沪上游侠 v1.0.0 正在 [PR #2](https://github.com/Songhonglei/art-creativity/pull/2) 开发，尚未合入 `main`。
@@ -49,7 +58,7 @@
 
 ## 本地运行
 
-流体时间和牛马求生记无需安装前端依赖。克隆仓库后启动静态服务：
+流体时间、牛马求生记和城市骑行侠无需安装前端依赖。克隆仓库后启动静态服务：
 
 ```bash
 git clone https://github.com/Songhonglei/art-creativity.git
@@ -57,7 +66,7 @@ cd art-creativity
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-打开 [流体时间](http://127.0.0.1:8080/liquidtime/) 或 [牛马求生记](http://127.0.0.1:8080/niuma-week-game/)。
+打开 [流体时间](http://127.0.0.1:8080/liquidtime/)、[牛马求生记](http://127.0.0.1:8080/niuma-week-game/) 或 [城市骑行侠](http://127.0.0.1:8080/city-rider/)。
 
 MBP—14 和沪上游侠需要 Node.js 22.16+。另开终端并进入仓库根目录，再安装依赖并启动对应项目：
 
@@ -75,6 +84,7 @@ npm run dev
 | --- | --- | --- |
 | [沪上游侠](shanghai-ranger/) | 都市夜巡、战斗与宠物成长 | Vite + React + Three.js |
 | [牛马求生记](niuma-week-game/) | 职场剧情选择与跨局档案 | HTML / CSS / JavaScript |
+| [城市骑行侠](city-rider/) | 九城骑行、道具连击与领奖台晒图 | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 三维机械布局与部件探索 | Vite + Three.js |
 | [流体时间](liquidtime/) | WebGL 流体时钟与世界时区 | HTML / CSS / WebGL |
 

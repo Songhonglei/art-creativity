@@ -41,6 +41,15 @@ Creative web experiences, browser games, and interactive 3D studies built with A
 <p><a href="#run-locally">Run locally</a> · <a href="liquidtime/">Source & guide</a></p>
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+<a href="city-rider/"><img src="docs/images/city-rider.png" alt="City Rider garage with nine cityscapes, rider and road bike selection" width="100%"></a>
+<h3>City Rider · 城市骑行侠</h3>
+<p>Road-bike time trials through nine Chinese cities. Dodge traffic, hit checkpoints, chain coin combos, and finish with a shareable podium poster.</p>
+<p><a href="#run-locally">Run locally</a> · <a href="city-rider/">Source & guide</a></p>
+</td>
+<td width="50%" valign="top"></td>
+</tr>
 </table>
 
 Screenshots show local builds of `main`. Shanghai Ranger v1.0.0 is in development in [PR #2](https://github.com/Songhonglei/art-creativity/pull/2) and has not been merged into `main`.
@@ -49,7 +58,7 @@ Screenshots show local builds of `main`. Shanghai Ranger v1.0.0 is in developmen
 
 ## Run locally
 
-Liquid Time and Office Survival need no frontend dependencies. Clone the repository and start a static server:
+Liquid Time, Office Survival, and City Rider need no frontend dependencies. Clone the repository and start a static server:
 
 ```bash
 git clone https://github.com/Songhonglei/art-creativity.git
@@ -57,7 +66,7 @@ cd art-creativity
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-Open [Liquid Time](http://127.0.0.1:8080/liquidtime/) or [Office Survival](http://127.0.0.1:8080/niuma-week-game/).
+Open [Liquid Time](http://127.0.0.1:8080/liquidtime/), [Office Survival](http://127.0.0.1:8080/niuma-week-game/), or [City Rider](http://127.0.0.1:8080/city-rider/).
 
 MBP—14 and Shanghai Ranger require Node.js 22.16+. In a second terminal, return to the repository root, then install dependencies and start the selected project:
 
@@ -75,6 +84,7 @@ For Shanghai Ranger, enter `shanghai-ranger/` instead and run the same install a
 | --- | --- | --- |
 | [Shanghai Ranger](shanghai-ranger/) | City patrols, combat, and pet progression | Vite + React + Three.js |
 | [Office Survival](niuma-week-game/) | Workplace choices and persistent career records | HTML / CSS / JavaScript |
+| [City Rider](city-rider/) | Nine-city cycling, power-ups, and podium posters | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 3D mechanical layouts and component exploration | Vite + Three.js |
 | [Liquid Time](liquidtime/) | Fluid clock and world time zones | HTML / CSS / WebGL |
 
