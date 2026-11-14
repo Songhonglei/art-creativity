@@ -1,0 +1,13 @@
+
+> shanghai-ranger@0.9.5 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/songhonglei/space/沪上游侠
+
+
+ Test Files  10 passed (10)
+      Tests  200 passed (200)
+   Start at  14:43:47
+   Duration  2.30s (transform 2.14s, setup 0ms, import 4.50s, tests 761ms, environment 1ms)
+

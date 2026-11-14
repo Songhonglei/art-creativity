@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Tab traverses gameplay HUD",
+    "passed": true,
+    "detail": {
+      "a": "<body><div id=\"root\"><main class=\"game-shell is-ready      \"><div class=\"scene-container\"><canvas data-engine=\"three.js r186\" width=\"300\" height=\"649\" aria-labe",
+      "b": "<canvas data-engine=\"three.js r186\" width=\"300\" height=\"649\" aria-label=\"沪上游侠：拖动场景环顾，滚轮或双指缩放。W A S D 或左下摇杆移动，点击或 J 攻击，空格键闪避，V 镜头归位。\" tabindex=\"0\" style=\"display"
+    }
+  },
+  {
+    "name": "modal Tab stays inside",
+    "passed": true
+  },
+  {
+    "name": "paused scene stops drawing and publishing",
+    "passed": true,
+    "detail": {
+      "before": {
+        "renderedFrames": 11,
+        "publishes": 5,
+        "preferredQuality": "low",
+        "effectiveQuality": "low",
+        "followerSearches": 0,
+        "companionCache": 1,
+        "streetCache": 3
+      },
+      "after": {
+        "renderedFrames": 11,
+        "publishes": 5,
+        "preferredQuality": "low",
+        "effectiveQuality": "low",
+        "followerSearches": 0,
+        "companionCache": 1,
+        "streetCache": 3
+      }
+    }
+  },
+  {
+    "name": "modal close returns focus",
+    "passed": true
+  },
+  {
+    "name": "pet native vertical swipe scrolls menu",
+    "passed": true,
+    "detail": {
+      "start": {
+        "top": 889.5,
+        "r": {
+          "x": 29,
+          "y": 122.1484375,
+          "width": 317,
+          "height": 220,
+          "top": 122.1484375,
+          "right": 346,
+          "bottom": 342.1484375,
+          "left": 29
+        },
+        "camera": -0.07
+      },
+      "vertical": {
+        "top": 1046.5,
+        "camera": -0.07
+      }
+    }
+  },
+  {
+    "name": "complete guide keeps current target",
+    "passed": true
+  },
+  {
+    "name": "next hunt advances number",
+    "passed": true
+  },
+  {
+    "name": "death recovery returns alive",
+    "passed": true
+  },
+  {
+    "name": "pet native horizontal drag rotates model without scrolling/camera changes",
+    "passed": true,
+    "detail": "pet-touch-result.json; verified visible preview region pixel differences"
+  }
+]

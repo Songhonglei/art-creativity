@@ -4,9 +4,11 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT="${1:-$(pwd)/output/沪上游侠-小红书小工具.zip}"
+OUT="$(python3 -c 'import os,sys;print(os.path.abspath(sys.argv[1]))' "$OUT")"
 BUILDER_DIR="${MINITOOL_BUILDER_DIR:-}"
 if [[ -z "$BUILDER_DIR" ]]; then
   for candidate in \
+    "$(pwd)/scripts/minitool" \
     "$HOME/.codex/skills/webapp-building-pro/modules/xiaohongshu-minitool/builder" \
     "$HOME/.agents/skills/webapp-building-pro/modules/xiaohongshu-minitool/builder" \
     /app/.agents/skills/xiaohongshu-minitool/builder; do

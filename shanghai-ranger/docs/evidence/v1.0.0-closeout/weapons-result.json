@@ -1,0 +1,44 @@
+[
+  {
+    "title": "碳纤维战术棍 · 精修 0/3",
+    "rect": {
+      "x": 67.5,
+      "y": 214,
+      "width": 240,
+      "height": 220,
+      "top": 214,
+      "right": 307.5,
+      "bottom": 434,
+      "left": 67.5
+    },
+    "svgLength": 395
+  },
+  {
+    "title": "钛合金伸缩棍 · 精修 0/3",
+    "rect": {
+      "x": 67.5,
+      "y": 214,
+      "width": 240,
+      "height": 220,
+      "top": 214,
+      "right": 307.5,
+      "bottom": 434,
+      "left": 67.5
+    },
+    "svgLength": 369
+  },
+  {
+    "title": "霓虹长柄战术伞 · 精修 0/3",
+    "rect": {
+      "x": 67.5,
+      "y": 214,
+      "width": 240,
+      "height": 220,
+      "top": 214,
+      "right": 307.5,
+      "bottom": 434,
+      "left": 67.5
+    },
+    "svgLength": 365
+  }
+]

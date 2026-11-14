@@ -1,0 +1,2544 @@
+{
+  "baseline": {
+    "start": {
+      ".game-shell button": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "14px",
+        "weight": "400"
+      },
+      ".nightwatch-notes>p": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "14px",
+        "weight": "400"
+      },
+      ".vital-line>span": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "12px",
+        "weight": "400"
+      }
+    },
+    "forge": {
+      ".game-shell button": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "14px",
+        "weight": "400"
+      },
+      ".forge-details>p": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "14px",
+        "weight": "400"
+      },
+      ".forge-stat strong": {
+        "font": "Cormorant, GameChineseDisplay, serif",
+        "size": "24px",
+        "weight": "400"
+      },
+      ".vital-line>span": {
+        "font": "GameChineseSans, system-ui, sans-serif",
+        "size": "12px",
+        "weight": "400"
+      }
+    }
+  },
+  "results": {
+    "H5-1440x1000-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "94px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-rendered-font": {
+      "fonts": [
+        {
+          "familyName": "RangerActionTitle",
+          "postScriptName": "RangerActionTitle-Regular",
+          "isCustomFont": true,
+          "glyphCount": 4
+        }
+      ]
+    },
+    "H5-1440x1000-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "碳纤维战术棍 · 精修 0/3",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "27px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "27px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-skin-梧桐巡守": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "梧桐巡守",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-skin-江畔司夜": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-skin-申城守望": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "申城守望",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-save-warning": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "申城守望",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-1440x1000-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "野猫",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "20px",
+          "overflow": false
+        },
+        {
+          "text": "看清路数，沉着出手",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "block"
+    },
+    "H5-375x812-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "31px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-375x812-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "碳纤维战术棍 · 精修 0/3",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-375x812-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-375x812-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "26px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-375x812-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-375x812-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "野猫",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "block"
+    },
+    "H5-844x390-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "37px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "23px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-844x390-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-844x390-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-844x390-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "26px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-844x390-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "H5-844x390-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "none"
+    },
+    "IIFE-1440x1000-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "94px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-rendered-font": {
+      "fonts": [
+        {
+          "familyName": "RangerActionTitle",
+          "postScriptName": "RangerActionTitle-Regular",
+          "isCustomFont": true,
+          "glyphCount": 4
+        }
+      ]
+    },
+    "IIFE-1440x1000-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "碳纤维战术棍 · 精修 0/3",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "27px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "27px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-skin-梧桐巡守": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "梧桐巡守",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-skin-江畔司夜": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-skin-申城守望": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "申城守望",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "城隍庙商圈",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-1440x1000-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "30px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        },
+        {
+          "text": "晴夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "44px",
+          "overflow": false
+        },
+        {
+          "text": "野猫",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "20px",
+          "overflow": false
+        },
+        {
+          "text": "看清路数，沉着出手",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "block"
+    },
+    "IIFE-375x812-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "31px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-375x812-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "碳纤维战术棍 · 精修 0/3",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-375x812-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜色巡逻",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "24px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-375x812-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "26px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-375x812-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-375x812-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "野猫",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "18px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "block"
+    },
+    "IIFE-844x390-start": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "沪上游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "37px",
+          "overflow": false
+        },
+        {
+          "text": "准备夜巡",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "23px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".nightwatch-notes>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-844x390-forge": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客强化所",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-details>p": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".forge-stat strong": {
+          "font": "Cormorant, GameChineseDisplay, serif",
+          "size": "24px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-844x390-guide": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡手册",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-844x390-wardrobe": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "侠客衣橱",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "江畔司夜",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "26px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-844x390-settings": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "夜巡设置",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "IIFE-844x390-combat": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": [],
+      "bossCardDisplay": "none"
+    },
+    "IIFE-mobile-recovery": {
+      "titleLoaded": true,
+      "titles": [
+        {
+          "text": "游侠",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "25px",
+          "overflow": false
+        },
+        {
+          "text": "夜鹰",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "16px",
+          "overflow": false
+        },
+        {
+          "text": "暂时倒下了",
+          "font": "NightTitle, GameChineseSans, sans-serif",
+          "weight": "400",
+          "size": "29px",
+          "overflow": false
+        }
+      ],
+      "unchanged": {
+        ".game-shell button": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "14px",
+          "weight": "400"
+        },
+        ".vital-line>span": {
+          "font": "GameChineseSans, system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400"
+        }
+      },
+      "pageOverflow": false,
+      "panelOverflow": false,
+      "errors": [],
+      "httpErrors": [],
+      "external": []
+    },
+    "recoveryRetry": true
+  }
+}

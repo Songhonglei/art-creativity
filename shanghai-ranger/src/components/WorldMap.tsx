@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import type { Snapshot } from '../game/types';
 import { CHUNK_SIZE, chunkCoordinate, chunkKey, districtLayout, isAuthoredChunk } from '../game/districts';
 import type { UrbanKind } from '../game/architecture';
@@ -20,18 +20,20 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
     x: center.x + (rawObjective.x - center.x) / objectiveDistance * 123,
     y: center.y + (rawObjective.y - center.y) / objectiveDistance * 123,
   } : rawObjective;
-  const cx = chunkCoordinate(snapshot.player.x), cz = chunkCoordinate(snapshot.player.z), chunks: { x: number; z: number }[] = [];
-  for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) chunks.push({ x: cx + dx, z: cz + dz });
-  const roads: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  for (const i of [-2, -1, 0, 1, 2]) {
-    const vertical = toMap((cx + i) * CHUNK_SIZE, snapshot.player.z).x;
-    const horizontal = toMap(snapshot.player.x, (cz + i) * CHUNK_SIZE).y;
-    roads.push({ x1: vertical, y1: 0, x2: vertical, y2: 300 }, { x1: 0, y1: horizontal, x2: 300, y2: horizontal });
-  }
-  const riverPoints: string[] = [];
-  for (let z = snapshot.player.z - 105; z <= snapshot.player.z + 105; z += 7) {
-    const point = toMap(riverX(z), z); riverPoints.push(`${point.x},${point.y}`);
-  }
+  const cx = chunkCoordinate(snapshot.player.x), cz = chunkCoordinate(snapshot.player.z);
+  // The city geometry changes only at chunk boundaries; moving the hero translates
+  // the cached layer instead of rebuilding every building and road at HUD frequency.
+  const city = useMemo(() => {
+    const map = (x: number, z: number) => ({ x: 150 + (x - cx * CHUNK_SIZE) * 1.58, y: 147 + (z - cz * CHUNK_SIZE) * 1.58 });
+    const blocks = [];
+    for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) {
+      const x = cx + dx, z = cz + dz, layout = districtLayout(x, z);
+      if (!isAuthoredChunk(x, z)) blocks.push(<g key={chunkKey(x, z)}>{layout.buildings.map((b, i) => { const p = map(b.x, b.z); return <rect key={i} x={p.x - b.halfWidth * 1.58} y={p.y - b.halfDepth * 1.58} width={b.halfWidth * 3.16} height={b.halfDepth * 3.16} rx="1.5" fill={DISTRICT_COLORS[layout.kind]} stroke="#b4c0d6" strokeOpacity=".2" strokeWidth=".6"/>; })}</g>);
+    }
+    const roads = [-2, -1, 0, 1, 2].map(i => { const x = map((cx + i) * CHUNK_SIZE, cz * CHUNK_SIZE).x, y = map(cx * CHUNK_SIZE, (cz + i) * CHUNK_SIZE).y; return [<line key={`v${i}`} x1={x} y1={-80} x2={x} y2={380} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9"/>, <line key={`h${i}`} x1={-80} y1={y} x2={380} y2={y} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9"/>]; });
+    const river: string[] = []; for (let z = cz * CHUNK_SIZE - 150; z <= cz * CHUNK_SIZE + 150; z += 7) { const p = map(riverX(z), z); river.push(`${p.x},${p.y}`); }
+    return <>{blocks}{roads}<polyline points={river.join(' ')} fill="none" stroke="#101a30" strokeWidth="17"/><polyline points={river.join(' ')} fill="none" stroke="#40538c" strokeOpacity=".8" strokeWidth="9"/></>;
+  }, [cx, cz]);
   const camp = toMap(-18, 29);
   const label = (x: number, z: number, text: string, dx = 0, dy = 0) => {
     const p = toMap(x, z);
@@ -54,18 +56,7 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
     <circle cx="150" cy="150" r="145" fill="#101322" fillOpacity=".85" stroke="#7d8cbd" strokeOpacity=".6" strokeWidth=".7" />
     <g clipPath={`url(#${id}clip)`}>
       <circle cx="150" cy="150" r="140" fill={`url(#${id}paper)`} />
-      {chunks.map(({ x, z }) => {
-        const layout = districtLayout(x, z);
-        return <g key={chunkKey(x, z)}>
-          {!isAuthoredChunk(x, z) && layout.buildings.map((b, i) => {
-            const p = toMap(b.x, b.z);
-            return <rect key={i} x={p.x - b.halfWidth * scale} y={p.y - b.halfDepth * scale} width={b.halfWidth * 2 * scale} height={b.halfDepth * 2 * scale} rx="1.5" fill={DISTRICT_COLORS[layout.kind]} stroke="#b4c0d6" strokeOpacity=".2" strokeWidth=".6" />;
-          })}
-        </g>;
-      })}
-      {roads.map((line, i) => <line key={i} {...line} stroke="#9db1e8" strokeOpacity=".19" strokeWidth="9" />)}
-      <polyline points={riverPoints.join(' ')} fill="none" stroke="#101a30" strokeWidth="17" />
-      <polyline points={riverPoints.join(' ')} fill="none" stroke="#40538c" strokeOpacity=".8" strokeWidth="9" />
+      <g transform={`translate(${-(snapshot.player.x - cx * CHUNK_SIZE) * scale} ${-(snapshot.player.z - cz * CHUNK_SIZE) * scale})`}>{city}</g>
       <circle cx="150" cy="150" r="140" fill={`url(#${id}grid)`} />
       {route && <polyline points={route} fill="none" stroke="#f0cf7e" strokeOpacity=".72" strokeWidth="1.5" strokeDasharray="4 4" />}
       {snapshot.resources.filter(r => !r.collected && r.kind !== 'clue').map(r => {
@@ -80,16 +71,16 @@ export function WorldMap({ snapshot, large = false }: { snapshot: Snapshot; larg
       {marker && objective && <g transform={`translate(${marker.x} ${marker.y})`}>
         <circle r="10" fill={objective === nextClue ? '#776738' : '#8d4a48'} stroke="#ffe0a8" strokeWidth="1" />
         {objective === nextClue ? <path d="M0-6 5 0 0 6-5 0Z" fill="#ffe0a8" /> : <path d="m-5-5 2 6 3 5 3-5 2-6-5 3Z" fill="#ffd7ab" />}
-        {large && objectiveDistance > 123 && <text x="13" y="3" fill="#ffd7ab" fontSize="8" stroke="#151a2b" strokeWidth="2" paintOrder="stroke">{Math.round(objective === nextClue ? Math.hypot(objective.x - snapshot.player.x, objective.z - snapshot.player.z) : snapshot.monsterDistance)}m</text>}
+        {large && objectiveDistance > 123 && <text x="13" y="3" fill="#ffd7ab" fontSize="12" stroke="#151a2b" strokeWidth="2" paintOrder="stroke">{Math.round(objective === nextClue ? Math.hypot(objective.x - snapshot.player.x, objective.z - snapshot.player.z) : snapshot.monsterDistance)}m</text>}
       </g>}
       <g transform={`translate(${center.x} ${center.y}) rotate(${-snapshot.facing * 180 / Math.PI})`}><circle r="10" fill="#dfe6ff" fillOpacity=".15" /><path d="M0 7-4-5 0-2 4-5Z" fill="#f4ecff" stroke="#141830" strokeWidth="1" /></g>
-      {large && <g fontFamily="Manrope" fill="#dfe6ff" fontSize="7" letterSpacing="1">
+      {large && <g fontFamily="GameChineseSans, sans-serif" fill="#dfe6ff" fontSize="12" letterSpacing="1">
         {Math.abs(snapshot.player.x) < 170 && Math.abs(snapshot.player.z) < 170 && <>{label(13.5, -10, '外滩 THE BUND', 12, -8)}{label(-18, 42, '城隍庙夜市', -16, 13)}{label(49, -45, '陆家嘴', 12, -12)}{label(-10, 5, '南京路', -10, 15)}</>}
       </g>}
     </g>
     <circle cx="150" cy="150" r="139" fill="none" stroke="#aebadd" strokeOpacity=".45" strokeWidth=".8" />
     <path d="M150 1v8M150 291v8M1 150h8M291 150h8" stroke="#c4d0f2" strokeWidth="1" />
-    <text x="150" y="24" textAnchor="middle" fontFamily="Manrope" fontSize="11" fill="#f2f4ff" fontWeight="700">北</text>
-    {large && <text x="150" y="282" textAnchor="middle" fontFamily="GameChineseDisplay, sans-serif" fontSize="8" fill="#e8c76a">委托 · {snapshot.questDistrict}</text>}
+    <text x="150" y="24" textAnchor="middle" fontFamily="GameChineseSans, sans-serif" fontSize="12" fill="#f2f4ff" fontWeight="700">北</text>
+    {large && <text x="150" y="282" textAnchor="middle" fontFamily="GameChineseDisplay, sans-serif" fontSize="12" fill="#e8c76a">委托 · {snapshot.questDistrict}</text>}
   </svg>;
 }

@@ -23,7 +23,7 @@ export function PetContent({s,engine}:{s:Snapshot;engine:Engine|null}) {
       <button className="pet-inspect" aria-label={`查看${PET_NAMES[p.id]}`} aria-pressed={selected===p.id} onClick={()=>setSelected(p.id)}><span className={`pet-face pet-${p.id}`}/><strong>{PET_NAMES[p.id]}</strong><span>{p.name} · {p.role}</span><small>Lv.{s.progress.pets[p.id].level}</small></button>
       <button className="pet-deploy" aria-label={s.progress.pet===p.id?`${PET_NAMES[p.id]}出战中`:`出战${PET_NAMES[p.id]}`} disabled={busy||s.progress.pet===p.id} onClick={()=>{engine?.setPet(p.id);setSelected(p.id);}}>{s.progress.pet===p.id?<><Check size={13}/>出战中</>:<>出战<ArrowRight size={13}/></>}</button>
     </div>)}</div>
-    {busy&&<p className="pet-busy" role="status">{s.dead?'回大排档后可调整':s.combat?'脱战后可调整':'动作结束后可调整'}</p>}
+    {busy&&<p className="pet-busy" role="status">{s.dead?'恢复后可调整':s.combat?'脱战后可调整':'动作结束后可调整'}</p>}
     <div className="pet-workbench"><section className="pet-growth"><div className="pet-save-status" role="status">{s.saveStatus==='saved'?'已保存':s.saveStatus==='saving'?'正在保存':s.saveStatus==='failed'?'未保存，请重试':'修改后自动保存'}</div><div className="pet-growth-heading"><div><span>{pet.name} · {pet.role}</span><h3>{PET_NAMES[selected]} <small>Lv.{g.level}</small></h3></div><button className="pet-growth-skins" aria-controls="pet-appearance" onClick={()=>{setShowSkins(true);requestAnimationFrame(()=>{const target=appearance.current,panel=target?.closest('.modal-panel');if(target&&panel)panel.scrollTop+=target.getBoundingClientRect().top-panel.getBoundingClientRect().top-110;});}}>换肤<ArrowRight size={14}/></button></div>
       <div className="pet-xp-label"><span>{g.level===10?'已满级':`距 ${g.level+1} 级`}</span><b>{g.level===10?'Lv.10':`${g.xp} / ${PET_XP[g.level-1]}`}</b></div><div className="pet-xp" role="progressbar" aria-label={`${PET_NAMES[selected]}升级经验`} aria-valuenow={g.level===10?1:g.xp} aria-valuemin={0} aria-valuemax={g.level===10?1:PET_XP[g.level-1]}><i style={{transform:`scaleX(${g.level===10?1:g.xp/PET_XP[g.level-1]})`}}/></div>
       <div className="pet-skill-summary"><strong>{selected==='shiba'?'寻踪／识破':pet.skill}<small>基础冷却 {decimal(stats.cooldown)} 秒</small></strong><div>{skillEffects.map(effect=><span key={effect}>{effect}</span>)}</div><p>{latest[1]}</p></div>
@@ -39,7 +39,7 @@ export function PetContent({s,engine}:{s:Snapshot;engine:Engine|null}) {
       <p className="pet-skin-next">{nextSkin?`${nextSkin.level} 级解锁「${nextSkin.name}」`:'等级皮肤已全部解锁'}<small>皮肤只改变外观</small></p>
     </section>
     </div>
-    <div className="pet-rescue-summary"><Shield size={20}/><div><strong>本轮救援：{s.rescueAvailable?'可用 1 次':s.rescueTime>0?'正在救援':'已用完'}</strong><p>致命伤后自动救起；用完后再倒下可回大排档，保留调查进度。回营休息后补充。</p></div></div>
+    <div className="pet-rescue-summary"><Shield size={20}/><div><strong>本轮救援：{s.rescueAvailable?'可用 1 次':s.rescueTime>0?'正在救援':'已用完'}</strong><p>致命伤后自动救起；用完后再倒下可就近再战，调查和收益保留。再战或回营休息后补充。</p></div></div>
     <details className="pet-rules"><summary>成长与能力说明</summary><p>调查 +8、街坊求助 +10、游荡制伏 +5、主目标制伏 +20、完成委托 +60 经验；出战获得完整经验，待命获得一半。升级自动生效，属性点可留待以后分配。</p><ul>{PET_MILESTONES[selected].map(([level,desc])=><li key={level}><span>Lv.{level}</span>{desc}{g.level>=level&&<Check size={13}/>}</li>)}</ul><p>晴夜宠物技能恢复较快。C／手机技能始终只需按一次，正常轻击或重击均可使用柴犬识破；不要求特殊连招。主动技能与自动辅助分别计时，切宠不会刷新。</p></details>
   </div>;
 }

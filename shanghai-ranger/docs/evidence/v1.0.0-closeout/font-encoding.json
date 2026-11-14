@@ -1,0 +1,20 @@
+[
+  {
+    "name": "zh-sans",
+    "bytes": 283428,
+    "glyphs": 1104,
+    "missingFromOriginal": 0
+  },
+  {
+    "name": "zh-serif",
+    "bytes": 366748,
+    "glyphs": 1104,
+    "missingFromOriginal": 0
+  },
+  {
+    "name": "title",
+    "bytes": 119072,
+    "glyphs": 958,
+    "missingFromOriginal": 0
+  }
+]

@@ -1,0 +1,168 @@
+{
+  "v0.9.5": {
+    "viewport": [
+      1024,
+      768
+    ],
+    "quality": "low",
+    "runs": [
+      {
+        "sampleFrames": 60,
+        "p50": 33.5,
+        "p95": 42.40000000000009,
+        "routes": [
+          {
+            "x": -18,
+            "z": 31.2,
+            "calls": 249,
+            "triangles": 123398,
+            "geometries": 266,
+            "textures": 23
+          },
+          {
+            "x": 0,
+            "z": 20,
+            "calls": 311,
+            "triangles": 130840,
+            "geometries": 267,
+            "textures": 23
+          },
+          {
+            "x": 8,
+            "z": -12,
+            "calls": 134,
+            "triangles": 93606,
+            "geometries": 267,
+            "textures": 23
+          }
+        ]
+      },
+      {
+        "sampleFrames": 60,
+        "p50": 33.30000000000018,
+        "p95": 42.69999999999982,
+        "routes": [
+          {
+            "x": -18,
+            "z": 31.2,
+            "calls": 249,
+            "triangles": 123398,
+            "geometries": 267,
+            "textures": 23
+          },
+          {
+            "x": 0,
+            "z": 20,
+            "calls": 311,
+            "triangles": 130840,
+            "geometries": 267,
+            "textures": 23
+          },
+          {
+            "x": 8,
+            "z": -12,
+            "calls": 134,
+            "triangles": 93606,
+            "geometries": 267,
+            "textures": 23
+          }
+        ]
+      }
+    ],
+    "hero": {
+      "triangles": 14192,
+      "calls": 35,
+      "lights": 2
+    },
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+    "heap": {
+      "usedSize": 47838804,
+      "totalSize": 50659328,
+      "embedderHeapUsedSize": 3841752,
+      "backingStorageSize": 25093113
+    }
+  },
+  "v1.0.0": {
+    "viewport": [
+      1024,
+      768
+    ],
+    "quality": "low",
+    "runs": [
+      {
+        "sampleFrames": 60,
+        "p50": 41.600000000000364,
+        "p95": 1042.5,
+        "routes": [
+          {
+            "x": -18,
+            "z": 31.2,
+            "calls": 245,
+            "triangles": 125242,
+            "geometries": 256,
+            "textures": 23
+          },
+          {
+            "x": 0,
+            "z": 20,
+            "calls": 299,
+            "triangles": 128682,
+            "geometries": 257,
+            "textures": 23
+          },
+          {
+            "x": 8,
+            "z": -12,
+            "calls": 123,
+            "triangles": 91450,
+            "geometries": 257,
+            "textures": 23
+          }
+        ]
+      },
+      {
+        "sampleFrames": 60,
+        "p50": 33.400000000001455,
+        "p95": 1008.5,
+        "routes": [
+          {
+            "x": -18,
+            "z": 31.2,
+            "calls": 246,
+            "triangles": 125244,
+            "geometries": 258,
+            "textures": 23
+          },
+          {
+            "x": 0,
+            "z": 20,
+            "calls": 298,
+            "triangles": 128680,
+            "geometries": 258,
+            "textures": 23
+          },
+          {
+            "x": 8,
+            "z": -12,
+            "calls": 123,
+            "triangles": 91450,
+            "geometries": 258,
+            "textures": 23
+          }
+        ]
+      }
+    ],
+    "hero": {
+      "triangles": 12034,
+      "calls": 23,
+      "lights": 0
+    },
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)",
+    "heap": {
+      "usedSize": 62299912,
+      "totalSize": 64290816,
+      "embedderHeapUsedSize": 6756720,
+      "backingStorageSize": 44264451
+    }
+  }
+}

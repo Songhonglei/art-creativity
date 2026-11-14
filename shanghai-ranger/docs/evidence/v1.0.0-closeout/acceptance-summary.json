@@ -1,0 +1,17 @@
+{
+  "applicationCommit": "83dc188",
+  "date": "2026-11-10",
+  "unitTests": 245,
+  "testFiles": 13,
+  "uiStates": 84,
+  "uiBaseline": "259f17a; final 83dc188 focus-only fix separately verified",
+  "storageChecks": 18,
+  "renderComparisons": 18,
+  "petSkinSelections": 36,
+  "browserTask": 54,
+  "taskFinished": true,
+  "testStorageRemoved": true,
+  "deviceAndNativeAcceptance": "pending; no actual platform/native/Chrome61/device/FPS claim",
+  "ciApplicationHead": "dd0ea2daafd0476494ce46f48a3df55ab20b0877",
+  "ciUrl": "https://github.com/Songhonglei/art-creativity/actions/runs/42802407215"
+}

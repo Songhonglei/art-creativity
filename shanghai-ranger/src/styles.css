@@ -374,7 +374,7 @@ button,.touch-joystick{-webkit-tap-highlight-color:transparent}
 .pet-busy { padding:8px 12px; margin-bottom:16px; background:#433622; color:#f5dba1 }
 .pet-workbench { display:grid; grid-template-columns:minmax(0,1fr); gap:20px }
 .pet-appearance,.pet-growth { min-width:0 }
-.pet-model-preview { width:100%; height:220px; position:relative; background:#15222e; touch-action:none; cursor:grab }
+.pet-model-preview { width:100%; height:220px; position:relative; background:#15222e; touch-action:pan-y; cursor:grab }
 .pet-model-preview:active { cursor:grabbing }
 .pet-model-preview canvas { display:block; max-width:100%; height:100%; width:100% }
 .preview-error { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:16px; background:#15222e }

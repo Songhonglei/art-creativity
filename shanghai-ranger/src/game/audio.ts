@@ -28,10 +28,11 @@ export class GameAudio {
   private musicTimer: ReturnType<typeof setInterval> | null = null;
   private outputConnected = false;
   private disposed = false;
+  private background = false;
   enabled = true; volume = .45;
 
   unlock() {
-    if (this.disposed || !this.enabled || this.volume <= 0) return;
+    if (this.disposed || this.background || !this.enabled || this.volume <= 0) return;
     if (!this.ctx) {
       try {
         this.ctx = new AudioContext(); this.master = this.ctx.createGain(); this.master.gain.value = 0;
@@ -42,7 +43,7 @@ export class GameAudio {
         this.moodKey = ''; this.applyMood(); this.setVolume(this.volume, this.enabled);
       } catch { this.dispose(); return; }
     }
-    if (this.ctx.state === 'suspended') void this.ctx.resume().catch(() => { });
+    if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') void this.ctx.resume().catch(() => { });
     if (this.musicTimer === null) this.musicTimer = setInterval(() => this.updateMusic(), 100);
     this.updateMusic();
   }
@@ -100,7 +101,7 @@ export class GameAudio {
 
   /** Schedule against the audio clock, including while a settings dialog pauses the game. */
   updateMusic() {
-    if (!this.ctx || this.ctx.state !== 'running' || !this.enabled || this.volume <= 0) return;
+    if (this.background || !this.ctx || this.ctx.state !== 'running' || !this.enabled || this.volume <= 0) return;
     const now = this.ctx.currentTime;
     if (this.nextNote < now) this.nextNote = now + .02;
     const profile = SOUNDSCAPES[this.soundscape];
@@ -156,6 +157,13 @@ export class GameAudio {
 
   setEnvironmentActive(active: boolean) {
     this.environmentActive = active; if (!active) this.stopAmbience();
+  }
+  setBackground(hidden: boolean) {
+    this.background = hidden;
+    if (hidden) {
+      if (this.musicTimer !== null) clearInterval(this.musicTimer); this.musicTimer = null;
+      this.stopScore(); this.stopAmbience(); void this.ctx?.suspend().catch(() => {});
+    } else this.unlock();
   }
   setCityFeature(kind: CityFeatureKind | null, distance: number) {
     this.ambience.setCity(kind, distance); this.trimAmbience();
@@ -237,6 +245,8 @@ export class GameAudio {
       case 'attack': this.noise(e.heavy ? .32 : .16, e.weapon === 'baton' ? 2400 : 1600, e.heavy ? .3 : .17); this.tone(e.heavy ? 105 : 180, .18, 'triangle', e.heavy ? .12 : .06, 60); break;
       case 'hit': this.noise(e.heavy ? .25 : .13, e.blocked ? 2600 : 1000, e.heavy ? .52 : .32); this.tone(e.blocked ? 620 : e.heavy ? 65 : 100, e.heavy ? .28 : .16, 'triangle', e.heavy ? .4 : .25, e.blocked ? 280 : 28); this.tone(780, .1, 'sine', .1, 180); break;
       case 'hurt': this.noise(.3, 480, .3); this.tone(130, .25, 'sawtooth', .12, 35); break;
+      case 'fall': this.noise(.22, 260, .13); this.tone(92, .6, 'sine', .07, 44); break;
+      case 'revive': [294, 392, 587].forEach((f, i) => this.tone(f, .28, 'sine', .045, f, i * .07)); break;
       case 'dodge': this.noise(.24, 850, .22); break;
       case 'roar': {
         const range = e.kind === 'ebike' || e.kind === 'racer' ? 16 : 12;

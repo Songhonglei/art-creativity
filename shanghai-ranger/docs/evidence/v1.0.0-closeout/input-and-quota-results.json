@@ -1,0 +1,49 @@
+[
+  {
+    "case": "held joystick and camera survive quality change",
+    "before": {
+      "touch": {
+        "x": 0.6451612447467472,
+        "z": 0,
+        "sprint": false
+      },
+      "contacts": 1,
+      "player": {
+        "x": -17.238099877652306,
+        "z": 31.298297783050913
+      }
+    },
+    "after": {
+      "touch": {
+        "x": 0.6451612447467472,
+        "z": 0,
+        "sprint": false
+      },
+      "contacts": 1
+    }
+  },
+  {
+    "case": "held joystick moves player",
+    "passed": true
+  },
+  {
+    "case": "touch release clears contacts",
+    "passed": true
+  },
+  {
+    "case": "重击",
+    "value": true
+  },
+  {
+    "case": "闪避",
+    "value": 0.3185333333333331
+  },
+  {
+    "case": "quota failure shows retry beside current menu",
+    "status": "failed"
+  },
+  {
+    "case": "quota retry saves without dropping level",
+    "level": 10
+  }
+]

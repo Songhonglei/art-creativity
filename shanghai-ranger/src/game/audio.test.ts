@@ -41,6 +41,7 @@ class Context {
   createBufferSource() { const source = Object.assign(new Source(), { loop: false, buffer: null }); this.buffers.push(source); return source; }
   createOscillator() { const source = new Source(); this.oscillators.push(source); return source; }
   resume = vi.fn(async () => { this.state = 'running'; });
+  suspend = vi.fn(async () => { this.state = 'suspended'; });
   close = vi.fn(async () => { this.state = 'closed'; });
 }
 
@@ -57,6 +58,12 @@ describe('城市声景', () => {
     expect(Context.latest.oscillators[0].type).toBe('triangle');
     expect(Context.latest.oscillators[1].type).toBe('sine');
     expect(audio.audioDebug.scoreVoices).toBeGreaterThan(0);
+  });
+  it('切后台停止调度并暂停音频上下文，返回后可恢复', () => {
+    audio.unlock(); const context = Context.latest;
+    audio.setBackground(true); expect(context.suspend).toHaveBeenCalled();
+    const count = context.oscillators.length; context.currentTime = 5; audio.updateMusic(); expect(context.oscillators.length).toBe(count);
+    audio.setBackground(false); expect(context.resume).toHaveBeenCalled();
   });
 
   it('不依赖游戏帧或 mood 轮询，切换立即替换发声和旧旋律', () => {
@@ -152,6 +159,19 @@ describe('城市声景', () => {
     expect(Context.instances).toHaveLength(0);
     audio.setVolume(0, true); audio.unlock(); expect(Context.instances).toHaveLength(0);
     audio.setVolume(.45, true); audio.unlock(); expect(Context.instances).toHaveLength(1);
+  });
+
+  it('死亡与复活音一次性发声，静音和音量0不增加任何音源', () => {
+    audio.setVolume(.45, false); audio.play({ type: 'fall' }); audio.play({ type: 'revive' });
+    expect(Context.instances).toHaveLength(0);
+    audio.setVolume(.45, true); audio.unlock(); const ctx = Context.latest;
+    const before = ctx.oscillators.length;
+    audio.play({ type: 'fall' }); expect(ctx.oscillators.length).toBe(before + 1);
+    audio.play({ type: 'revive' }); expect(ctx.oscillators.length).toBe(before + 4);
+    audio.setVolume(.45, false); const muted = ctx.oscillators.length;
+    audio.play({ type: 'fall' }); audio.play({ type: 'revive' }); expect(ctx.oscillators).toHaveLength(muted);
+    audio.setVolume(0, true); audio.play({ type: 'fall' }); audio.play({ type: 'revive' });
+    expect(ctx.oscillators).toHaveLength(muted);
   });
 
   it('关闭声音会立即归零并断开输出，而非只让低频缓慢淡出', () => {

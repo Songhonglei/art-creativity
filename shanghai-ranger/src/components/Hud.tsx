@@ -1,5 +1,7 @@
+import { HeroPortrait } from './HeroPortrait';
+import { ActionIcon } from './ActionIcon';
 import { useEffect, useRef } from 'react';
-import { ArrowRight, BookOpen, CaretRight, Check, CircleNotch, Compass, Crosshair, Diamond, Feather, Flask, Footprints, HandCoins, Heart, MapTrifold, MoonStars, MouseLeftClick, PawPrint, Skull, Star, Sword, Wrench, Wind, CloudFog, CloudRain } from '@phosphor-icons/react';
+import { ArrowRight, BookOpen, CaretRight, Check, CircleNotch, Compass, Crosshair, Diamond, Feather, Footprints, HandCoins, Heart, MapTrifold, MoonStars, MouseLeftClick, PawPrint, Skull, Star, Sword, Wrench, Wind, CloudFog, CloudRain } from '@phosphor-icons/react';
 import { MonsterGlyph } from './Emblem';
 import { WorldMap } from './WorldMap';
 import { PET_NAMES, WEAPONS } from '../game/simulation';
@@ -68,9 +70,9 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
   const WeatherIcon = s.weather === '晴夜' ? MoonStars : s.weather === '雾霾' ? CloudFog : CloudRain;
   const weaponName = WEAPONS.find(weapon => weapon.id === s.progress.weapon)?.name ?? '城市战术棍';
   const enemy = s.encounter;
-  return <div className={`hud ${s.combat ? 'in-combat' : ''}`}>
+  return <div className={`hud ${s.combat ? 'in-combat' : ''}`} inert={s.dead}>
     <section className="hunter-status" aria-label="侠客状态">
-      <div className="hunter-sigil"><Sword size={25} weight="light" /><span>01</span></div>
+      <button className="hunter-sigil" onClick={() => open('wardrobe')} aria-label="打开侠客衣橱"><HeroPortrait skin={s.progress.skin} gender={s.progress.gender}/></button>
       <div className="hunter-details">
         <div className="hunter-name"><strong>夜鹰</strong><span>侠义等级 {String(s.progress.level).padStart(2, '0')}</span></div>
         <div className="vital-line"><Heart size={12} weight="fill" /><div className="vital health" role="progressbar" aria-label="气血" aria-valuenow={Math.round(s.health)} aria-valuemin={0} aria-valuemax={s.maxHealth}><i style={{ transform: `scaleX(${s.health / s.maxHealth})` }} /></div><span>{Math.ceil(s.health)}<small> / {s.maxHealth}</small></span></div>
@@ -107,7 +109,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
     <div className="map-hud">
       <div className="map-heading"><Compass size={13} /><span>上海 · 动态夜巡</span><span className="map-region">{districtName(s.player.x, s.player.z)}</span></div>
       <button className="minimap-button" onClick={() => open('map')} aria-label="打开街区地图"><WorldMap snapshot={s} /><span className="map-expand"><MapTrifold size={12} /><Key>M</Key></span></button>
-      <div className="map-caption"><span className="map-day-dot" />第 {String(s.progress.hunts + 1).padStart(2, '0')} 夜<span>21:{String(24 + Math.floor(s.time / 60) % 36).padStart(2, '0')}</span><span>夜巡中</span></div>
+      <div className="map-caption"><span className="map-day-dot" />第 {String(s.hunt + 1).padStart(2, '0')} 夜<span>21:{String(24 + Math.floor(s.time / 60) % 36).padStart(2, '0')}</span><span>夜巡中</span></div>
     </div>
 
     <div className="world-title"><div><span />上海 · {districtName(s.player.x, s.player.z)}<span /></div><h2>{s.combat ? '看清路数，沉着出手' : districtName(s.player.x, s.player.z)}</h2><p>{s.combat ? '稳住阵脚，看清它的路数。' : s.weather === '暴雨' ? '雨落申城，霓虹在积水里摇晃。' : s.weather === '雾霾' ? '雾漫街巷，跟紧身边的伙伴。' : '十里洋场夜色深，侠客独行守霓虹。'}</p></div>
@@ -116,8 +118,8 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
       <div className="weapon-label"><Sword size={21} weight="light" /><div><small>随身兵器</small><strong>{weaponName}</strong></div><span className="weapon-tier">{s.progress.weaponLevel ? `精修 ${s.progress.weaponLevel}` : '未精修'}</span></div>
       <div className="sharpness"><span /><span /><span /><span /><span /></div>
       <div className="quick-items">
-        <button className="quick-item selected" {...actionHandlers('heal')} title="喝奶茶回血 (R)" aria-label={`喝奶茶，还剩 ${s.potions} 杯`}><span className="item-key">R</span><Flask size={27} weight="light" /><span className="quick-label">奶茶</span><span className="item-count">{s.potions}</span></button>
-        <button className={`quick-item quick-pet ${s.petCooldown <= 0 ? 'selected' : ''}`} disabled={s.petCooldown > 0 || !s.petSkillAvailable || s.rescueTime > 0} {...actionHandlers('pet')} title={`${s.petSkillName} (C)`} aria-label={`${s.petSkillName}，${s.petCooldown > 0 ? `冷却 ${Math.ceil(s.petCooldown)} 秒` : s.petSkillAvailable ? '已就绪' : '无目标'}`}><span className="item-key">C</span><PawPrint size={27} weight="light" /><span className="quick-label">{s.petSkillName}</span><span className="item-count">{s.petCooldown > 0 ? Math.ceil(s.petCooldown) : s.petSkillAvailable ? '✓' : '—'}</span></button>
+        <button className="quick-item selected" {...actionHandlers('heal')} title="喝奶茶回血 (R)" aria-label={`喝奶茶，还剩 ${s.potions} 杯`}><span className="item-key">R</span><ActionIcon kind="heal" size={27}/><span className="quick-label">奶茶</span><span className="item-count">{s.potions}</span></button>
+        <button className={`quick-item quick-pet ${s.petCooldown <= 0 ? 'selected' : ''}`} disabled={s.petCooldown > 0 || !s.petSkillAvailable || s.rescueTime > 0} {...actionHandlers('pet')} title={`${s.petSkillName} (C)`} aria-label={`${s.petSkillName}，${s.petCooldown > 0 ? `冷却 ${Math.ceil(s.petCooldown)} 秒` : s.petSkillAvailable ? '已就绪' : '无目标'}`}><span className="item-key">C</span><ActionIcon kind={s.progress.pet} size={27}/><span className="quick-label">{s.petSkillName}</span><span className="item-count">{s.petCooldown > 0 ? Math.ceil(s.petCooldown) : s.petSkillAvailable ? '✓' : '—'}</span></button>
         <button className={`quick-item ${s.locked ? 'selected' : ''}`} {...actionHandlers('lock')} title="锁定目标 (Q)" aria-label="锁定目标" aria-pressed={s.locked}><span className="item-key">Q</span><Crosshair size={27} weight="light" /><span className="quick-label">锁定</span></button>
         <button className="quick-item quick-forge" onClick={() => open('forge')} title="侠客强化 (F)" aria-label="打开强化所"><span className="item-key">F</span><Wrench size={26} weight="light" /><span className="quick-label">强化</span><span className="item-count">{s.progress.level}</span></button>
         <button className="quick-item quick-guide" onClick={() => open('guide')} title="夜巡手册 (G)" aria-label="打开夜巡手册"><span className="item-key">G</span><BookOpen size={26} weight="light" /><span className="quick-label">手册</span></button>
@@ -127,7 +129,7 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
 
     <div className="bottom-controls"><span><Key>W A S D</Key>移动</span><span><Key>拖动</Key>环顾</span><span><Key><MouseLeftClick size={12} /></Key>攻击</span><span><Key>SPACE</Key>闪避</span><span><Key>E</Key>交互</span><button onClick={() => open('help')}><Key>H</Key>全部操作<ArrowRight size={12} /></button></div>
     <div className="camera-tools"><button onClick={() => engine?.resetCamera()} aria-label="镜头归位" title="镜头归位 (V)" disabled={paused}><Compass size={18} /><span>归位</span></button><small>拖动环顾 · 双指缩放</small></div>
-    <span className="expedition-code">沪上夜巡 <i /> 001 — SH</span>
+    <span className="expedition-code">沪上夜巡 <i /> {String(s.hunt + 1).padStart(3, '0')} — SH</span>
 
     {s.interact && <button className="interact-prompt" {...actionHandlers('interact')}><Key>E</Key><span><strong>{s.interact.label}</strong><small>{s.interact.detail}</small></span><CaretRight size={18} /></button>}
 
@@ -140,9 +142,9 @@ export function Hud({ s, engine, open, paused, settings }: { s: Snapshot; engine
       <TouchJoystick engine={engine} paused={paused} />
       <div className="touch-actions">
         {s.interact && <button className="touch-interact" {...actionHandlers('interact')} aria-label={`交互：${s.interact.label}`}><HandCoins size={20} /><span>交互</span></button>}
-        <button {...actionHandlers('dodge')} aria-label="闪避"><Wind size={21} /><span>闪避</span></button>
-        <button className="primary-action" {...actionHandlers('attack')} aria-label="攻击"><Sword size={26} /><span>攻击</span></button>
-        <button {...actionHandlers('heavy')} aria-label="重击"><Crosshair size={20} /><span>重击</span></button>
+        <button {...actionHandlers('dodge')} aria-label="闪避"><ActionIcon kind="dodge" size={24}/><span>闪避</span></button>
+        <button className="primary-action" {...actionHandlers('attack')} aria-label="攻击"><ActionIcon kind="attack" size={28}/><span>攻击</span></button>
+        <button {...actionHandlers('heavy')} aria-label="重击"><ActionIcon kind="heavy" size={25}/><span>重击</span></button>
       </div>
     </div>
   </div>;
