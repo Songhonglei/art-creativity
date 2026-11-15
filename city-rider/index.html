@@ -571,8 +571,9 @@ kbd{border:1px solid var(--edge2);border-bottom-width:2px;border-radius:5px;padd
   .hud-timer{font-size:19px}.hud-timer small{font-size:7px;letter-spacing:2px}
   .hud-score{font-size:14px}.hud-coins{font-size:10px}
   .hud-btn{width:31px;height:31px}.hud-btn svg{width:14px;height:14px}
-  .hud-bottom-l{left:76px;bottom:12px}
-  .hud-bottom-r{right:150px;bottom:12px}
+  /* 横屏：HUD 上移到触屏按钮之上，避免速度表与小地图被遮挡 */
+  .hud-bottom-l{left:76px;bottom:80px}
+  .hud-bottom-r{right:150px;bottom:80px}
   .speedo{padding:5px 9px;min-width:92px;border-radius:9px}
   .speed-num{font-size:20px}.speed-num small{font-size:8px}
   .stamina-label{font-size:7px}.stamina-bar{height:4px}
@@ -652,7 +653,7 @@ kbd{border:1px solid var(--edge2);border-bottom-width:2px;border-radius:5px;padd
     min-width:0;max-width:100%;width:100%;
     overflow-x:auto;overflow-y:hidden;
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-    scroll-behavior:smooth;padding:4px 4px 12px;
+    padding:4px 4px 12px;
     scrollbar-width:none;overscroll-behavior-x:contain;
   }
   .city-grid::-webkit-scrollbar{display:none}
@@ -990,6 +991,8 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=(n>>16)+amt,g=((n>>8)&255)+amt,b=(n&255)+amt;r=clamp(r,0,255);g=clamp(g,0,255);b=clamp(b,0,255);return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0")}
 function rr(g,x,y,w,h,r){r=Math.min(r,w/2,h/2);g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function mkCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;return c}
+/* 存档结构版本：旧档加载后按默认值归一化并补写版本号，后续按版本号迁移 */
+const SAVE_V=1;
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* ================= 数据 ================= */
@@ -3448,10 +3451,12 @@ function drawRiderBack(g,cx,gy,s,o){
  g.restore();
 }/* ================= 车库 UI ================= */
 const sel={city:0,bike:0,frame:0,jersey:0,helmet:0,diff:1,gender:"m",skin:1};
+const saveLoadedV=store.get("cr_save_v",0);
 Object.assign(sel,store.get("cr_sel",{}));
 sel.city=clamp(sel.city|0,0,CITIES.length-1);sel.bike=clamp(sel.bike|0,0,2);sel.diff=clamp(sel.diff|0,0,2);
 sel.frame=clamp(sel.frame|0,0,FRAME_COLORS.length-1);sel.jersey=clamp(sel.jersey|0,0,JERSEY_COLORS.length-1);sel.helmet=clamp(sel.helmet|0,0,HELMET_COLORS.length-1);
 sel.gender=sel.gender==="f"?"f":"m";sel.skin=clamp(sel.skin|0,0,SKIN_TONES.length-1);
+if(saveLoadedV!==SAVE_V)store.set("cr_save_v",SAVE_V);
 function kitOf(){return {frame:FRAME_COLORS[sel.frame],jersey:JERSEY_COLORS[sel.jersey],
  helmet:HELMET_COLORS[sel.helmet],gender:sel.gender,skin:SKIN_TONES[sel.skin],lightDir:-.55}}
 function saveSel(){store.set("cr_sel",sel)}
@@ -3530,17 +3535,24 @@ function drawRiderHero(cv,o){
 }
 let bikeCvs=[];
 /* ---- 城市橱窗：横向滑动 / 指示点 / 翻页 ---- */
+/* 程序化滚动的目标与定时器：避免冷启动/快速连点时 scroll 回写把城市改成半途位置 */
+let cityScrollT=null,cityNavTarget=-1,cityNavT=0;
 function cityIsRail(){
  const cg=$("cityGrid");
  return cg&&getComputedStyle(cg).display==="flex";
 }
-function cityScrollTo(i,instant){
+/* 程序化定位一律瞬时完成：平滑滚动 + scroll-snap-stop 会让选中态与视觉居中错位 */
+function cityScrollTo(i){
  const cg=$("cityGrid");if(!cg||!cityIsRail())return;
  const card=cg.children[i];if(!card)return;
  /* 车库隐藏时 clientWidth=0，等可见后再滚 */
- if(!cg.clientWidth){requestAnimationFrame(()=>cityScrollTo(i,true));return}
+ if(!cg.clientWidth){requestAnimationFrame(()=>cityScrollTo(i));return}
  const left=card.offsetLeft-(cg.clientWidth-card.offsetWidth)/2;
- cg.scrollTo({left:Math.max(0,left),behavior:instant?"auto":"smooth"});
+ cityNavTarget=i;
+ clearTimeout(cityNavT);
+ cityNavT=setTimeout(()=>{cityNavTarget=-1},300);
+ if(cityScrollT){clearTimeout(cityScrollT);cityScrollT=null}
+ cg.scrollTo({left:Math.max(0,left),behavior:"auto"});
 }
 function buildCityDots(){
  const d=$("cityDots");if(!d)return;d.innerHTML="";
@@ -3568,13 +3580,15 @@ function cityStep(dir){
  updateStartNote();cityScrollTo(n);citySyncUI();
 }
 /* 滑动停止后，把居中的卡片设为当前城市 */
-let cityScrollT=null;
 function bindCityRail(){
  const cg=$("cityGrid");if(!cg)return;
+ /* 用户主动滑动时立即解除程序化滚动锁定 */
+ cg.addEventListener("pointerdown",()=>{cityNavTarget=-1;clearTimeout(cityNavT)},{passive:true});
  cg.addEventListener("scroll",()=>{
   if(!cityIsRail())return;
   if(cityScrollT)clearTimeout(cityScrollT);
   cityScrollT=setTimeout(()=>{
+   if(cityNavTarget>=0)return;
    const mid=cg.scrollLeft+cg.clientWidth/2;
    let best=0,bd=1e9;
    Array.from(cg.children).forEach((el,k)=>{
@@ -3608,7 +3622,7 @@ function buildGarage(){
  });
  buildCityDots();
  citySyncUI();
- requestAnimationFrame(()=>cityScrollTo(sel.city,true));
+ requestAnimationFrame(()=>cityScrollTo(sel.city));
  const bl=$("bikeList");bl.innerHTML="";bikeCvs=[];
  BIKES.forEach((b,i)=>{
   const btn=document.createElement("button");btn.className="bike-card"+(i===sel.bike?" sel":"");
@@ -4095,8 +4109,8 @@ function hitObstacle(sp,seg,idx){
   G.buffs.shield=0;G.invuln=1.2;seg.sprites.splice(idx,1);
   Snd.shield();toast("🛡 护盾挡下了障碍！");G.flash=.5;G.flashColor="#b89aff";updateBuffsUI();return;
  }
- if(sp.ob==="manhole"){G.speed*=.82;G.shake=4;Snd.bump();G.combo=0;addFloater("井盖颠簸","#c9cdd6")}
- else if(sp.ob==="bump"){G.speed*=.72;G.shake=6;G.stamina=clamp(G.stamina-6,0,100);Snd.bump();G.combo=0;addFloater("减速带！","#e8b83a")}
+ if(sp.ob==="manhole"){G.speed*=.82;G.shake=4;Snd.bump();G.combo=0;addFloater("井盖颠簸","#c9cdd6");toast("⚠️ 压过井盖 · 减速")}
+ else if(sp.ob==="bump"){G.speed*=.72;G.shake=6;G.stamina=clamp(G.stamina-6,0,100);Snd.bump();G.combo=0;addFloater("减速带！","#e8b83a");toast("⚠️ 冲过减速带 · 掉速")}
  else{seg.sprites.splice(idx,1);crash(sp.ob==="barrier"?.6:.5);toast(sp.ob==="barrier"?"💥 撞上护栏！":"💥 撞上锥桶！")}
  G.invuln=Math.max(G.invuln,.8);
 }
@@ -4583,11 +4597,12 @@ function renderPhoto(){
  /* 文案 + 元信息 */
  photoCaption=buildCaption(r);
  $("photoCap").textContent=photoCaption;
+ /* 空格分隔：读屏与复制 textContent 时各元信息不再粘连 */
  $("photoMeta").innerHTML=[
   `${r.city.name}`,`${r.weather.icon} ${r.weather.name}`,`${r.season.icon} ${r.season.name}季`,
   `${r.diff.name}难度`,`${"★".repeat(r.stars)}${"☆".repeat(3-r.stars)}`,
   `最高连击 ×${r.combo}`,`1080×1350`
- ].map(t=>`<span>${t}</span>`).join("");
+ ].map(t=>`<span>${t}</span>`).join(" ");
  cvp.toBlob(b=>{photoBlob=b},"image/png");
 }
 function openPhoto(){
@@ -5152,12 +5167,12 @@ $("musicBtn").onclick=()=>{Snd.click();cycleMusic()};
 $("photoOv").addEventListener("click",e=>{if(e.target===$("photoOv"))closePhoto()});
 function cgRefreshSel(){
  $("cityGrid").querySelectorAll(".city-card").forEach((el,k)=>el.classList.toggle("sel",k===sel.city));
- citySyncUI();requestAnimationFrame(()=>cityScrollTo(sel.city,true));
+ citySyncUI();requestAnimationFrame(()=>cityScrollTo(sel.city));
  updateStartNote();
 }
 $("garageMute").onclick=()=>{Snd.init();Snd.setMuted(!Snd.muted)};
 $("gameMute").onclick=()=>{Snd.init();Snd.setMuted(!Snd.muted)};
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&G.state==="riding")pauseGame()});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&(G.state==="riding"||G.state==="countdown"))pauseGame()});
 /* ================= 主循环 ================= */
 let lastT=performance.now();
 function loop(now){
@@ -5189,7 +5204,7 @@ window.addEventListener("resize",()=>{
  heroSync();
  clearTimeout(rsT);
  rsT=setTimeout(()=>{
-  citySyncUI();cityScrollTo(sel.city,true);
+  citySyncUI();cityScrollTo(sel.city);
   document.querySelectorAll(".city-card").forEach((el,i)=>{
    const cv=el.querySelector("canvas");if(cv&&CITIES[i])drawCityPreview(cv,CITIES[i],true);
   });
@@ -5200,11 +5215,13 @@ heroSync();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(heroSync);
 garageLoop();
 requestAnimationFrame(loop);
-/* 测试钩子 */
-window.__CR={G,sel,startGame,endGame,keys,Snd,CITIES,buildTrack,
- openPhoto,renderPhoto,savePhoto,copyCaption,cycleMusic,buildCaption,
- get caption(){return photoCaption},get blob(){return photoBlob}};
-window.__CR_step=dt=>{update(dt)};
+/* 测试钩子：仅本机 / QA 环境注入，静态站点部署后不暴露状态与成绩接口 */
+if(location.protocol==="file:"||location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.hostname==="[::1]"||new URLSearchParams(location.search).has("qa")){
+ window.__CR={G,sel,startGame,endGame,keys,Snd,CITIES,buildTrack,
+  openPhoto,renderPhoto,savePhoto,copyCaption,cycleMusic,buildCaption,
+  get caption(){return photoCaption},get blob(){return photoBlob}};
+ window.__CR_step=dt=>{update(dt)};
+}
 </script>
 </body>
 </html>
