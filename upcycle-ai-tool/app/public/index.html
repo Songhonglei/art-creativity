@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<!-- 本地预览留空（用相对路径 /api/）；CloudBase 部署时由构建脚本注入网关地址 -->
+<meta name="upcycle-api-base" content="">
+<title>万物改造局 · 闲置物改造台</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+</head>
+<body>
+<div class="paper-grain" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand"><img class="brand-mark" src="logo.svg" alt="万物改造局标识" width="30" height="30"><span>万物改造局</span></div>
+  <div class="top-actions">
+    <span id="modeBadge" class="mode-badge">读取配置中</span>
+    <button id="favBtn" class="ghost-btn" type="button">收藏 <span id="favCount">0</span></button>
+  </div>
+</header>
+
+<main>
+  <!-- 首页 -->
+  <section id="viewHome" class="view">
+    <div class="hero">
+      <p class="eyebrow">UPCYCLE · 手作工作台</p>
+      <h1>拍下闲置物，看看还能做什么</h1>
+      <p class="hero-sub">放一张照片，或者直接用下面的样例开做。</p>
+      <p id="capNote" class="cap-note">正在读取服务状态…</p>
+    </div>
+
+    <div class="workbench">
+      <div class="upload-col">
+        <label id="dropZone" class="dropzone" for="fileInput">
+          <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <span class="dz-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="16" width="48" height="36" rx="5"/><path d="M8 42l13-13 10 9 9-11 16 15"/><circle cx="43" cy="26" r="4"/><path d="M22 16l4-6h12l4 6"/></svg>
+          </span>
+          <strong>放一张照片进来</strong>
+          <span>JPEG / PNG / WebP · 5MB 内 · 自动压缩后发送</span>
+        </label>
+        <div id="previewWrap" class="preview-wrap hidden">
+          <img id="previewImg" alt="上传的闲置物照片预览">
+          <p id="photoNote" class="photo-note"></p>
+          <button id="clearPhoto" class="text-btn" type="button">换掉 / 移除照片</button>
+        </div>
+        <div id="ocrPanel" class="ocr-panel hidden">
+          <div class="ocr-head">
+            <span class="field-label">照片上的文字</span>
+            <button id="ocrBtn" class="ghost-btn small" type="button">识别文字</button>
+          </div>
+          <p id="ocrStatus" class="hint">真实调用文字识别，只读包装或标签上的字，不等于看懂物品。</p>
+          <div id="ocrLines" class="ocr-lines"></div>
+          <div id="ocrClue" class="ocr-clue hidden"></div>
+          <button id="ocrApplyBtn" class="text-btn hidden" type="button">把线索填进表单</button>
+        </div>
+        <div>
+          <p class="field-label">没照片，用示例</p>
+          <div id="sampleChips" class="chips sample-chips"></div>
+        </div>
+      </div>
+
+      <div class="form-col">
+        <div>
+          <label class="field-label" for="itemInput">这是什么 <span class="hint">上传新物品时示例模式必填</span></label>
+          <input id="itemInput" type="text" maxlength="60" placeholder="例：旧铁盒 / 鞋盒盖">
+        </div>
+        <div>
+          <label class="field-label" for="materialInput">材质 <span class="hint">可纠正</span></label>
+          <input id="materialInput" type="text" maxlength="60" placeholder="例：马口铁 / 未确认">
+        </div>
+        <div>
+          <label class="field-label" for="descInput">再补一句</label>
+          <input id="descInput" type="text" maxlength="200" placeholder="例：想放桌面，别太占地方">
+        </div>
+        <div>
+          <p class="field-label">已有工具</p>
+          <div id="toolChips" class="chips tool-chips"></div>
+          <div id="toolMore" class="chips tool-chips hidden"></div>
+          <button id="moreToolsBtn" class="text-btn more-tools-btn hidden" type="button">更多工具（0）</button>
+        </div>
+        <div class="budget-row">
+          <label class="field-label" for="budgetInput">预算</label>
+          <div class="budget-input"><span>¥</span><input id="budgetInput" type="number" min="0" max="9999" step="1" value="20"></div>
+          <span class="hint">默认 20 元</span>
+        </div>
+        <button id="generateBtn" class="primary-btn" type="button">生成三种改造方案</button>
+        <p id="homeError" class="inline-error" role="alert"></p>
+      </div>
+    </div>
+    <p class="home-footnote">只做普通低风险手作。费用为估计；未核实材质不保证安全、承重与防水。</p>
+  </section>
+
+  <!-- 三方案 -->
+  <section id="viewResults" class="view hidden">
+    <div class="view-head">
+      <button id="backHome" class="text-btn" type="button">← 换件物品</button>
+      <div><h2 id="resultsTitle">三种改法</h2><p id="resultsMeta"></p></div>
+    </div>
+    <div id="noticeBox" class="notice-box"></div>
+    <button id="toggleCorrection" class="text-btn correction-toggle hidden" type="button">核对 / 纠正物品与材质</button>
+    <div id="recognizedBox" class="recognized-box hidden">
+      <label>物品（可纠正）<input id="correctItem" type="text" maxlength="60"></label>
+      <label>材质（可纠正）<input id="correctMaterial" type="text" maxlength="60"></label>
+      <button id="applyCorrection" class="ghost-btn" type="button">按纠正后的信息重做</button>
+    </div>
+    <div id="cards" class="cards"></div>
+    <div id="laneStatus" class="lane-status"></div>
+    <div id="infeasibleBox" class="alt-box hidden"></div>
+  </section>
+
+  <!-- 制作视图 -->
+  <section id="viewDetail" class="view hidden">
+    <div class="view-head">
+      <button id="backResults" class="text-btn" type="button">← 换方案</button>
+      <div><h2 id="detailTitle"></h2><p id="detailMeta"></p></div>
+      <button id="favCurrent" class="ghost-btn" type="button">☆ 收藏这个</button>
+    </div>
+
+    <div id="explainBox" class="explain-box hidden"></div>
+
+    <div id="compareWrap" class="compare">
+      <figure>
+        <div id="originalBody" class="figure-body"></div>
+        <figcaption><span>原物</span><span id="originalCaption"></span></figcaption>
+      </figure>
+      <figure>
+        <div id="detailDiagram" class="figure-body diagram"></div>
+        <figcaption><span>改造示意</span><strong>示意图，并非实物成品</strong></figcaption>
+      </figure>
+    </div>
+
+    <div id="detailGrid" class="detail-grid">
+      <div class="panel">
+        <h3>材料 <span id="costTotal"></span></h3>
+        <div id="materialList"></div>
+      </div>
+      <div class="panel">
+        <h3>工具</h3>
+        <div id="toolList" class="tool-list"></div>
+        <h3>必要注意点</h3>
+        <ul id="noteList"></ul>
+        <div id="safetyHints"></div>
+      </div>
+    </div>
+
+    <div id="stepsPanel" class="panel">
+      <h3>制作步骤 <span id="stepProgress"></span></h3>
+      <div id="stepList"></div>
+    </div>
+
+    <div class="panel">
+      <h3>追加限制，重新设计</h3>
+      <div class="refine-row">
+        <label>预算 ¥<input id="refineBudget" type="number" min="0" max="9999" step="1" value="20"></label>
+        <div id="forbidChips" class="chips"></div>
+        <div id="forbidMore" class="chips hidden"></div>
+        <button id="moreForbidBtn" class="text-btn more-tools-btn hidden" type="button">更多工具（0）</button>
+        <input id="refineExtra" type="text" maxlength="300" placeholder="例：不能用胶水，剪刀可以用，预算 20 元">
+        <button id="refineBtn" class="primary-btn small" type="button">按限制重做</button>
+      </div>
+      <p id="refineError" class="inline-error" role="alert"></p>
+      <div id="refineResult" class="refine-result hidden"></div>
+    </div>
+
+    <div id="detailActions" class="detail-actions">
+      <button id="downloadMd" class="ghost-btn" type="button">下载制作清单 .md</button>
+      <button id="shareBtn" class="primary-btn" type="button">导出分享卡 PNG</button>
+    </div>
+    <p class="fine-print">费用是估计值，未核实材质不保证安全、承重与防水；示意图不是实物成品。</p>
+  </section>
+</main>
+
+<aside id="favDrawer" class="drawer hidden" aria-label="本地收藏">
+  <div class="drawer-head"><h3>本地收藏</h3><button id="closeFav" class="ghost-btn" type="button">收起</button></div>
+  <div id="favList"></div>
+</aside>
+
+<div id="shareModal" class="modal hidden" role="dialog" aria-label="分享卡预览">
+  <div class="modal-inner">
+    <h3>分享卡预览</h3>
+    <div id="canvasWrap" class="canvas-wrap"></div>
+    <p id="shareNote" class="hint">标注方案来源与示意说明，不表示已完成实物制作；不含 API 配置、隐私与二维码。</p>
+    <div class="modal-actions">
+      <button id="downloadPng" class="primary-btn small" type="button">下载 PNG</button>
+      <button id="closeShare" class="ghost-btn" type="button">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script src="diagrams.js"></script>
+<script src="share.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

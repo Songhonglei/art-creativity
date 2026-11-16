@@ -1,0 +1,28 @@
+{
+  "name": "upcycle-bureau",
+  "version": "1.0.0",
+  "private": true,
+  "description": "万物改造局 · 上传闲置物照片，得到实用款 / 好看款 / 脑洞款三种可制作的改造方案",
+  "scripts": {
+    "start": "node server.js",
+    "mock-llm": "node scripts/mock-llm.js",
+    "verify:api": "node scripts/verify-api.js",
+    "verify:browser": "node scripts/verify-browser.js",
+    "verify:ocr": "node scripts/verify-ocr.js",
+    "verify:guard": "node scripts/verify-guard.js",
+    "verify:stability": "node scripts/verify-live-stability.js",
+    "verify:all": "npm run verify:api && npm run verify:ocr && npm run verify:guard && npm run verify:browser && node scripts/verify-final.js && npm run verify:cloudbase && npm run verify:cloud-ocr && npm run verify:stability",
+    "build:cloudbase": "node scripts/build-cloudbase.js",
+    "deploy:live": "node scripts/deploy-live.js",
+    "verify:cloudbase": "node scripts/verify-cloudbase.js",
+    "verify:cloud-ocr": "node scripts/verify-cloud-ocr.js",
+    "pipeline:env": "node scripts/write-pipeline-env.js",
+    "pipeline:deploy": "tcb deploy --yes --only functions,hosting",
+    "pipeline:verify": "node scripts/verify-pipeline.js",
+    "pipeline:all": "npm run build:cloudbase && npm run pipeline:env && npm run pipeline:deploy && npm run pipeline:verify"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}

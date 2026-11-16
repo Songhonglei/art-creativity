@@ -78,6 +78,8 @@ npm run dev
 
 Shanghai Ranger を実行する場合は、代わりに `shanghai-ranger/` に移動して同じコマンドを実行します。ターミナルに表示されたローカル URL を開いてください。本番用のビルドは `npm run build` です。各プロジェクトの依存関係とセーブデータは独立しています。
 
+Upcycle AI Tool も Node.js（>= 18）で動作しますが、サードパーティ依存がなく `npm ci` は不要です。`upcycle-ai-tool/app` に移動して `npm start` を実行し、<http://127.0.0.1:4173/> を開いてください。
+
 ## プロジェクト別の説明
 
 | プロジェクト | 内容 | 技術構成 |
@@ -87,6 +89,7 @@ Shanghai Ranger を実行する場合は、代わりに `shanghai-ranger/` に�
 | [City Rider](city-rider/) | 9 都市のサイクリング、アイテムと表彰台ポスター | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 3D 機械レイアウトと部品の探索 | Vite + Three.js |
 | [Liquid Time](liquidtime/) | 流体時計と世界のタイムゾーン | HTML / CSS / WebGL |
+| [Upcycle AI Tool](upcycle-ai-tool/) | 使わない物の写真から3つの改造案とシェアカードを生成 | HTML / CSS / JavaScript / Node.js |
 
 言語リンクはリポジトリの説明文を切り替えます。アプリの画面は主に中国語です。
 

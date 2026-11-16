@@ -78,6 +78,8 @@ npm run dev
 
 For Shanghai Ranger, enter `shanghai-ranger/` instead and run the same install and start commands. Open the local URL printed in the terminal. Use `npm run build` for a production build. Projects maintain their dependencies and saves separately.
 
+Upcycle AI Tool also runs on Node.js (>= 18) but has no third-party dependencies and needs no `npm ci`: enter `upcycle-ai-tool/app`, run `npm start`, then open <http://127.0.0.1:4173/>.
+
 ## Project guides
 
 | Project | Experience | Stack |
@@ -87,6 +89,7 @@ For Shanghai Ranger, enter `shanghai-ranger/` instead and run the same install a
 | [City Rider](city-rider/) | Nine-city cycling, power-ups, and podium posters | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 3D mechanical layouts and component exploration | Vite + Three.js |
 | [Liquid Time](liquidtime/) | Fluid clock and world time zones | HTML / CSS / WebGL |
+| [Upcycle AI Tool](upcycle-ai-tool/) | Three remake plans and a share card from a photo of an unused item | HTML / CSS / JavaScript / Node.js |
 
 Language links switch the repository documentation. Most application interfaces are currently in Chinese.
 

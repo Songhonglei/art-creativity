@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+deploy-cloudbase/
+node_modules/
+output/*
+!output/.gitkeep
+.DS_Store
+npm-debug.log*

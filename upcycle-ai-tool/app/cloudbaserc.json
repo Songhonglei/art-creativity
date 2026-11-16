@@ -1,0 +1,33 @@
+{
+  "envId": "evansongdev-d3gwank9e76835e8b",
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "functionRoot": "./deploy-cloudbase/functions",
+  "functions": [
+    {
+      "name": "upcycle-api",
+      "handler": "index.main",
+      "runtime": "Nodejs18.15",
+      "timeout": 60,
+      "memorySize": 256,
+      "installDependency": false,
+      "envVariables": {
+        "LLM_BASE_URL": "{{env.LLM_BASE_URL}}",
+        "LLM_API_KEY": "{{env.LLM_API_KEY}}",
+        "LLM_MODEL": "{{env.LLM_MODEL}}",
+        "LLM_VISION": "{{env.LLM_VISION}}",
+        "LLM_DISABLE_THINKING": "{{env.LLM_DISABLE_THINKING}}",
+        "LLM_JSON_MODE": "{{env.LLM_JSON_MODE}}",
+        "LLM_TIMEOUT_MS": "{{env.LLM_TIMEOUT_MS}}"
+      }
+    }
+  ],
+  "hosting": [
+    {
+      "name": "upcycle",
+      "root": "./deploy-cloudbase/site",
+      "framework": "static",
+      "outputDir": "./",
+      "deployPath": "/upcycle"
+    }
+  ]
+}

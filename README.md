@@ -78,6 +78,8 @@ npm run dev
 
 沪上游侠改为进入 `shanghai-ranger/` 后执行同样的安装和启动命令。访问终端打印的本地地址；生产构建使用 `npm run build`。各项目独立维护依赖与存档。
 
+万物改造局同样基于 Node.js（>= 18），但零第三方依赖、无需 `npm ci`：进入 `upcycle-ai-tool/app` 执行 `npm start`，再打开 <http://127.0.0.1:4173/>。
+
 ## 项目文档
 
 | 项目 | 内容 | 技术栈 |
@@ -87,6 +89,7 @@ npm run dev
 | [城市骑行侠](city-rider/) | 九城骑行、道具连击与领奖台晒图 | HTML / CSS / Canvas / WebAudio |
 | [MBP—14](macbook-pro-mechanical-study/) | 三维机械布局与部件探索 | Vite + Three.js |
 | [流体时间](liquidtime/) | WebGL 流体时钟与世界时区 | HTML / CSS / WebGL |
+| [万物改造局](upcycle-ai-tool/) | 闲置物照片生成三种改造方案与分享卡 | HTML / CSS / JavaScript / Node.js |
 
 以上语言切换适用于仓库文档；应用界面以各项目当前实现为准。
 

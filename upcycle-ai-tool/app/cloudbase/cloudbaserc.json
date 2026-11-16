@@ -1,0 +1,16 @@
+{
+  "envId": "evansongdev-d3gwank9e76835e8b",
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "functionRoot": "functions",
+  "functions": [
+    {
+      "name": "upcycle-api",
+      "handler": "index.main",
+      "runtime": "Nodejs18.15",
+      "timeout": 60,
+      "memorySize": 256,
+      "installDependency": false,
+      "envVariables": {}
+    }
+  ]
+}
