@@ -18,10 +18,10 @@ function strike(sim: Simulation, heavy = false) {
 
 describe('本地存档', () => {
   it('损坏的存档安全回退，畸形进度被钳制', () => {
-    expect(readProgress('{bad')).toEqual(DEFAULT_PROGRESS);
+    expect(() => readProgress('{bad')).toThrow('原存档未覆盖');
     const p = readProgress(JSON.stringify({ version: 2, weapon: 'invalid', level: 90, hunts: -1, cash: 'many', parts: -20, pet: 'dragon' }));
     expect(p.weapon).toBe('crowbar');
-    expect(p.level).toBe(5);
+    expect(p.level).toBe(10);
     expect(p.hunts).toBe(0);
     expect(p.parts).toBe(0);
     expect(p.cash).toBe(350);
@@ -296,16 +296,16 @@ describe('都市天象', () => {
     expect(haze.player.stamina).toBeGreaterThan(10);
     expect(haze.player.stamina).toBeLessThan(clear.player.stamina);
   });
-  it('简化升级：侠义等级封顶 5 级，攻防随等级成长', () => {
+  it('侠义等级封顶 10 级，战力在 5 级封顶', () => {
     const progress = JSON.parse(JSON.stringify(DEFAULT_PROGRESS)) as typeof DEFAULT_PROGRESS;
-    progress.parts = 100; progress.cash = 10000;
+    progress.parts = 100; progress.cash = 20000;
     const sim = new Simulation(progress);
     expect(sim.maxHealth).toBe(100); expect(sim.attackDamage).toBe(44);
     expect(sim.levelUp()).toBe(true);
     expect(sim.maxHealth).toBe(118); expect(sim.attackDamage).toBe(57);
     expect(sim.player.health).toBe(118);
     for (let i = 0; i < 10; i++) sim.levelUp();
-    expect(sim.progress.level).toBe(5);
+    expect(sim.progress.level).toBe(10);
     expect(sim.maxHealth).toBe(172);
     expect(sim.levelUp()).toBe(false);
   });

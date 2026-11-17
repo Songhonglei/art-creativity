@@ -1,0 +1,25 @@
+{
+  "mockOnly": true,
+  "label": "进度保存在小工具本地缓存，不会跨设备同步。",
+  "writes": [
+    "nightwatch-settings",
+    "shanghai-night-watch-v1",
+    "shanghai-night-watch-v1",
+    "shanghai-night-watch-v1",
+    "shanghai-night-watch-v1",
+    "shanghai-night-watch-v1",
+    "nightwatch-settings"
+  ],
+  "last": "wutong-warden",
+  "settings": {
+    "sound": false,
+    "volume": 0.45,
+    "soundscape": "neon",
+    "quality": "low",
+    "sensitivity": 1,
+    "reducedMotion": true,
+    "enemyHealthBars": false
+  },
+  "saveStatus": "saved",
+  "errors": []
+}

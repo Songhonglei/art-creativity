@@ -78,7 +78,7 @@ export function hasLineOfSight(from: Point, to: Point, boxes: BoxCollider[], pad
 }
 
 
-function pathClear(from: Point, to: Point, circles: CircleCollider[], boxes: BoxCollider[], radius: number) {
+export function pathClear(from: Point, to: Point, circles: CircleCollider[], boxes: BoxCollider[], radius: number) {
   for (const box of boxes) if (segmentHitsBox(from, to, box, radius)) return false;
   for (const circle of circles) {
     const dx = to.x - from.x, dz = to.z - from.z, length2 = dx * dx + dz * dz;
@@ -89,9 +89,8 @@ function pathClear(from: Point, to: Point, circles: CircleCollider[], boxes: Box
 }
 
 /** Choose a visible corner when the direct route is blocked, then move with the same wall rules. */
-export function followPet(current: Point, player: Point, dt: number, circles: CircleCollider[], boxes: BoxCollider[]): Point {
-  const radius = .3, desired = resolveCircle(point(player.x - 2.2, player.z + 1.1), radius, circles, boxes);
-  let target = desired;
+export function petFollowRoute(current: Point, desired: Point, circles: CircleCollider[], boxes: BoxCollider[]): Point[] {
+  const radius = .3;
   if (!pathClear(current, desired, circles, boxes, radius)) {
     const routeBoxes = boxes.filter(box =>
       (Math.abs(box.x - current.x) <= box.halfWidth + 28 && Math.abs(box.z - current.z) <= box.halfDepth + 28) ||
@@ -123,13 +122,24 @@ export function followPet(current: Point, player: Point, dt: number, circles: Ci
       while (at > 0) { route.push(nodes[at]); at = previous[at]; }
       route.reverse();
       while (route.length && distance(current, route[0]) < .08) route.shift();
-      if (route.length) target = route[0];
+      return route;
     }
   }
+  return pathClear(current, desired, circles, boxes, radius) ? [desired] : [];
+}
+export function advancePet(current: Point, player: Point, target: Point, dt: number, circles: CircleCollider[], boxes: BoxCollider[]) {
+  const radius = .3;
   const far = distance(current, player), speed = far > 12 ? 10 : far > 7 ? 7.5 : 5.4;
   const blend = 1 - Math.exp(-Math.max(0, dt) * 5.2);
   const delta = point((target.x - current.x) * blend, (target.z - current.z) * blend);
   const length = Math.hypot(delta.x, delta.z), maximum = speed * Math.max(0, dt);
   if (length > maximum && length > 0) { delta.x *= maximum / length; delta.z *= maximum / length; }
   return moveCircle(current, delta, radius, circles, boxes);
+}
+
+export function followPet(current: Point, player: Point, dt: number, circles: CircleCollider[], boxes: BoxCollider[]): Point {
+  if (dt <= 0) return { ...current };
+  const desired = resolveCircle(point(player.x - 2.2, player.z + 1.1), .3, circles, boxes);
+  const route = petFollowRoute(current, desired, circles, boxes);
+  return advancePet(current, player, route[0] ?? desired, dt, circles, boxes);
 }

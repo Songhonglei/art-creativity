@@ -1,0 +1,86 @@
+[
+  {
+    "name": "H5 legacy migration",
+    "passed": true,
+    "detail": [
+      "shanghai-ranger-progress-v1",
+      "shanghai-ranger-progress-v1-backup",
+      "shanghai-night-watch-v1",
+      "shanghai-ranger-legacy-import"
+    ]
+  },
+  {
+    "name": "H5 rollback isolated",
+    "passed": true
+  },
+  {
+    "name": "H5 backup export",
+    "passed": true
+  },
+  {
+    "name": "H5 corrupt primary preserved",
+    "passed": true
+  },
+  {
+    "name": "H5 both invalid do not overwrite",
+    "passed": true
+  },
+  {
+    "name": "H5 original readable",
+    "passed": true
+  },
+  {
+    "name": "H5 invalid recovery rejected",
+    "passed": true
+  },
+  {
+    "name": "H5 pasted recovery",
+    "passed": true
+  },
+  {
+    "name": "H5 future version protected",
+    "passed": true
+  },
+  {
+    "name": "IIFE legacy migration",
+    "passed": true,
+    "detail": [
+      "shanghai-ranger-progress-v1",
+      "shanghai-ranger-progress-v1-backup",
+      "shanghai-night-watch-v1",
+      "shanghai-ranger-legacy-import"
+    ]
+  },
+  {
+    "name": "IIFE rollback isolated",
+    "passed": true
+  },
+  {
+    "name": "IIFE backup export",
+    "passed": true
+  },
+  {
+    "name": "IIFE corrupt primary preserved",
+    "passed": true
+  },
+  {
+    "name": "IIFE both invalid do not overwrite",
+    "passed": true
+  },
+  {
+    "name": "IIFE original readable",
+    "passed": true
+  },
+  {
+    "name": "IIFE invalid recovery rejected",
+    "passed": true
+  },
+  {
+    "name": "IIFE pasted recovery",
+    "passed": true
+  },
+  {
+    "name": "IIFE future version protected",
+    "passed": true
+  }
+]

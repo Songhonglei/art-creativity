@@ -1,0 +1,974 @@
+[
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 240,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 375,
+    "height": 812,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 240,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 390,
+    "height": 844,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 768,
+    "height": 1024,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1024,
+    "height": 768,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 1440,
+    "height": 1000,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "H5",
+    "width": 844,
+    "height": 390,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 240,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 375,
+    "height": 812,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 240,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 390,
+    "height": 844,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 768,
+    "height": 1024,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1024,
+    "height": 768,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 1440,
+    "height": 1000,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "start",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "沪上游侠",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "forge",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客强化所",
+    "errors": [],
+    "art": {
+      "width": 300,
+      "height": 220
+    }
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "guide",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡手册",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "pets",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "江湖宠物",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "wardrobe",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "侠客衣橱",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "settings",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "夜巡设置",
+    "errors": []
+  },
+  {
+    "build": "IIFE",
+    "width": 844,
+    "height": 390,
+    "state": "map",
+    "overflow": false,
+    "panelOverflow": false,
+    "images": 0,
+    "title": "街区一览",
+    "errors": []
+  }
+]

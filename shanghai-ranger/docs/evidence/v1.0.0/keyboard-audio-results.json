@@ -1,0 +1,47 @@
+{
+  "focusChecks": 24,
+  "focusTrap": true,
+  "focusRestore": true,
+  "presets": [
+    "neon",
+    "jazz",
+    "river",
+    "radio"
+  ],
+  "enabled": {
+    "soundscape": "radio",
+    "scoreStep": 1,
+    "scoreVoices": 2,
+    "root": 109.76,
+    "cityKind": "river",
+    "cityLevel": 0.09653777205902696,
+    "ambientVoices": 0,
+    "ambientCount": 0,
+    "lastAmbient": null,
+    "environmentActive": false,
+    "enabled": true,
+    "volume": 0.45,
+    "outputConnected": true,
+    "masterLevel": 0.3682708144187927,
+    "context": "running"
+  },
+  "muted": {
+    "soundscape": "radio",
+    "scoreStep": 0,
+    "scoreVoices": 0,
+    "root": 109.76,
+    "cityKind": "river",
+    "cityLevel": 0.09653777205902696,
+    "ambientVoices": 0,
+    "ambientCount": 0,
+    "lastAmbient": null,
+    "environmentActive": false,
+    "enabled": false,
+    "volume": 0.45,
+    "outputConnected": false,
+    "masterLevel": 0.4466685354709625,
+    "context": "running"
+  },
+  "enemyBarsToggle": true,
+  "errors": []
+}

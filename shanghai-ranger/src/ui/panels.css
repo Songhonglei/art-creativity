@@ -1,0 +1,658 @@
+.game-shell .modal-backdrop{
+  padding:28px 24px;
+  background:rgba(8,19,26,.77);
+  backdrop-filter:blur(8px)
+}
+.game-shell .modal-panel{
+  background:var(--ink);
+  border:1px solid #d7b56d85;
+  border-radius:6px;
+  max-width:1080px;
+  max-height:calc(100vh - 56px);
+  max-height:calc(100dvh - 56px);
+  box-shadow:0 20px 70px rgba(0,0,0,.533);
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#8a907c #172832
+}
+.game-shell .modal-header{
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:20px 24px;
+  background:#182b37;
+  border-bottom:1px solid #d7b56d55;
+  grid-gap:16px;
+  gap:16px
+}
+.game-shell .modal-header h2{
+  font-size:29px;
+  line-height:1.3;
+  margin:5px 0 0
+}
+.game-shell .modal-header .eyebrow{
+  font-size:12px;
+  grid-gap:6px;
+  gap:6px
+}
+.game-shell .close-button{
+  min-width:44px;
+  min-height:44px;
+  color:var(--cream);
+  border:1px solid #d7b56d66;
+  border-radius:4px;
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .close-button kbd{
+  display:none
+}
+.game-shell .modal-footer{
+  font-size:12px;
+  padding:12px 24px;
+  background:#182b37;
+  border-color:rgba(215,181,109,.333);
+  grid-gap:12px;
+  gap:12px;
+  min-height:54px
+}
+.game-shell .modal-footer>span{
+  font-size:12px
+}
+.game-shell .modal-footer .text-button{
+  min-height:44px
+}
+.game-shell .panel-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  grid-gap:8px;
+  gap:8px;
+  padding:16px 24px;
+  border-color:rgba(215,181,109,.25)
+}
+.game-shell .panel-tabs button{
+  color:var(--ui-muted);
+  padding:9px 15px;
+  min-height:44px;
+  border:1px solid #657366;
+  border-radius:4px;
+  font-size:14px;
+  grid-gap:7px;
+  gap:7px
+}
+.game-shell .panel-tabs button.active{
+  color:var(--gold);
+  background:rgba(215,181,109,.082);
+  border-color:var(--gold)
+}
+.game-shell .map-content,.game-shell .guide-content,.game-shell .story-content,.game-shell .forge-content,.game-shell .training-content,.game-shell .settings-content,.game-shell .help-content,.game-shell .pet-content{
+  padding:24px;
+  grid-gap:24px;
+  gap:24px
+}
+.game-shell .forge-details h3,.game-shell .guide-copy h3,.game-shell .map-info h3,.game-shell .help-intro h3{
+  font-size:27px;
+  line-height:1.4
+}
+.game-shell .forge-details p,.game-shell .guide-copy p,.game-shell .map-info p{
+  font-size:14px;
+  color:var(--ui-muted)
+}
+.game-shell .map-content{
+  grid-template-columns:1.2fr 1fr
+}
+.game-shell .map-legend{
+  grid-gap:14px;
+  gap:14px
+}
+.game-shell .map-legend>span{
+  font-size:13px
+}
+.game-shell .map-legend svg{
+  width:18px
+}
+.game-shell .map-info-weather small,.game-shell .map-scale{
+  font-size:12px
+}
+.game-shell .map-info .primary-button{
+  width:100%
+}
+.game-shell .forge-toolbar{
+  display:flex;
+  justify-content:space-between;
+  grid-gap:12px;
+  gap:12px;
+  align-items:center;
+  padding-right:24px;
+  border-color:rgba(215,181,109,.25)
+}
+.game-shell .forge-toolbar>.panel-tabs{
+  padding-right:0
+}
+.game-shell .forge-toolbar>span{
+  font-size:14px;
+  grid-gap:6px;
+  gap:6px;
+  white-space:nowrap;
+  color:var(--gold)
+}
+.game-shell .forge-art{
+  background:radial-gradient(ellipse,#355453,#182b37 65%);
+  border:1px solid #d7b56d50;
+  min-height:250px;
+  border-radius:4px
+}
+.game-shell .forge-art>.equipment-art{width:100%;max-width:300px;height:220px;flex:0 0 auto}
+.game-shell .preview-label{
+  color:var(--gold)
+}
+.game-shell .weapon-choices{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .weapon-choices>button{
+  min-height:64px;
+  padding:12px;
+  background:#182b37;
+  border-color:#697364;
+  grid-gap:12px;
+  gap:12px;
+  color:var(--cream)
+}
+.game-shell .weapon-choices small{
+  font-size:12px
+}
+.game-shell .weapon-choices button.active{
+  border-color:var(--gold);
+  background:#2c4548
+}
+.game-shell .forge-stat{
+  font-size:14px;
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .forge-stat>strong,.game-shell .forge-stat>b{
+  font-size:24px
+}
+.game-shell .materials-heading{
+  font-size:12px;
+  margin:16px 0 8px
+}
+.game-shell .materials-list{
+  font-size:14px
+}
+.game-shell .materials-list>div{
+  min-height:42px;
+  background:#182b37
+}
+.game-shell .materials-list small{
+  font-size:12px
+}
+.game-shell .forge-button{
+  width:100%;
+  margin-top:16px
+}
+.game-shell .forge-button>span{
+  font-size:14px
+}
+.game-shell .upgrade-reward{
+  padding:10px 12px;
+  border-left:2px solid var(--ui-jade);
+  background:rgba(121,188,178,.05);
+  color:var(--ui-jade);
+  font-size:14px
+}
+.game-shell .forge-combat-note{
+  font-size:12px;
+  color:#e7b977
+}
+.game-shell .training-card{
+  padding:22px;
+  border-color:rgba(215,181,109,.333);
+  background:#182b37;
+  border-radius:4px
+}
+.game-shell .training-card h4{
+  font-size:23px
+}
+.game-shell .training-cost{
+  font-size:14px
+}
+.wardrobe-v1{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-gap:24px;
+  gap:24px;
+  padding:24px
+}
+.wardrobe-selection{
+  min-width:0
+}
+.wardrobe-heading h3{
+  font-size:29px;
+  margin:6px 0
+}
+.wardrobe-heading p{
+  color:var(--ui-muted)
+}
+.hero-preview-wrap{
+  min-width:0
+}
+.hero-model-preview{
+  height:350px;
+  position:relative;
+  touch-action:pan-y;
+  overflow:hidden;
+  border:1px solid #7c806c;
+  border-radius:4px;
+  background:#172832
+}
+.hero-model-preview canvas{
+  display:block;
+  max-width:100%;
+  touch-action:pan-y
+}
+.preview-tag{
+  position:absolute;
+  top:10px;
+  left:12px;
+  font-size:12px;
+  color:var(--ui-muted);
+  pointer-events:none
+}
+.hero-view-controls{
+  display:flex;
+  grid-gap:8px;
+  gap:8px;
+  margin-top:10px;
+  justify-content:center
+}
+.hero-view-controls>button,.face-focus-button{
+  background:#182b37;
+  border:1px solid #697364;
+  border-radius:4px;
+  color:var(--cream);
+  padding:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+.hero-view-controls button{
+  flex:1
+}
+.preview-options{
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  grid-gap:10px;
+  gap:10px;
+  margin-top:12px
+}
+.preview-options label{
+  display:grid;
+  grid-gap:6px;
+  gap:6px;
+  color:var(--ui-muted);
+  font-size:12px!important;
+  min-width:0
+}
+.preview-options select{
+  width:100%;
+  font-size:13px!important;
+  padding:6px
+}
+.face-focus-button{
+  margin-top:10px;
+  width:100%
+}
+.skin-choices{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-gap:8px;
+  gap:8px;
+  margin:16px 0
+}
+.outfit-choice{
+  display:flex;
+  align-items:center;
+  grid-gap:8px;
+  gap:8px;
+  padding:10px;
+  text-align:left;
+  background:#182b37;
+  border:1px solid #697364;
+  border-radius:4px;
+  min-height:90px;
+  color:var(--cream);
+  min-width:0
+}
+.outfit-choice.active{
+  border-color:var(--gold);
+  background:rgba(215,181,109,.086)
+}
+.outfit-choice>span:nth-child(2){
+  display:grid;
+  grid-gap:5px;
+  gap:5px;
+  min-width:0
+}
+.outfit-choice strong{
+  font-size:14px
+}
+.outfit-choice small{
+  font-size:12px!important
+}
+.outfit-choice>svg{
+  margin-left:auto;
+  flex-shrink:0;
+  color:var(--gold)
+}
+.outfit-color{
+  width:36px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  border:1px solid;
+  border-radius:3px
+}
+.outfit-color svg{
+  width:26px
+}
+.wardrobe-equip>.primary-button{
+  width:100%
+}
+.wardrobe-equip p{
+  font-size:12px!important;
+  color:var(--ui-muted);
+  margin:10px 0 0
+}
+.wardrobe-equip>.text-button{
+  margin-top:8px
+}
+.game-shell .settings-row{
+  padding:18px 0;
+  grid-gap:18px;
+  gap:18px;
+  border-color:rgba(215,181,109,.208)
+}
+.game-shell .settings-row strong{
+  font-size:16px
+}
+.game-shell .settings-row small{
+  font-size:12px
+}
+.game-shell .toggle{
+  width:52px;
+  height:44px;
+  min-height:44px;
+  border:1px solid #8b937b;
+  background:#34414b;
+  padding:8px;
+  flex-shrink:0;
+  border-radius:22px
+}
+.game-shell .toggle>span{
+  width:24px;
+  height:24px;
+  background:#c2cac3
+}
+.game-shell .toggle.on{
+  background:#376e68;
+  border-color:#79bcb2
+}
+.game-shell .toggle.on>span{
+  transform:translate(10px);
+  background:#f2eadb
+}
+.game-shell .segmented{
+  grid-gap:8px;
+  gap:8px;
+  background:none;
+  flex-shrink:0
+}
+.game-shell .segmented button{
+  padding:8px 12px;
+  border:1px solid #697364;
+  border-radius:4px;
+  color:var(--ui-muted)
+}
+.game-shell .segmented button.active{
+  color:var(--gold);
+  background:rgba(215,181,109,.08);
+  border-color:var(--gold)
+}
+.game-shell .soundscape-picker{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .soundscape-picker button{
+  font-size:14px;
+  padding:12px;
+  background:#182b37;
+  border-color:#697364;
+  color:var(--cream)
+}
+.game-shell .soundscape-picker button.active{
+  border-color:var(--gold);
+  background:rgba(215,181,109,.08)
+}
+.game-shell .settings-help{
+  min-height:64px;
+  padding:12px 14px;
+  background:#182b37;
+  border:1px solid #697364;
+  border-radius:4px;
+  grid-gap:12px;
+  gap:12px;
+  color:var(--cream);
+  margin-top:12px
+}
+.game-shell .settings-help strong{
+  font-size:15px
+}
+.game-shell .settings-help small{
+  font-size:12px
+}
+.game-shell .controls-grid{
+  grid-gap:10px 20px;
+  gap:10px 20px
+}
+.game-shell .controls-grid>div{
+  font-size:14px;
+  grid-gap:12px;
+  gap:12px;
+  min-height:44px
+}
+.game-shell .help-tip{
+  border-color:rgba(215,181,109,.4);
+  background:#182b37;
+  padding:16px
+}
+.game-shell .help-tip p{
+  font-size:14px
+}
+.game-shell .assignment-list strong{
+  font-size:16px
+}
+.game-shell .assignment-list p{
+  font-size:14px
+}
+.game-shell .assignment-list>div>span{
+  width:36px;
+  height:36px;
+  font-size:13px
+}
+.game-shell .quest-reward{
+  font-size:14px;
+  flex-wrap:wrap;
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell blockquote{
+  font-size:18px
+}
+.game-shell cite{
+  font-size:12px
+}
+.game-shell .bestiary-facts strong{
+  font-size:16px
+}
+.game-shell .material-drops{
+  font-size:14px
+}
+.game-shell .story-content h3{
+  font-size:32px
+}
+.game-shell .story-seasons h4{
+  font-size:20px
+}
+.game-shell .story-seasons p{
+  font-size:14px
+}
+.game-shell .pet-summary,.game-shell .pet-card,.game-shell .pet-stat-card,.game-shell .pet-trait-card,.game-shell .pet-skin-card{
+  border-color:#737c68;
+  background:#182b37;
+  color:var(--cream)
+}
+.game-shell .pet-stats{
+  grid-gap:10px;
+  gap:10px
+}
+.game-shell .pet-stats h4{
+  font-size:16px
+}
+.game-shell .pet-stats p{
+  font-size:14px
+}
+.game-shell .pet-roster{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .pet-roster button{
+  font-size:14px;
+  min-height:56px
+}
+.game-shell .pet-xp-label{
+  font-size:12px
+}
+.game-shell .pet-panel-tabs{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .pet-panel-tabs button{
+  min-height:44px;
+  font-size:14px
+}
+.game-shell .pet-preview-controls{
+  grid-gap:8px;
+  gap:8px
+}
+.game-shell .pet-preview-controls button{
+  width:44px;
+  height:44px
+}
+.game-shell .pet-preview-controls span{
+  font-size:12px
+}
+.game-shell .pet-skin-card strong{
+  font-size:14px
+}
+.game-shell .pet-traits button{
+  min-height:70px
+}
+.game-shell .pet-attribute-card>div>span{
+  font-size:14px
+}
+.game-shell .pet-attributes{
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .loading-screen{
+  background:radial-gradient(ellipse at 50% 40%,#27434a,#111d2a 70%)
+}
+.game-shell .loading-brand h1{
+  font-size:64px
+}
+.game-shell .loading-brand p{
+  font-size:14px
+}
+.game-shell .loading-caption{
+  font-size:12px
+}
+.game-shell .loading-track>span{
+  background:var(--gold)
+}
+.game-shell .error-content h2{
+  font-size:28px
+}
+.game-shell .error-content p{
+  font-size:14px
+}
+.game-shell .result-panel{
+  background:#152633;
+  border:1px solid #d7b56d88;
+  border-radius:6px;
+  padding:32px;
+  max-width:700px
+}
+.game-shell .result-panel h2{
+  font-size:38px
+}
+.game-shell .result-panel>p{
+  font-size:14px
+}
+.game-shell .result-rewards strong{
+  font-size:29px
+}
+.game-shell .result-rewards span,.game-shell .result-meta{
+  font-size:12px
+}
+.game-shell .result-actions{
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .result-actions button{
+  min-height:50px;
+  font-size:14px
+}
+.game-shell .recovery-card{
+  background:#152633;
+  border-color:rgba(215,181,109,.533);
+  border-radius:6px
+}
+.game-shell .recovery-card h2{
+  font-size:34px
+}
+.game-shell .recovery-card p,.game-shell .recovery-card summary{
+  font-size:14px
+}
+.game-shell .save-warning{
+  background:#382c2b;
+  border:1px solid #df9298;
+  color:#f2eadb;
+  border-radius:4px;
+  grid-gap:12px;
+  gap:12px
+}
+.game-shell .save-warning strong{
+  font-size:15px
+}
+.game-shell .save-warning p{
+  font-size:14px
+}
+.game-shell .save-warning button{
+  font-size:14px;
+  min-height:44px;
+  flex-shrink:0;
+  border:1px solid #df9298;
+  padding:8px 12px
+}
+.game-shell .save-warning small{
+  font-size:12px
+}
+
+.save-recovery-actions{display:grid;gap:12px;margin:16px 0;text-align:left}
+.save-recovery-actions label,.save-backup label{display:grid;gap:6px;font-size:14px}
+.save-recovery-actions textarea,.save-backup textarea{width:100%;min-height:110px;resize:vertical;background:#172832;color:var(--cream);border:1px solid #697364;padding:10px;font:14px/1.5 GameChineseSans,sans-serif}
+.save-backup{padding:16px 0;border-top:1px solid var(--line)}
+.save-backup[open]{display:grid;gap:12px}.save-backup summary{min-height:44px;cursor:pointer}

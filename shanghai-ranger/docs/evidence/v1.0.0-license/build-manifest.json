@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "e9f8bf0063c9b0e95a7fd095762d77779e29c597",
+  "zip": "/Users/songhonglei/space/output/shanghai-ranger-v1-20261110/output/沪上游侠-v1.0.0-小红书小工具-非商业许可.zip",
+  "zipBytes": 1898422,
+  "zipSha256": "426c8093e77b14c82f972f4806599f9f4db72c54b27714e6dd43567bf5b73056",
+  "fileCount": 44,
+  "previous43FilesUnchanged": true,
+  "addedFile": "project-license.json",
+  "h5LicenseVerified": true,
+  "zipLicenseVerified": true,
+  "directoryAuditWarnings": 0,
+  "zipSizeAuditWarnings": 0,
+  "applicationTestsRerun": false,
+  "platformTestsRun": false
+}

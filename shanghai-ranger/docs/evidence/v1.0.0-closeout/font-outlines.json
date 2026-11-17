@@ -1,0 +1,17 @@
+[
+  {
+    "font": "zh-sans",
+    "checkedCodepoints": 1104,
+    "outlineOrMetricsDifferences": []
+  },
+  {
+    "font": "zh-serif",
+    "checkedCodepoints": 1104,
+    "outlineOrMetricsDifferences": []
+  },
+  {
+    "font": "title",
+    "checkedCodepoints": 958,
+    "outlineOrMetricsDifferences": []
+  }
+]

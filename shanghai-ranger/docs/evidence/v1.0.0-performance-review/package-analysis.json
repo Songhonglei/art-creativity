@@ -1,0 +1,241 @@
+{
+  "zipBytes": 3107490,
+  "compressedPayloadBytes": 3098774,
+  "groups": {
+    "codeAndOther": 381440,
+    "fonts": 1949942,
+    "heroImages": 767392
+  },
+  "entries": [
+    {
+      "name": "version.json",
+      "bytes": 45,
+      "compressedBytes": 45
+    },
+    {
+      "name": "index.html",
+      "bytes": 2168,
+      "compressedBytes": 624
+    },
+    {
+      "name": "original-font/",
+      "bytes": 0,
+      "compressedBytes": 0
+    },
+    {
+      "name": "original-font/display.woff2",
+      "bytes": 33136,
+      "compressedBytes": 33146
+    },
+    {
+      "name": "shanghai-ranger.css",
+      "bytes": 157903,
+      "compressedBytes": 30445
+    },
+    {
+      "name": "fonts/",
+      "bytes": 0,
+      "compressedBytes": 0
+    },
+    {
+      "name": "fonts/zh-serif.woff2",
+      "bytes": 838656,
+      "compressedBytes": 838786
+    },
+    {
+      "name": "fonts/zh-sans.woff2",
+      "bytes": 642204,
+      "compressedBytes": 642304
+    },
+    {
+      "name": "fonts/manrope-500.woff2",
+      "bytes": 30028,
+      "compressedBytes": 30021
+    },
+    {
+      "name": "fonts/licenses.json",
+      "bytes": 27165,
+      "compressedBytes": 2614
+    },
+    {
+      "name": "fonts/manrope-400.woff2",
+      "bytes": 30368,
+      "compressedBytes": 30318
+    },
+    {
+      "name": "fonts/cormorant-garamond-600.woff2",
+      "bytes": 64612,
+      "compressedBytes": 64622
+    },
+    {
+      "name": "fonts/manrope-600.woff2",
+      "bytes": 30372,
+      "compressedBytes": 30318
+    },
+    {
+      "name": "fonts/cormorant-garamond-400.woff2",
+      "bytes": 63616,
+      "compressedBytes": 63626
+    },
+    {
+      "name": "fonts/manrope-700.woff2",
+      "bytes": 30744,
+      "compressedBytes": 30609
+    },
+    {
+      "name": "fonts/title.woff2",
+      "bytes": 119104,
+      "compressedBytes": 119124
+    },
+    {
+      "name": "fonts/cormorant-garamond-500.woff2",
+      "bytes": 64444,
+      "compressedBytes": 64454
+    },
+    {
+      "name": "assets/",
+      "bytes": 0,
+      "compressedBytes": 0
+    },
+    {
+      "name": "assets/hero/",
+      "bytes": 0,
+      "compressedBytes": 0
+    },
+    {
+      "name": "assets/hero/portrait-shanghai-paragon-female.png",
+      "bytes": 40919,
+      "compressedBytes": 40824
+    },
+    {
+      "name": "assets/hero/portrait-nightwatch-male.png",
+      "bytes": 39119,
+      "compressedBytes": 39056
+    },
+    {
+      "name": "assets/hero/portrait-riverside-sentinel-male.png",
+      "bytes": 38620,
+      "compressedBytes": 38489
+    },
+    {
+      "name": "assets/hero/outfit-magnolia-male.png",
+      "bytes": 24542,
+      "compressedBytes": 24440
+    },
+    {
+      "name": "assets/hero/outfit-shanghai-paragon-male.png",
+      "bytes": 26700,
+      "compressedBytes": 26511
+    },
+    {
+      "name": "assets/hero/portrait-neon-male.png",
+      "bytes": 41263,
+      "compressedBytes": 41147
+    },
+    {
+      "name": "assets/hero/portrait-magnolia-female.png",
+      "bytes": 37422,
+      "compressedBytes": 37321
+    },
+    {
+      "name": "assets/hero/outfit-neon-female.png",
+      "bytes": 22757,
+      "compressedBytes": 22617
+    },
+    {
+      "name": "assets/hero/portrait-wutong-warden-male.png",
+      "bytes": 38214,
+      "compressedBytes": 38096
+    },
+    {
+      "name": "assets/hero/outfit-nightwatch-male.png",
+      "bytes": 23914,
+      "compressedBytes": 23799
+    },
+    {
+      "name": "assets/hero/outfit-magnolia-female.png",
+      "bytes": 24638,
+      "compressedBytes": 24521
+    },
+    {
+      "name": "assets/hero/portrait-nightwatch-female.png",
+      "bytes": 40906,
+      "compressedBytes": 40810
+    },
+    {
+      "name": "assets/hero/portrait-neon-female.png",
+      "bytes": 43191,
+      "compressedBytes": 43081
+    },
+    {
+      "name": "assets/hero/portrait-wutong-warden-female.png",
+      "bytes": 40061,
+      "compressedBytes": 39986
+    },
+    {
+      "name": "assets/hero/portrait-shanghai-paragon-male.png",
+      "bytes": 39118,
+      "compressedBytes": 39050
+    },
+    {
+      "name": "assets/hero/outfit-neon-male.png",
+      "bytes": 22684,
+      "compressedBytes": 22533
+    },
+    {
+      "name": "assets/hero/portrait-riverside-sentinel-female.png",
+      "bytes": 40416,
+      "compressedBytes": 40334
+    },
+    {
+      "name": "assets/hero/outfit-wutong-warden-male.png",
+      "bytes": 24537,
+      "compressedBytes": 24347
+    },
+    {
+      "name": "assets/hero/portrait-magnolia-male.png",
+      "bytes": 35573,
+      "compressedBytes": 35467
+    },
+    {
+      "name": "assets/hero/outfit-nightwatch-female.png",
+      "bytes": 24056,
+      "compressedBytes": 23967
+    },
+    {
+      "name": "assets/hero/outfit-riverside-sentinel-female.png",
+      "bytes": 25096,
+      "compressedBytes": 24973
+    },
+    {
+      "name": "assets/hero/outfit-shanghai-paragon-female.png",
+      "bytes": 26795,
+      "compressedBytes": 26599
+    },
+    {
+      "name": "assets/hero/outfit-riverside-sentinel-male.png",
+      "bytes": 25001,
+      "compressedBytes": 24914
+    },
+    {
+      "name": "assets/hero/outfit-wutong-warden-female.png",
+      "bytes": 24626,
+      "compressedBytes": 24510
+    },
+    {
+      "name": "mini_tool.json",
+      "bytes": 36,
+      "compressedBytes": 36
+    },
+    {
+      "name": "app.js",
+      "bytes": 1230419,
+      "compressedBytes": 350068
+    },
+    {
+      "name": "favicon.svg",
+      "bytes": 311,
+      "compressedBytes": 222
+    }
+  ]
+}

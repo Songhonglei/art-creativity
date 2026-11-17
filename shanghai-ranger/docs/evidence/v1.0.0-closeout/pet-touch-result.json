@@ -1,0 +1,57 @@
+{
+  "before": {
+    "r": {
+      "x": 29,
+      "y": 122.1484375,
+      "width": 317,
+      "height": 220,
+      "top": 122.1484375,
+      "right": 346,
+      "bottom": 342.1484375,
+      "left": 29
+    },
+    "scroll": 889.5,
+    "camera": {
+      "x": -18.29451246127916,
+      "y": 2.455981991526386,
+      "z": 35.40044667209919,
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2,
+      "contacts": 0,
+      "target": {
+        "x": -18,
+        "y": 1.602418921731134,
+        "z": 31.2
+      },
+      "targetDistance": 4.296400790093516,
+      "safeFraction": 1
+    }
+  },
+  "after": {
+    "scroll": 889.5,
+    "camera": {
+      "x": -18.29451246127916,
+      "y": 2.455981991526386,
+      "z": 35.40044667209919,
+      "yaw": -0.07,
+      "pitch": 0.2,
+      "distance": 8.2,
+      "contacts": 0,
+      "target": {
+        "x": -18,
+        "y": 1.602418921731134,
+        "z": 31.2
+      },
+      "targetDistance": 4.296400790093516,
+      "safeFraction": 1
+    }
+  },
+  "modelPixelDifferenceBBox": [
+    103,
+    24,
+    242,
+    182
+  ],
+  "horizontalRotationVerified": true
+}

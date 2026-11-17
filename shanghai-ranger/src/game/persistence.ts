@@ -1,3 +1,4 @@
+import { combatLevel } from './heroProgress';
 import type { MonsterAction, MonsterKind, PatrolCheckpoint, PetEffects, Progress, SavedMonster, SavedStreetEnemy } from './types';
 const kinds: MonsterKind[] = ['cat', 'dog', 'ebike', 'racer', 'hooligan', 'robber', 'official'];
 const actions: MonsterAction[] = ['idle', 'stalk', 'windup', 'charge', 'recover', 'stagger', 'guard', 'dead'];
@@ -17,7 +18,7 @@ export function readCheckpoint(raw: unknown, progress: Progress): PatrolCheckpoi
   const hunt = Math.floor(finite(c.hunt, -1));
   if (hunt !== progress.hunts - (phase === 'complete' ? 1 : 0) || hunt < 0) return;
   if (c.monster.kind !== kinds[hunt % kinds.length]) return;
-  const maxHealth = 100 + (progress.level - 1) * 18, e = c.effects ?? emptyPetEffects();
+  const maxHealth = 100 + (combatLevel(progress.level) - 1) * 18, e = c.effects ?? emptyPetEffects();
   const effects: PetEffects = {
     autoCooldown: finite(e.autoCooldown, 0, 0, 45), shield: finite(e.shield, 0, 0, maxHealth * .12), shieldTime: finite(e.shieldTime, 0, 0, 4), economyTime: finite(e.economyTime, 0, 0, 8),
     markTime: finite(e.markTime, 0, 0, 12), markTarget: e.markTarget === -1 ? -1 : typeof e.markTarget === 'number' ? Math.floor(finite(e.markTarget)) : null,
@@ -35,5 +36,7 @@ export function readCheckpoint(raw: unknown, progress: Progress): PatrolCheckpoi
     rescueAvailable: c.rescueAvailable === true, rescueTime: finite(c.rescueTime, 0, 0, .7), dead: c.dead === true,
     death: c.death && typeof c.death.source === 'string' ? { source: c.death.source.slice(0, 50), damage: Math.round(finite(c.death.damage, 0, 0, 100000)) } : null,
     effects, rewarded: Array.isArray(c.rewarded) ? [...new Set(c.rewarded.filter(s => typeof s === 'string').map(s => s.slice(0, 64)))].slice(-2048) : [],
+    retryOrigin: c.retryOrigin && Number.isFinite(c.retryOrigin.x) && Number.isFinite(c.retryOrigin.z) && Math.abs(c.retryOrigin.x) <= 1e6 && Math.abs(c.retryOrigin.z) <= 1e6 ? position(c.retryOrigin) : undefined,
+    recoveryProtection: finite(c.recoveryProtection, 0, 0, 2),
   };
 }

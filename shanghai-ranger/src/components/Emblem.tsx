@@ -19,7 +19,7 @@ export function MonsterGlyph() {
 }
 
 export function WeaponArt({ type }: { type: string }) {
-  return <svg viewBox="0 0 240 220" fill="none" aria-hidden="true">
+  return <svg className="equipment-art" viewBox="0 0 240 220" fill="none" aria-hidden="true">
     <g stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       {type === 'armor'
         ? <><path d="M60 70 91 47h58l31 23-19 89H79Z" /><path d="m80 79 40 21 40-21M79 114l41 18 41-18M97 52l23 22 23-22" /><circle cx="120" cy="111" r="8" /></>

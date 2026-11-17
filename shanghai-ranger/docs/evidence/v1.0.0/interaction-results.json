@@ -1,0 +1,53 @@
+{
+  "genderAndPet": true,
+  "level4": {
+    "level": 4,
+    "health": 108,
+    "maxHealth": 154
+  },
+  "level10": {
+    "level": 10,
+    "health": 126,
+    "maxHealth": 172,
+    "parts": 37,
+    "cash": 3200
+  },
+  "previewIsolated": true,
+  "lockedPreview": true,
+  "escapeFromSelect": true,
+  "cache": [
+    {
+      "models": 2,
+      "geometries": 232,
+      "textures": 23
+    },
+    {
+      "models": 2,
+      "geometries": 236,
+      "textures": 23
+    },
+    {
+      "models": 2,
+      "geometries": 242,
+      "textures": 23
+    },
+    {
+      "models": 2,
+      "geometries": 228,
+      "textures": 23
+    },
+    {
+      "models": 2,
+      "geometries": 229,
+      "textures": 23
+    },
+    {
+      "models": 2,
+      "geometries": 232,
+      "textures": 23
+    }
+  ],
+  "saveFailureAndRetry": true,
+  "reloadPreserved": true,
+  "errors": []
+}

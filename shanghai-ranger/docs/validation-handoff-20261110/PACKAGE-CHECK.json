@@ -1,0 +1,30 @@
+{
+  "status": "verified",
+  "sourceCommit": "83dc188",
+  "currentHead": "57685048b376a59ff5ce05c0582771ff72fb13b3",
+  "zip": "/Users/songhonglei/space/output/shanghai-ranger-v1-20261110/output/沪上游侠-v1.0.0-小红书小工具-收尾优化.zip",
+  "zipBytes": 1896197,
+  "zipSha256": "244371d1125ea58d1410d1b869a0dd50359ed527bc8960d03abd51d365d0c3d4",
+  "files": 43,
+  "zipMatchesManifest": true,
+  "zipMatchesDistTool": true,
+  "sourceUnchangedSinceBuildCommit": true,
+  "workingTreeClean": true,
+  "rebuildRequired": false,
+  "checkedDate": "2026-11-10",
+  "directoryAudit": {
+    "files": 43,
+    "warnings": 0,
+    "status": "pass"
+  },
+  "zipSizeAudit": {
+    "warnings": 0,
+    "status": "pass",
+    "scope": "zip size only"
+  },
+  "applicationTestsRerun": false,
+  "platformTestsRun": false,
+  "planRevision": 2,
+  "caseCount": 65,
+  "reasonNoRebuild": "clean source; only documentation/evidence changed since sourceCommit; ZIP matches all 43 manifest and dist-tool files"
+}

@@ -1,0 +1,376 @@
+{
+  "runtime": "v24.19.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "follow": [
+    {
+      "quality": "low",
+      "route": "camp",
+      "boxes": 50,
+      "circles": 154,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.024541999999996733,
+        "p95Ms": 0.15841600000001677,
+        "maxMs": 0.22216699999998468
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.10866699999999696,
+        "p95Ms": 0.4995409999999936,
+        "maxMs": 0.8716670000000022
+      },
+      "blockedFixture": {
+        "current": {
+          "x": -20.7,
+          "z": 27.3
+        },
+        "player": {
+          "x": -13.100000000000001,
+          "z": 29.599999999999998
+        },
+        "obstacle": {
+          "x": -18,
+          "z": 29,
+          "halfWidth": 1.7,
+          "halfDepth": 0.7,
+          "minY": 0.058532879568579325,
+          "maxY": 1.5585328795685793
+        }
+      }
+    },
+    {
+      "quality": "low",
+      "route": "core",
+      "boxes": 44,
+      "circles": 116,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.011625000000009322,
+        "p95Ms": 0.023540999999994483,
+        "maxMs": 0.04870800000000486
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.07691699999998036,
+        "p95Ms": 0.1322499999999991,
+        "maxMs": 0.20737499999998477
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 1.4,
+          "z": 23.95
+        },
+        "player": {
+          "x": 7.8,
+          "z": 28.95
+        },
+        "obstacle": {
+          "x": 3.5,
+          "z": 27,
+          "halfWidth": 1.1,
+          "halfDepth": 2.05,
+          "minY": -0.03029540364943381,
+          "maxY": 1.6697045963505661
+        }
+      }
+    },
+    {
+      "quality": "low",
+      "route": "outer",
+      "boxes": 75,
+      "circles": 172,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.010707999999993945,
+        "p95Ms": 0.037332999999989624,
+        "maxMs": 0.1333750000000009
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.06816599999999085,
+        "p95Ms": 0.14433300000001736,
+        "maxMs": 0.23870800000000258
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 148.898360018146,
+          "z": 126.49627794148726
+        },
+        "player": {
+          "x": 163.79071808933023,
+          "z": 137.1172034095009
+        },
+        "obstacle": {
+          "x": 155.24453905373812,
+          "z": 132.35674067549408,
+          "halfWidth": 5.346179035592125,
+          "halfDepth": 4.860462734006811,
+          "minY": -0.1542681858618994,
+          "maxY": 37.47299568678948
+        }
+      }
+    },
+    {
+      "quality": "balanced",
+      "route": "camp",
+      "boxes": 89,
+      "circles": 272,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.015541000000013128,
+        "p95Ms": 0.01712499999999295,
+        "maxMs": 0.08433300000001509
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.08704200000002515,
+        "p95Ms": 0.15470899999999688,
+        "maxMs": 0.20050000000000523
+      },
+      "blockedFixture": {
+        "current": {
+          "x": -20.7,
+          "z": 27.3
+        },
+        "player": {
+          "x": -13.100000000000001,
+          "z": 29.599999999999998
+        },
+        "obstacle": {
+          "x": -18,
+          "z": 29,
+          "halfWidth": 1.7,
+          "halfDepth": 0.7,
+          "minY": 0.058532879568579325,
+          "maxY": 1.5585328795685793
+        }
+      }
+    },
+    {
+      "quality": "balanced",
+      "route": "core",
+      "boxes": 72,
+      "circles": 286,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.015415999999987662,
+        "p95Ms": 0.019249999999999545,
+        "maxMs": 0.04800000000000182
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.08749999999997726,
+        "p95Ms": 0.18137500000000273,
+        "maxMs": 0.4685410000000161
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 1.4,
+          "z": 23.95
+        },
+        "player": {
+          "x": 7.8,
+          "z": 28.95
+        },
+        "obstacle": {
+          "x": 3.5,
+          "z": 27,
+          "halfWidth": 1.1,
+          "halfDepth": 2.05,
+          "minY": -0.03029540364943381,
+          "maxY": 1.6697045963505661
+        }
+      }
+    },
+    {
+      "quality": "balanced",
+      "route": "outer",
+      "boxes": 129,
+      "circles": 338,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.020332999999993717,
+        "p95Ms": 0.037042000000013786,
+        "maxMs": 0.09499999999999886
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.08658300000001873,
+        "p95Ms": 0.14383300000000077,
+        "maxMs": 0.24445800000000872
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 148.898360018146,
+          "z": 126.49627794148726
+        },
+        "player": {
+          "x": 163.79071808933023,
+          "z": 137.1172034095009
+        },
+        "obstacle": {
+          "x": 155.24453905373812,
+          "z": 132.35674067549408,
+          "halfWidth": 5.346179035592125,
+          "halfDepth": 4.860462734006811,
+          "minY": -0.1542681858618994,
+          "maxY": 37.47299568678948
+        }
+      }
+    },
+    {
+      "quality": "high",
+      "route": "camp",
+      "boxes": 89,
+      "circles": 294,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.01712499999999295,
+        "p95Ms": 0.01745800000000486,
+        "maxMs": 0.06595799999999485
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.08804199999997309,
+        "p95Ms": 0.2782909999999674,
+        "maxMs": 0.5841660000000388
+      },
+      "blockedFixture": {
+        "current": {
+          "x": -20.7,
+          "z": 27.3
+        },
+        "player": {
+          "x": -13.100000000000001,
+          "z": 29.599999999999998
+        },
+        "obstacle": {
+          "x": -18,
+          "z": 29,
+          "halfWidth": 1.7,
+          "halfDepth": 0.7,
+          "minY": 0.058532879568579325,
+          "maxY": 1.5585328795685793
+        }
+      }
+    },
+    {
+      "quality": "high",
+      "route": "core",
+      "boxes": 72,
+      "circles": 312,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.016708999999991647,
+        "p95Ms": 0.020666000000005624,
+        "maxMs": 0.0831670000000031
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.09083299999997507,
+        "p95Ms": 0.190208000000041,
+        "maxMs": 0.2142910000000029
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 1.4,
+          "z": 23.95
+        },
+        "player": {
+          "x": 7.8,
+          "z": 28.95
+        },
+        "obstacle": {
+          "x": 3.5,
+          "z": 27,
+          "halfWidth": 1.1,
+          "halfDepth": 2.05,
+          "minY": -0.03029540364943381,
+          "maxY": 1.6697045963505661
+        }
+      }
+    },
+    {
+      "quality": "high",
+      "route": "outer",
+      "boxes": 129,
+      "circles": 380,
+      "natural": {
+        "iterations": 60,
+        "p50Ms": 0.02204100000000153,
+        "p95Ms": 0.023500000000012733,
+        "maxMs": 0.07091599999995424
+      },
+      "blocked": {
+        "iterations": 60,
+        "p50Ms": 0.09304099999997106,
+        "p95Ms": 0.13670900000005304,
+        "maxMs": 0.16937500000000227
+      },
+      "blockedFixture": {
+        "current": {
+          "x": 148.898360018146,
+          "z": 126.49627794148726
+        },
+        "player": {
+          "x": 163.79071808933023,
+          "z": 137.1172034095009
+        },
+        "obstacle": {
+          "x": 155.24453905373812,
+          "z": 132.35674067549408,
+          "halfWidth": 5.346179035592125,
+          "halfDepth": 4.860462734006811,
+          "minY": -0.1542681858618994,
+          "maxY": 37.47299568678948
+        }
+      }
+    }
+  ],
+  "save": {
+    "normal": {
+      "snapshot": {
+        "iterations": 200,
+        "p50Ms": 0.005999999999971806,
+        "p95Ms": 0.012958999999966636,
+        "maxMs": 0.023874999999975444
+      },
+      "checkpoint": {
+        "iterations": 200,
+        "p50Ms": 0.0008750000000077307,
+        "p95Ms": 0.0013339999999857355,
+        "maxMs": 0.0206670000000031
+      },
+      "bytes": 2648,
+      "stringify": {
+        "iterations": 200,
+        "p50Ms": 0.008874999999989086,
+        "p95Ms": 0.009208000000000993,
+        "maxMs": 0.12624999999997044
+      }
+    },
+    "boundedStress": {
+      "bytes": 30209,
+      "snapshot": {
+        "iterations": 200,
+        "p50Ms": 0.004917000000034477,
+        "p95Ms": 0.005458999999973457,
+        "maxMs": 0.01866699999999355
+      },
+      "checkpoint": {
+        "iterations": 200,
+        "p50Ms": 0.0032090000000266627,
+        "p95Ms": 0.003708000000017364,
+        "maxMs": 0.1598329999999919
+      },
+      "stringify": {
+        "iterations": 200,
+        "p50Ms": 0.05675000000002228,
+        "p95Ms": 0.07316699999995535,
+        "maxMs": 0.24916699999999992
+      }
+    }
+  },
+  "note": "Node CPU microbenchmarks using current source and captured production colliders. Blocked follower positions are constructed around a real captured obstacle; they do not prove an observed gameplay frame rate. Native storage IO is excluded."
+}

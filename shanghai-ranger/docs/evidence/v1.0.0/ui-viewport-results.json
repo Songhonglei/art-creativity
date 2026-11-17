@@ -1,0 +1,350 @@
+{
+  "375x812": {
+    "start": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  },
+  "390x844": {
+    "start": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  },
+  "768x1024": {
+    "start": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  },
+  "1024x768": {
+    "start": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  },
+  "1440x1000": {
+    "start": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  },
+  "844x390": {
+    "start": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "wardrobe": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "forge": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "map": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "guide": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "pets": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    },
+    "settings": {
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "panelOverflow": false,
+      "small": [],
+      "buttons": []
+    }
+  }
+}

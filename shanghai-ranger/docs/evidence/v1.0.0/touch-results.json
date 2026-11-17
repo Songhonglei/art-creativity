@@ -1,0 +1,38 @@
+{
+  "375x812": {
+    "origin": {
+      "x": -18,
+      "z": 31.2,
+      "yaw": -0.07
+    },
+    "attacking": {
+      "attack": true,
+      "x": -17.622320429080286,
+      "z": 30.772911921721377,
+      "yaw": 0.4200884539600077,
+      "contacts": 1
+    },
+    "heavy": true,
+    "dodging": true,
+    "released": true,
+    "errors": []
+  },
+  "844x390": {
+    "origin": {
+      "x": -18,
+      "z": 31.2,
+      "yaw": -0.07
+    },
+    "attacking": {
+      "attack": true,
+      "x": -17.556663896707214,
+      "z": 30.717313707141415,
+      "yaw": 0.4012388980384689,
+      "contacts": 1
+    },
+    "heavy": true,
+    "dodging": true,
+    "released": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,20 @@
+
+> shanghai-ranger@0.9.5 build
+> tsc -b && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 4608 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   2.66 kB │ gzip:   0.67 kB
+dist/assets/index-C0pDuk3t.css  114.46 kB │ gzip:  23.18 kB
+dist/assets/react-Cdy76tek.js    12.00 kB │ gzip:   4.23 kB
+dist/assets/three-D-ISCDTO.js   548.21 kB │ gzip: 138.03 kB
+dist/assets/index-BiEP1hHA.js   614.86 kB │ gzip: 192.93 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.94s

@@ -1,0 +1,30 @@
+[
+  {
+    "case": "held write timed out with visible warning",
+    "writes": [
+      "shanghai-ranger-legacy-import",
+      "shanghai-ranger-progress-v1-backup",
+      "nightwatch-settings"
+    ],
+    "status": "failed"
+  },
+  {
+    "case": "retry remains blocked until native request settles",
+    "backupWrites": 1,
+    "status": "failed"
+  },
+  {
+    "case": "release then retry persists latest progress",
+    "writes": [
+      "shanghai-ranger-legacy-import",
+      "shanghai-ranger-progress-v1-backup",
+      "nightwatch-settings",
+      "shanghai-ranger-progress-v1-backup",
+      "shanghai-ranger-progress-v1",
+      "shanghai-ranger-progress-v1-backup",
+      "shanghai-ranger-progress-v1"
+    ],
+    "level": 10,
+    "status": "saved"
+  }
+]

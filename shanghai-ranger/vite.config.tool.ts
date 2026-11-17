@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   define: { 'process.env.NODE_ENV': '"production"' },
   build: {
-    target: ['es2017', 'chrome61'],
+    target: ['es2017', 'chrome61'], cssTarget: 'chrome61',
     outDir: 'dist-tool',
     emptyOutDir: true,
     lib: { entry: 'src/main.tsx', formats: ['iife'], name: 'ShanghaiRanger', fileName: () => 'app.js', cssFileName: 'shanghai-ranger' },

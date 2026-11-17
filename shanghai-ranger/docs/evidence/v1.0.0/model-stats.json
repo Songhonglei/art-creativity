@@ -1,0 +1,290 @@
+[
+  {
+    "skin": "nightwatch",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 12034,
+    "calls": 23,
+    "geometries": 23
+  },
+  {
+    "skin": "nightwatch",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 11602,
+    "calls": 23,
+    "geometries": 25
+  },
+  {
+    "skin": "nightwatch",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 12098,
+    "calls": 24,
+    "geometries": 28
+  },
+  {
+    "skin": "magnolia",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 12324,
+    "calls": 23,
+    "geometries": 23
+  },
+  {
+    "skin": "magnolia",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 11892,
+    "calls": 23,
+    "geometries": 25
+  },
+  {
+    "skin": "magnolia",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 12388,
+    "calls": 24,
+    "geometries": 28
+  },
+  {
+    "skin": "neon",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 11566,
+    "calls": 24,
+    "geometries": 24
+  },
+  {
+    "skin": "neon",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 11134,
+    "calls": 24,
+    "geometries": 26
+  },
+  {
+    "skin": "neon",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 11630,
+    "calls": 25,
+    "geometries": 29
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 13160,
+    "calls": 27,
+    "geometries": 27
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 12728,
+    "calls": 27,
+    "geometries": 29
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 13224,
+    "calls": 28,
+    "geometries": 32
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 14262,
+    "calls": 31,
+    "geometries": 31
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 13830,
+    "calls": 31,
+    "geometries": 33
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 14326,
+    "calls": 32,
+    "geometries": 36
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "male",
+    "weapon": "crowbar",
+    "triangles": 16828,
+    "calls": 37,
+    "geometries": 37
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "male",
+    "weapon": "baton",
+    "triangles": 16396,
+    "calls": 37,
+    "geometries": 39
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "male",
+    "weapon": "umbrella",
+    "triangles": 16892,
+    "calls": 38,
+    "geometries": 42
+  },
+  {
+    "skin": "nightwatch",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 12558,
+    "calls": 24,
+    "geometries": 24
+  },
+  {
+    "skin": "nightwatch",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 12126,
+    "calls": 24,
+    "geometries": 26
+  },
+  {
+    "skin": "nightwatch",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 12622,
+    "calls": 25,
+    "geometries": 29
+  },
+  {
+    "skin": "magnolia",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 12848,
+    "calls": 24,
+    "geometries": 24
+  },
+  {
+    "skin": "magnolia",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 12416,
+    "calls": 24,
+    "geometries": 26
+  },
+  {
+    "skin": "magnolia",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 12912,
+    "calls": 25,
+    "geometries": 29
+  },
+  {
+    "skin": "neon",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 12090,
+    "calls": 25,
+    "geometries": 25
+  },
+  {
+    "skin": "neon",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 11658,
+    "calls": 25,
+    "geometries": 27
+  },
+  {
+    "skin": "neon",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 12154,
+    "calls": 26,
+    "geometries": 30
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 13684,
+    "calls": 28,
+    "geometries": 28
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 13252,
+    "calls": 28,
+    "geometries": 30
+  },
+  {
+    "skin": "wutong-warden",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 13748,
+    "calls": 29,
+    "geometries": 33
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 14786,
+    "calls": 32,
+    "geometries": 32
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 14354,
+    "calls": 32,
+    "geometries": 34
+  },
+  {
+    "skin": "riverside-sentinel",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 14850,
+    "calls": 33,
+    "geometries": 37
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "female",
+    "weapon": "crowbar",
+    "triangles": 17352,
+    "calls": 38,
+    "geometries": 38
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "female",
+    "weapon": "baton",
+    "triangles": 16920,
+    "calls": 38,
+    "geometries": 40
+  },
+  {
+    "skin": "shanghai-paragon",
+    "gender": "female",
+    "weapon": "umbrella",
+    "triangles": 17416,
+    "calls": 39,
+    "geometries": 43
+  }
+]

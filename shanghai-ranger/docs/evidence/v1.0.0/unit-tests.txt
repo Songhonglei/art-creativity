@@ -1,0 +1,12 @@
+
+> shanghai-ranger@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/songhonglei/space/output/shanghai-ranger-v1-20261110
+
+
+ Test Files  11 passed (11)
+      Tests  228 passed (228)
+   Start at  17:03:03
+   Duration  2.23s (transform 1.21s, setup 0ms, import 2.79s, tests 2.09s, environment 1ms)

@@ -1,0 +1,27 @@
+{
+  "bestiary": {
+    "overflow": false,
+    "panelOverflow": false,
+    "errors": []
+  },
+  "story": {
+    "overflow": false,
+    "panelOverflow": false,
+    "errors": []
+  },
+  "weapon-training": {
+    "overflow": false,
+    "panelOverflow": false,
+    "errors": []
+  },
+  "shiba-skins": {
+    "overflow": false,
+    "panelOverflow": false,
+    "errors": []
+  },
+  "help": {
+    "overflow": false,
+    "panelOverflow": false,
+    "errors": []
+  }
+}

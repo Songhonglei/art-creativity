@@ -1,0 +1,1154 @@
+[
+  {
+    "cycle": 0,
+    "pet": 0,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-original",
+      "petModel": "pet-orangeCat-cat-original",
+      "petModels": 2,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 92558,
+      "geometries": 221,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 0,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-red-scarf",
+      "petModel": "pet-orangeCat-cat-red-scarf",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 265,
+      "triangles": 92719,
+      "geometries": 226,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 0,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-guardian",
+      "petModel": "pet-orangeCat-cat-guardian",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 95119,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 0,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-golden-bell",
+      "petModel": "pet-orangeCat-cat-golden-bell",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 97083,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 1,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-original",
+      "petModel": "pet-corgi-corgi-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 92940,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 1,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-harness",
+      "petModel": "pet-corgi-corgi-harness",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 94016,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 1,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-supply",
+      "petModel": "pet-corgi-corgi-supply",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 97916,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 1,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-expedition",
+      "petModel": "pet-corgi-corgi-expedition",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 100000,
+      "geometries": 232,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 2,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-original",
+      "petModel": "pet-shiba-shiba-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 265,
+      "triangles": 93954,
+      "geometries": 230,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 2,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-tracker",
+      "petModel": "pet-shiba-shiba-tracker",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 266,
+      "triangles": 94117,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 2,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-detective",
+      "petModel": "pet-shiba-shiba-detective",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 97623,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 0,
+    "pet": 2,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-inspector",
+      "petModel": "pet-shiba-shiba-inspector",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 269,
+      "triangles": 100463,
+      "geometries": 232,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 0,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-original",
+      "petModel": "pet-orangeCat-cat-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 92558,
+      "geometries": 230,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 0,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-red-scarf",
+      "petModel": "pet-orangeCat-cat-red-scarf",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 265,
+      "triangles": 92719,
+      "geometries": 226,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 0,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-guardian",
+      "petModel": "pet-orangeCat-cat-guardian",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 95119,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 0,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-golden-bell",
+      "petModel": "pet-orangeCat-cat-golden-bell",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 97083,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 1,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-original",
+      "petModel": "pet-corgi-corgi-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 263,
+      "triangles": 92938,
+      "geometries": 227,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 1,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-harness",
+      "petModel": "pet-corgi-corgi-harness",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 266,
+      "triangles": 94014,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 1,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-supply",
+      "petModel": "pet-corgi-corgi-supply",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 97914,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 1,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-expedition",
+      "petModel": "pet-corgi-corgi-expedition",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 99998,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 2,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-original",
+      "petModel": "pet-shiba-shiba-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 93952,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 2,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-tracker",
+      "petModel": "pet-shiba-shiba-tracker",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 265,
+      "triangles": 94115,
+      "geometries": 226,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 2,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-detective",
+      "petModel": "pet-shiba-shiba-detective",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 97621,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 1,
+    "pet": 2,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-inspector",
+      "petModel": "pet-shiba-shiba-inspector",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 100461,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 0,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-original",
+      "petModel": "pet-orangeCat-cat-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 92558,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 0,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-red-scarf",
+      "petModel": "pet-orangeCat-cat-red-scarf",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 92558,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 0,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-guardian",
+      "petModel": "pet-orangeCat-cat-guardian",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 95119,
+      "geometries": 224,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 0,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "orangeCat",
+      "petSkin": "cat-golden-bell",
+      "petModel": "pet-orangeCat-cat-golden-bell",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 97083,
+      "geometries": 228,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 1,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-original",
+      "petModel": "pet-corgi-corgi-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 263,
+      "triangles": 92938,
+      "geometries": 227,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 1,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-harness",
+      "petModel": "pet-corgi-corgi-harness",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 266,
+      "triangles": 94014,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 1,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-supply",
+      "petModel": "pet-corgi-corgi-supply",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 97914,
+      "geometries": 225,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 1,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "corgi",
+      "petSkin": "corgi-expedition",
+      "petModel": "pet-corgi-corgi-expedition",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 99998,
+      "geometries": 229,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 2,
+    "skin": 0,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-original",
+      "petModel": "pet-shiba-shiba-original",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 263,
+      "triangles": 93792,
+      "geometries": 227,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 2,
+    "skin": 1,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-tracker",
+      "petModel": "pet-shiba-shiba-tracker",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 264,
+      "triangles": 93955,
+      "geometries": 224,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 2,
+    "skin": 2,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-detective",
+      "petModel": "pet-shiba-shiba-detective",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 267,
+      "triangles": 97621,
+      "geometries": 223,
+      "textures": 25
+    }
+  },
+  {
+    "cycle": 2,
+    "pet": 2,
+    "skin": 3,
+    "appearance": {
+      "gender": "female",
+      "heroModels": 1,
+      "skin": "shanghai-paragon",
+      "weapon": "crowbar",
+      "pet": "shiba",
+      "petSkin": "shiba-inspector",
+      "petModel": "pet-shiba-shiba-inspector",
+      "petModels": 3,
+      "petFootprints": 0,
+      "petMarkVisible": false,
+      "model": "hunter:shanghai-paragon:female",
+      "monsterVisible": false,
+      "streetModels": 3,
+      "streetVisible": 3,
+      "streetKinds": [
+        "cat",
+        "hooligan",
+        "ebike"
+      ]
+    },
+    "render": {
+      "calls": 268,
+      "triangles": 100461,
+      "geometries": 228,
+      "textures": 25
+    }
+  }
+]

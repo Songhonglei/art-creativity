@@ -1,0 +1,14 @@
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 4612 modules transformed.
+rendering chunks...
+computing gzip size...
+../../../../../var/folders/mh/1tr07fs115q8yvrq6whh0ry80000gn/T/shanghai-ranger-tool-72628/shanghai-ranger.css    157.69 kB │ gzip:  30.41 kB
+../../../../../var/folders/mh/1tr07fs115q8yvrq6whh0ry80000gn/T/shanghai-ranger-tool-72628/app.js               1,230.42 kB │ gzip: 350.67 kB
+✓ built in 3.71s
+mini_tool.json: false
+PASS: 42 file(s), 0 warning(s)
+WARN: 沪上游侠-v1.0.0-小红书小工具.zip: zip is 2.94 MiB; recommended target is 2 MiB
+NOTE: Node audit checks zip size only; artifact contents must be audited before packaging
+PASS: 1 file(s), 1 warning(s)
+OK -> /Users/songhonglei/space/output/shanghai-ranger-v1-20261110/output/沪上游侠-v1.0.0-小红书小工具.zip

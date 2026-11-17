@@ -1,0 +1,88 @@
+{
+  "v0.9.5": {
+    "viewport": [
+      1024,
+      768
+    ],
+    "quality": "low",
+    "sampleFrames": 120,
+    "p50": 33.399999999999636,
+    "p95": 42,
+    "hero": {
+      "triangles": 14192,
+      "calls": 35,
+      "lights": 2
+    },
+    "routes": [
+      {
+        "x": -18,
+        "z": 31.2,
+        "calls": 257,
+        "triangles": 127400,
+        "geometries": 266,
+        "textures": 23
+      },
+      {
+        "x": 0,
+        "z": 20,
+        "calls": 311,
+        "triangles": 130840,
+        "geometries": 267,
+        "textures": 23
+      },
+      {
+        "x": 8,
+        "z": -12,
+        "calls": 135,
+        "triangles": 93608,
+        "geometries": 267,
+        "textures": 23
+      }
+    ],
+    "heap": 108199229,
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)"
+  },
+  "v1.0.0": {
+    "viewport": [
+      1024,
+      768
+    ],
+    "quality": "low",
+    "sampleFrames": 120,
+    "p50": 33.400000000000546,
+    "p95": 42.100000000000364,
+    "hero": {
+      "triangles": 12034,
+      "calls": 23,
+      "lights": 0
+    },
+    "routes": [
+      {
+        "x": -18,
+        "z": 31.2,
+        "calls": 245,
+        "triangles": 125242,
+        "geometries": 256,
+        "textures": 23
+      },
+      {
+        "x": 0,
+        "z": 20,
+        "calls": 299,
+        "triangles": 128682,
+        "geometries": 257,
+        "textures": 23
+      },
+      {
+        "x": 8,
+        "z": -12,
+        "calls": 123,
+        "triangles": 91450,
+        "geometries": 257,
+        "textures": 23
+      }
+    ],
+    "heap": 199594257,
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Unspecified Version)"
+  }
+}

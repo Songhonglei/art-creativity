@@ -1,0 +1,69 @@
+/* v0.9.5: quiet night, one clear way back into the fight. */
+.game-shell { --recovery-ink:#112330; --recovery-paper:#f1e6cc; --recovery-gold:#d9ba7a; --recovery-teal:#98cfc0; --recovery-muted:#becbd0; --recovery-line:#d9ba7a40 }
+.scene-container { transition:filter .55s ease }
+.is-fallen .scene-container { filter:saturate(.28) brightness(.72) }
+.is-fallen .hud { opacity:.18; transition:opacity .35s; pointer-events:none }
+.is-fallen .topbar,.is-fallen .help-corner { opacity:.3; pointer-events:none }
+.is-fallen .modal-backdrop { z-index:20 }
+.death-veil { position:absolute; inset:0; z-index:12; pointer-events:auto; background:radial-gradient(ellipse at 50% 45%,transparent 20%,#06111a99 100%); animation:death-veil-in .6s ease both }
+.death-caption { position:absolute; top:59%; left:0; width:100%; display:flex; align-items:center; justify-content:center; gap:16px; font-size:16px; color:var(--recovery-paper); letter-spacing:.12em; animation:death-caption-in .5s ease .25s both }
+.death-rule { height:1px; width:36px; background:var(--recovery-gold); opacity:.55 }
+.game-shell .recovery-backdrop { z-index:14; padding:24px 20px max(24px,env(safe-area-inset-bottom)); background:transparent; overflow:auto; align-items:flex-end }
+.game-shell .recovery-card { display:block; width:540px; max-width:100%; max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px); overflow:auto; padding:26px 30px 22px; color:var(--recovery-paper); background:var(--recovery-ink); border:1px solid var(--recovery-line); border-top:2px solid var(--recovery-gold); box-shadow:0 18px 80px #030b12a6; animation:recovery-card-in .22s ease both }
+.recovery-heading { display:flex; align-items:center; gap:14px }
+.recovery-emblem { display:grid; place-items:center; width:49px; height:54px; flex:none; border:1px solid var(--recovery-line); color:var(--recovery-gold); border-radius:22px 22px 4px 4px }
+.recovery-label { display:block; color:var(--recovery-gold); font-size:11px; letter-spacing:.18em; margin-bottom:5px }
+.game-shell .recovery-card h2 { font-size:28px; line-height:1.3; margin:0; font-weight:500; letter-spacing:.02em }
+.game-shell .recovery-card>p.recovery-summary { font-size:14px; color:var(--recovery-muted); margin:18px 0 16px; line-height:1.7 }
+.game-shell .recovery-card>div.recovery-tip { display:flex; min-width:0; gap:11px; align-items:flex-start; padding:14px 0; border-top:1px solid var(--recovery-line); border-bottom:1px solid var(--recovery-line) }
+.recovery-tip>svg { flex:none; color:var(--recovery-gold); margin-top:3px }
+.game-shell .recovery-tip p { margin:0; color:var(--recovery-paper); line-height:1.8; font-size:14px }
+.recovery-details { margin-top:7px; font-size:13px; color:var(--recovery-muted) }
+.recovery-details summary { min-height:44px; display:flex; align-items:center; gap:8px; cursor:pointer; width:fit-content }
+.recovery-details summary:before { content:'＋'; color:var(--recovery-gold) }
+.recovery-details[open] summary:before { content:'−' }
+.game-shell .recovery-details p { font-size:13px; margin:0 0 12px; line-height:1.8 }
+.game-shell .recovery-card>div.recovery-actions { display:flex; min-width:0; gap:10px; margin-top:5px }
+.recovery-actions>.primary-button { flex:1; justify-content:space-between; min-height:50px; font-size:15px; padding:13px 18px }
+.recovery-actions>.secondary-button { flex:none; min-height:50px; font-size:14px; padding:13px 18px; color:var(--recovery-paper); border-color:var(--recovery-line) }
+.game-shell .recovery-card>p.recovery-rule { color:var(--recovery-muted); font-size:12px; margin:13px 0 0; line-height:1.8 }
+.game-shell .recovery-card .save-warning { margin:12px 0; padding:12px; gap:10px; max-width:100%; box-sizing:border-box }
+.game-shell .recovery-card .save-warning p { font-size:13px; margin:5px 0 }
+.recovery-card :focus-visible { outline:2px solid var(--recovery-teal); outline-offset:4px }
+.revive-transition { position:absolute; inset:0; z-index:60; background:#081723; animation:revive-curtain .3s ease both; pointer-events:all }
+.recovery-protection { position:absolute; z-index:11; left:50%; bottom:24%; transform:translateX(-50%); display:flex; align-items:center; gap:12px; padding:11px 20px 13px; color:var(--recovery-paper); background:var(--recovery-ink); border:1px solid #98cfc044; pointer-events:none; font-size:15px }
+.protection-sigil { display:grid; place-items:center; width:33px; height:33px; border:1px solid var(--recovery-teal); border-radius:50%; color:var(--recovery-teal); font-size:19px }
+.recovery-protection small { display:block; margin-top:4px; color:var(--recovery-teal); font-size:12px }
+.recovery-protection>i { position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--recovery-teal); transform-origin:left; transition:transform .12s linear }
+.game-shell .recovery-forge-retry { min-height:44px; font-size:14px; padding:10px 16px }
+.is-reviving .hud,.is-reviving .topbar { pointer-events:none }
+@keyframes death-veil-in { from{opacity:0} to{opacity:1} }
+@keyframes death-caption-in { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+@keyframes recovery-card-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes revive-curtain { 0%{opacity:0} 45%,55%{opacity:1} 100%{opacity:0} }
+@media(max-width:599px) {
+  .game-shell .recovery-backdrop { padding:12px 12px max(12px,env(safe-area-inset-bottom)) }
+  .game-shell .recovery-card { padding:20px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px) }
+  .game-shell .recovery-card h2 { font-size:26px }
+  .recovery-heading { gap:12px }
+  .recovery-emblem { width:41px; height:48px }
+  .recovery-actions>.secondary-button { padding:12px }
+  .death-caption { top:46%; font-size:15px }
+  .recovery-protection { bottom:35% }
+}
+@media(max-height:500px) and (min-width:600px) {
+  .game-shell .recovery-card { width:620px; padding:15px 24px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px) }
+  .game-shell .recovery-card h2 { font-size:24px }
+  .game-shell .recovery-card>p.recovery-summary { margin:10px 0 }
+  .game-shell .recovery-card>div.recovery-tip { padding:9px 0 }
+  .recovery-emblem { height:42px }
+  .death-caption { top:18% }
+}
+.reduced-motion .scene-container,.reduced-motion .recovery-protection>i { transition:none }
+.reduced-motion .death-veil,.reduced-motion .death-caption,.reduced-motion .recovery-card { animation:none }
+.reduced-motion .revive-transition { animation:revive-curtain .3s ease both!important }
+@media(prefers-reduced-motion:reduce) {
+  .scene-container,.recovery-protection>i { transition:none }
+  .death-veil,.death-caption,.recovery-card { animation:none }
+  .revive-transition { animation:revive-curtain .3s ease both!important }
+}

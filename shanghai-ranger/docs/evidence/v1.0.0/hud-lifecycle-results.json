@@ -1,0 +1,63 @@
+{
+  "hud": {
+    "overflow": false,
+    "small": [],
+    "smallButtons": []
+  },
+  "previewCycles": 12,
+  "before": {
+    "usedSize": 62532044,
+    "totalSize": 64815104,
+    "embedderHeapUsedSize": 7715584,
+    "backingStorageSize": 45193157
+  },
+  "after": {
+    "usedSize": 63974656,
+    "totalSize": 67174400,
+    "embedderHeapUsedSize": 7794536,
+    "backingStorageSize": 45193189
+  },
+  "gpuBefore": {
+    "calls": 290,
+    "triangles": 127632,
+    "geometries": 221,
+    "textures": 23
+  },
+  "gpuAfter": {
+    "calls": 289,
+    "triangles": 127630,
+    "geometries": 221,
+    "textures": 23
+  },
+  "cycles": [
+    {
+      "canvases": 1,
+      "calls": 289,
+      "triangles": 127630,
+      "geometries": 221,
+      "textures": 23
+    },
+    {
+      "canvases": 1,
+      "calls": 289,
+      "triangles": 127630,
+      "geometries": 221,
+      "textures": 23
+    },
+    {
+      "canvases": 1,
+      "calls": 289,
+      "triangles": 127630,
+      "geometries": 221,
+      "textures": 23
+    },
+    {
+      "canvases": 1,
+      "calls": 289,
+      "triangles": 127630,
+      "geometries": 221,
+      "textures": 23
+    }
+  ],
+  "note": "JS heap is a single GC-assisted sample; bounded GPU/canvas observations do not prove no leaks in all sessions."
+}

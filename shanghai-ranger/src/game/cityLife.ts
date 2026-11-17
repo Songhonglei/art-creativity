@@ -136,7 +136,7 @@ export function createCityLife(root: THREE.Group, simulation: Simulation) {
   modernBridge(root); add('bridge', '江湾步行大桥', riverX(-12), -12);
   add('river', '黄浦江水声', riverX(12), 12);
   return {
-    features,
+    features, dynamicRoots: youths,
     update(t: number) {
       pondMaterial.uniforms.uTime.value = t;
       youths.forEach((youth, i) => { youth.rotation.z = Math.sin(t * 1.25 + i * 2.1) * .055; youth.rotation.y = Math.sin(t * .37 + i) * .22; });

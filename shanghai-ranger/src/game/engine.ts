@@ -1,14 +1,19 @@
+import { disposeHero } from './heroModel';
 import * as THREE from 'three';
 import { Simulation, SAVE_KEY, readProgress, clamp, ROSTER } from './simulation';
 import { groundHeight, makeMaterials, canvasTexture } from './materials';
 import type { Materials } from './materials';
 import { createMonster, createHunter, createPet } from './creatures';
 import { World } from './world';
-import { followPet, resolveCircle, hasLineOfSight } from './collision';
+import { resolveCircle, hasLineOfSight } from './collision';
 import { CAMERA, CameraGesture, orbitPosition, cameraSafeFraction } from './camera';
 import { GameAudio } from './audio';
 import { routeFootprints } from './petNavigation';
-import type { GameEvent, MonsterKind, Pet, Point, Progress, Settings, Skin, Snapshot } from './types';
+import { PetFollower } from './petFollower';
+import { AdaptiveQuality, setStyle, setText, setAttribute } from './performance';
+import { disposeActor } from './resources';
+import type { GameEvent, MonsterKind, Pet, Point, Progress, Settings, Gender, Skin, Snapshot } from './types';
+import { RECOVERY } from './recovery';
 
 export type Shortcut = 'map' | 'guide' | 'forge' | 'settings' | 'help' | 'pets' | 'escape';
 interface EngineCallbacks { snapshot: (s: Snapshot) => void; ready: () => void; error: (s: string) => void; shortcut: (key: Shortcut) => void; progress: (n: number) => void }
@@ -34,7 +39,7 @@ export class Engine {
   set cameraDistance(value: number) { this.orbit.distance = clamp(value, CAMERA.minDistance, CAMERA.maxDistance); }
   private world: World;
   private hunter: ReturnType<typeof createHunter>;
-  private hunters = new Map<Skin, ReturnType<typeof createHunter>>();
+  private hunters = new Map<string, ReturnType<typeof createHunter>>();
   private monster: ReturnType<typeof createMonster>;
   private monsters = new Map<MonsterKind, ReturnType<typeof createMonster>>();
   private streetModels = new Map<string, ReturnType<typeof createMonster>>();
@@ -67,16 +72,26 @@ export class Engine {
   private hitReactions: { x: number; z: number; life: number; heavy: boolean }[] = [];
   private enemyBars: HTMLDivElement[] = [];
   private loading = false;
-  private pausedFrame = 0;
+  private dirty = true;
+  private lastPublishedSave = 'idle';
+  private renderedFrames = 0;
+  private publishCount = 0;
+  private adaptive: AdaptiveQuality;
+  private follower = new PetFollower();
   private softwareRenderer = false;
   private contactShadows: THREE.Mesh[] = [];
+  private deathElapsed = 0; private riseElapsed = RECOVERY.riseSeconds as number;
+  private recoveryRing = new THREE.Mesh(new THREE.RingGeometry(.75, .78, 48), new THREE.MeshBasicMaterial({ color: '#8bcfc0', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  private systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   constructor(container: HTMLDivElement, settings: Settings, callbacks: EngineCallbacks, storage?: { progress: Progress; save: (progress: Progress) => void | Promise<void>; label: string }) {
-    this.container = container; this.callbacks = callbacks; this.settings = settings;
+    this.container = container; this.callbacks = callbacks; this.settings = settings; this.adaptive = new AdaptiveQuality(settings.quality, settings.autoQuality !== false);
     let saved: string | null = null;
     if (!storage) { try { saved = localStorage.getItem(SAVE_KEY); } catch { /* The App normally provides its validated storage adapter. */ } }
     this.storageLabel = storage?.label ?? '本机浏览器';
     this.simulation = new Simulation(storage?.progress ?? readProgress(saved), e => this.onEvent(e), storage?.save ?? (p => localStorage.setItem(SAVE_KEY, JSON.stringify(p))));
+    // App releases the initial pause after loading and the welcome/recovery screen.
+    this.simulation.paused = true;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     const gl = this.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
     this.softwareRenderer = Boolean(debug && /swiftshader|llvmpipe|software/i.test(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)));
@@ -91,16 +106,16 @@ export class Engine {
     manager.onLoad = () => { if (!this.disposed) { this.loading = false; callbacks.progress(100); callbacks.ready(); } };
     manager.onError = () => { if (!this.disposed) this.simulation.notify('贴图加载不全', '部分材质未能加载，不影响巡逻。'); };
     this.loading = true;
-    const materials = makeMaterials(); this.materials = materials; this.world = new World(this.scene, materials, this.simulation, new THREE.TextureLoader(manager));
-    if (this.softwareRenderer) { this.world.sun.shadow.mapSize.set(1024, 1024); }
-    this.world.setQuality(settings, this.softwareRenderer);
-    this.hunter = createHunter(materials, this.simulation.progress.skin); this.hunters.set(this.simulation.progress.skin, this.hunter);
+    const materials = makeMaterials(); this.materials = materials; this.world = new World(this.scene, materials, this.simulation, new THREE.TextureLoader(manager), callbacks.progress);
+
+    this.hunter = createHunter(materials, this.simulation.progress.skin, this.simulation.progress.gender); this.hunters.set(`${this.simulation.progress.skin}:${this.simulation.progress.gender ?? 'male'}`, this.hunter);
     this.monster = createMonster(this.simulation.monster.kind, materials); this.monsters.set(this.simulation.monster.kind, this.monster);
     this.companionKey = `${this.simulation.progress.pet}:${this.simulation.petGrowth.skin}`;
     this.companion = createPet(this.simulation.progress.pet, this.simulation.petGrowth.skin); this.companions.set(this.companionKey, this.companion);
     this.petFootprints.count = 0; this.petFootprints.frustumCulled = false; this.petMarker.visible = this.supplyMarker.visible = this.petShield.visible = false;
     this.scene.add(this.petFootprints, this.petMarker, this.supplyMarker, this.petShield);
     this.scene.add(this.hunter.root, this.monster.root, this.companion);
+    this.recoveryRing.rotation.x = -Math.PI / 2; this.recoveryRing.visible = false; this.scene.add(this.recoveryRing);
     if (this.softwareRenderer) {
       const texture = canvasTexture((ctx, size) => { const g = ctx.createRadialGradient(size / 2, size / 2, 1, size / 2, size / 2, size / 2); g.addColorStop(0, 'rgba(10,14,24,.65)'); g.addColorStop(.4, 'rgba(10,14,24,.38)'); g.addColorStop(1, 'rgba(10,14,24,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, size, size); }, 64);
       for (const scale of [[1.8, 2.5], [7, 10], [1.2, 1.5]]) {
@@ -115,7 +130,7 @@ export class Engine {
     for (let i = 0; i < 4; i++) {
       const bar = document.createElement('div'); bar.className = 'enemy-healthbar';
       bar.innerHTML = '<span class="enemy-bar-name"></span><span class="enemy-bar-track"><i></i></span>';
-      bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-valuemin', '0'); bar.style.display = 'none';
+      bar.setAttribute('role', 'progressbar'); setAttribute(bar, 'aria-valuemin', '0'); bar.style.display = 'none';
       container.appendChild(bar); this.enemyBars.push(bar);
     }
     this.targetMarker = document.createElement('div'); this.targetMarker.className = 'world-target'; this.targetMarker.innerHTML = '<span class="target-diamond"></span><span class="target-distance"></span>'; container.appendChild(this.targetMarker);
@@ -132,9 +147,10 @@ export class Engine {
       stream: this.world.streamingStats,
       audio: this.audio.audioDebug,
       cityFeature: this.world.nearestCityFeature(this.simulation.player),
-      appearance: { skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, petSkin: this.simulation.petGrowth.skin, petModel: this.companion.name, petModels: this.companions.size, petFootprints: this.petFootprints.count, petMarkVisible: this.petMarker.visible, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
+      appearance: { gender: this.simulation.progress.gender ?? 'male', heroModels: this.hunters.size, skin: this.simulation.progress.skin, weapon: this.simulation.progress.weapon, pet: this.simulation.progress.pet, petSkin: this.simulation.petGrowth.skin, petModel: this.companion.name, petModels: this.companions.size, petFootprints: this.petFootprints.count, petMarkVisible: this.petMarker.visible, model: this.hunter.root.name, monsterVisible: this.monster.root.visible, streetModels: this.streetModels.size, streetVisible: this.streetSlots.filter(model => model?.root.visible).length, streetKinds: [...this.streetKinds] },
       street: this.simulation.streetEnemies.map(enemy => ({ ...enemy })),
       camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, yaw: this.yaw, pitch: this.pitch, distance: this.cameraDistance, contacts: this.orbit.count, target: this.target.clone(), targetDistance: this.camera.position.distanceTo(this.target), safeFraction: cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight) },
+      performance: { renderedFrames: this.renderedFrames, publishes: this.publishCount, preferredQuality: this.settings.quality, effectiveQuality: this.adaptive.current, followerSearches: this.follower.searches, companionCache: this.companions.size, streetCache: this.streetModels.size },
       render: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles, geometries: this.renderer.info.memory.geometries, textures: this.renderer.info.memory.textures },
       placePlayer: (x: number, z: number) => { this.simulation.player.x = x; this.simulation.player.z = z; this.world.updateStreaming(this.simulation.player, true); },
       placePet: (x: number, z: number) => { this.companion.position.x = x; this.companion.position.z = z; },
@@ -143,16 +159,19 @@ export class Engine {
       interact: () => { this.simulation.interact(); this.publish(); },
       petSkill: () => { this.simulation.petSkill(); this.publish(); },
       step: (seconds: number) => { for (let i = 0; i < Math.ceil(seconds * 60); i++) this.simulation.tick(1 / 60, { x: 0, z: 0, sprint: false }); this.publish(); },
+      heroModel: () => this.hunter.root,
+      setSkin: (skin: Skin) => this.setSkin(skin),
       freeze: () => { this.simulation.paused = true; },
+      settleStreaming: () => { for (let i = 0; i < 1024 && this.world.streamingStats.pending; i++) this.world.updateStreaming(this.simulation.player); this.dirty = true; },
     }) });
 
-    void Promise.resolve().then(() => { if (!this.disposed) { this.loading = false; callbacks.progress(100); callbacks.ready(); } });
+    void this.world.ready.then(() => { if (!this.disposed) { this.applyQuality(); this.loading = false; this.dirty = true; callbacks.progress(100); callbacks.ready(); } }).catch(error => { if (!this.disposed) callbacks.error(error instanceof Error ? error.message : '街区加载失败，请重新加载。'); });
     this.raf = requestAnimationFrame(this.loop);
   }
   private resize = () => {
     const w = this.container.clientWidth, h = this.container.clientHeight; if (!w || !h) return;
     this.releaseCameraPointers(); this.touch = { x: 0, z: 0, sprint: false };
-    this.renderer.setSize(w, h); this.camera.aspect = w / h;
+    this.dirty = true; this.renderer.setSize(w, h); this.camera.aspect = w / h;
     this.camera.fov = w / h < .7 ? 65 : w / h > 1.65 && h < 600 ? 57 : 52;
     this.camera.updateProjectionMatrix();
   }
@@ -165,12 +184,14 @@ export class Engine {
     this.renderer.domElement.addEventListener('webglcontextlost', this.contextLost);
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Escape' && !e.repeat) { e.preventDefault(); this.callbacks.shortcut('escape'); return; }
     if (e.target instanceof HTMLElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
     if (e.target instanceof HTMLButtonElement && ['Space', 'Enter'].includes(e.code)) return;
     const shortcuts: Record<string, Shortcut> = { KeyM: 'map', KeyG: 'guide', KeyF: 'forge', KeyH: 'help', KeyP: 'pets', Escape: 'escape' };
     if (shortcuts[e.code] && !e.repeat) { e.preventDefault(); this.callbacks.shortcut(shortcuts[e.code]); return; }
     if (this.simulation.paused) return;
-    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
+    if (e.code === 'Tab') return;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
     this.audio.unlock(); this.keys.add(e.code);
     if (e.repeat) return;
     switch (e.code) { case 'Space': this.simulation.dodge(); break; case 'KeyJ': this.simulation.attack(); break; case 'KeyK': this.simulation.attack(true); break; case 'KeyE': this.simulation.interact(); break; case 'KeyR': case 'Digit1': this.simulation.heal(); break; case 'KeyQ': this.simulation.toggleLock(); break; case 'KeyC': this.simulation.petSkill(); break; case 'KeyV': this.resetCamera(); break; }
@@ -187,7 +208,7 @@ export class Engine {
   private capturedPointers = new Set<number>();
   private blur = () => { this.keys.clear(); this.touch = { x: 0, z: 0, sprint: false }; this.releaseCameraPointers(); };
   private checkpoint = () => this.simulation.persist();
-  private visibility = () => { this.blur(); this.lastTime = 0; if (document.hidden) this.simulation.persist(); };
+  private visibility = () => { this.blur(); this.lastTime = 0; this.lastFrameForQuality = 0; this.dirty = true; this.audio.setBackground(document.hidden); if (document.hidden) this.simulation.persist(); };
   private pointerDown = (e: PointerEvent) => {
     if (this.simulation.paused) return;
     if (!this.orbit.begin({ id: e.pointerId, x: e.clientX, y: e.clientY, type: e.pointerType, button: e.button })) return;
@@ -215,9 +236,15 @@ export class Engine {
     const pixels = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? this.container.clientHeight : 1);
     this.orbit.zoom(Math.exp(clamp(pixels * .0015, -.7, .7)));
   };
-  private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.callbacks.error('图形连接中断，请重新加载。已强化的装备和存档都还在。'); };
+  private contextLost = (e: Event) => { e.preventDefault(); this.setPaused(true); this.loading = true; this.callbacks.error('图形连接中断，请重新加载。已保存的进度可以恢复。'); };
 
   private onEvent(e: GameEvent) {
+    if (e.type === 'fall') {
+      this.deathElapsed = 0; this.shake = 0; this.hitLife = 0; this.hitReactions = []; this.blur();
+      this.simulation.paused = true; this.audio.setEnvironmentActive(false);
+      this.damage.forEach(d => d.element.remove()); this.damage = [];
+    }
+    if (e.type === 'revive') this.riseElapsed = 0;
     this.audio.play(e, e.x !== undefined && e.z !== undefined ? Math.hypot(e.x - this.simulation.player.x, e.z - this.simulation.player.z) : 0);
     if (e.type === 'hurt' || e.type === 'hit') { this.shake = e.type === 'hurt' ? .16 : e.heavy ? .14 : .045; }
     if (e.type === 'hit' && this.container) {
@@ -231,14 +258,23 @@ export class Engine {
     }
     if (e.type === 'weather') this.audio.setWeather(this.simulation.weather);
   }
+  private lastFrameForQuality = 0;
   private loop = (now: number) => {
     if (this.disposed) return; this.raf = requestAnimationFrame(this.loop);
     if (document.hidden) { this.lastTime = 0; return; }
-    const dt = this.lastTime ? Math.min((now - this.lastTime) / 1000, .25) : 1 / 60; this.lastTime = now;
+    const dt = this.lastTime ? clamp((now - this.lastTime) / 1000, 0, .25) : 1 / 60; this.lastTime = now;
     if (this.loading) return;
     const sim = this.simulation;
-    this.world.updateStreaming(sim.player);
-    if (sim.paused) { this.pausedFrame += dt; if (this.pausedFrame < .15) return; this.pausedFrame = 0; }
+    if (sim.dead) this.deathElapsed = Math.min(RECOVERY.deathSeconds, this.deathElapsed + dt);
+    else if (!sim.paused) this.riseElapsed = Math.min(RECOVERY.riseSeconds, this.riseElapsed + dt);
+    const streaming = this.world.streamingStats.pending > 0;
+    if (sim.paused && (!sim.dead || this.deathElapsed >= RECOVERY.deathSeconds) && !this.dirty && !streaming) {
+      if (sim.saveStatus !== this.lastPublishedSave) this.publish();
+      return;
+    }
+    if (!sim.dead) this.world.updateStreaming(sim.player);
+    if (!sim.paused && this.adaptive.sample((now - (this.lastFrameForQuality || now)) || 16.7)) this.applyQuality();
+    this.lastFrameForQuality = now; this.dirty = false;
     if (!sim.paused && !this.loading) {
       this.elapsed += dt;
       const right = (this.keys.has('KeyD') || this.keys.has('ArrowRight') ? 1 : 0) - (this.keys.has('KeyA') || this.keys.has('ArrowLeft') ? 1 : 0) + this.touch.x;
@@ -261,7 +297,13 @@ export class Engine {
       this.cityAudioTimer = 0;
     }
     this.audio.updateCity(dt);
-    this.hunter.update(sim, t, visualDt); this.monster.update(sim, t, visualDt);
+    const reducedMotion = this.settings.reducedMotion || this.systemReducedMotion.matches;
+    this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z);
+    this.hunter.update(sim, t, visualDt, { death: this.deathElapsed, rise: this.riseElapsed, reducedMotion }); this.monster.update(sim, t, visualDt);
+    this.recoveryRing.visible = !sim.dead && !reducedMotion && sim.recoveryProtection > 0;
+    this.recoveryRing.position.set(sim.player.x, groundHeight(sim.player.x, sim.player.z) + .07, sim.player.z);
+    this.recoveryRing.scale.setScalar(1 + Math.min(1, this.riseElapsed / RECOVERY.riseSeconds) * .65);
+    this.recoveryRing.material.opacity = .34 * Math.min(1, sim.recoveryProtection / .7);
     this.monster.root.visible = sim.targetRevealed;
     sim.streetEnemies.forEach((enemy, slot) => {
       if (this.streetKinds[slot] !== enemy.kind || !this.streetSlots[slot]) {
@@ -284,10 +326,11 @@ export class Engine {
     });
     this.hitReactions = this.hitReactions.filter(hit => hit.life > 0);
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = sim.targetRevealed;
-    this.hunter.root.position.y = groundHeight(sim.player.x, sim.player.z); this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
+    this.monster.root.position.y = groundHeight(sim.monster.x, sim.monster.z);
     this.syncCompanion();
+    this.trimActorCaches();
     const petBefore = { x: this.companion.position.x, z: this.companion.position.z };
-    const petNext = followPet(petBefore, sim.player, visualDt * (sim.rescueTime > 0 ? 3 : 1), sim.colliders, sim.boxColliders);
+    const petNext = this.follower.follow(petBefore, sim.player, visualDt * (sim.rescueTime > 0 ? 3 : 1), sim.colliders, sim.boxColliders, sim.colliderRevision);
     this.companion.position.x = petNext.x; this.companion.position.z = petNext.z;
     const petMoveX = petNext.x - petBefore.x, petMoveZ = petNext.z - petBefore.z;
     if (Math.hypot(petMoveX, petMoveZ) > .0001) this.companion.rotation.y = Math.atan2(petMoveX, petMoveZ);
@@ -296,7 +339,7 @@ export class Engine {
     this.updatePetVisuals(t);
     this.contactShadows.forEach((shadow, i) => { const actor = [this.hunter.root, this.monster.root, this.companion][i]; shadow.position.copy(actor.position); shadow.position.y += .06; shadow.rotation.z = -actor.rotation.y; });
     const warning = [sim.monster, ...sim.streetEnemies].filter(m => m.health > 0 && m.action === 'windup').sort((a, b) => Math.hypot(a.x - sim.player.x, a.z - sim.player.z) - Math.hypot(b.x - sim.player.x, b.z - sim.player.z))[0];
-    const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = warning ? .3 + Math.sin(t * 12) * .15 : 0;
+    const m = warning ?? sim.monster; this.dangerRing.position.set(m.x, groundHeight(m.x, m.z) + .09, m.z); this.dangerRing.material.opacity = !sim.dead && warning ? .3 + Math.sin(t * 12) * .15 : 0;
     const p = sim.player, swingTime = p.attackDuration - p.attackTime - p.attackImpact;
     this.slash.position.set(p.x + Math.sin(p.facing) * .7, groundHeight(p.x, p.z) + 1.1, p.z + Math.cos(p.facing) * .7);
     this.slash.rotation.set(p.attackWeapon === 'crowbar' && p.attackHeavy ? 0 : -Math.PI * .45, p.facing + (p.attackWeapon === 'crowbar' && p.attackHeavy ? Math.PI / 2 : 0), p.combo % 2 ? -.3 : .3);
@@ -304,10 +347,10 @@ export class Engine {
     this.slash.material.color.set(p.attackHeavy ? '#ffd18c' : p.attackWeapon === 'umbrella' ? '#dfbfff' : '#bfe6ff');
     this.slash.material.opacity = p.attackTime > 0 && swingTime > -.045 && swingTime < .16 ? Math.sin((swingTime + .045) / .205 * Math.PI) * (p.attackHeavy ? .65 : .3) : 0;
     if (!sim.paused) this.hitLife = Math.max(0, this.hitLife - dt);
-    const burst = this.hitLife / this.hitDuration; this.hitBurst.material.opacity = burst * .8;
+    const burst = this.hitLife / this.hitDuration; this.hitBurst.material.opacity = sim.dead ? 0 : burst * .8;
     this.hitBurst.scale.setScalar((1 - burst) * (this.hitHeavy ? 6 : 3) + 1); this.hitBurst.quaternion.copy(this.camera.quaternion);
     this.updateCamera(dt);
-    this.renderer.render(this.scene, this.camera); this.updateMarkers(dt);
+    this.renderer.render(this.scene, this.camera); this.renderedFrames++; this.updateMarkers(dt);
     this.hudTimer += dt; if (this.hudTimer > .1) { this.publish(); this.hudTimer = 0; }
   };
   private updateCamera(dt: number, instant = false) {
@@ -321,7 +364,7 @@ export class Engine {
     this.desiredCamera.lerp(this.target, 1 - fraction);
     const blend = instant || fraction < 1 ? 1 : 1 - Math.exp(-dt * 7);
     this.camera.position.lerp(this.desiredCamera, blend);
-    if (!this.settings.reducedMotion && this.shake > 0) { this.camera.position.x += (Math.random() - .5) * this.shake; this.camera.position.y += (Math.random() - .5) * this.shake; }
+    if (!this.settings.reducedMotion && !this.systemReducedMotion.matches && this.shake > 0) { this.camera.position.x += (Math.random() - .5) * this.shake; this.camera.position.y += (Math.random() - .5) * this.shake; }
     const safe = cameraSafeFraction(this.target, this.camera.position, this.simulation.boxColliders, this.simulation.colliders, groundHeight);
     this.camera.position.lerp(this.target, 1 - safe);
     this.shake = Math.max(0, this.shake - dt * .5);
@@ -331,21 +374,21 @@ export class Engine {
     const width = this.container.clientWidth, height = this.container.clientHeight, sim = this.simulation;
     const show = sim.targetRevealed && sim.monster.health > 0 && !sim.dead;
     this.projected.set(sim.monster.x, groundHeight(sim.monster.x, sim.monster.z) + (sim.monster.kind === 'cat' || sim.monster.kind === 'dog' ? 2.2 : 2.9), sim.monster.z).project(this.camera);
-    this.targetMarker.style.display = show && this.projected.z < 1 && Math.abs(this.projected.x) < .94 && Math.abs(this.projected.y) < .9 ? 'flex' : 'none';
-    this.targetMarker.style.transform = `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`;
+    setStyle(this.targetMarker, 'display', show && this.projected.z < 1 && Math.abs(this.projected.x) < .94 && Math.abs(this.projected.y) < .9 ? 'flex' : 'none');
+    setStyle(this.targetMarker, 'transform', `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`);
     this.targetMarker.classList.toggle('is-locked', sim.locked);
-    this.targetMarker.children[1].textContent = `${Math.round(Math.hypot(sim.player.x - sim.monster.x, sim.player.z - sim.monster.z))} 米`;
+    setText(this.targetMarker.children[1], `${Math.round(Math.hypot(sim.player.x - sim.monster.x, sim.player.z - sim.monster.z))} 米`);
     const enemies = [...sim.streetEnemies, sim.monster];
     this.enemyBars.forEach((bar, i) => {
       const enemy = enemies[i], main = i === 3, distance = Math.hypot(enemy.x - sim.player.x, enemy.z - sim.player.z);
       const labelHeight = enemy.kind === 'cat' || enemy.kind === 'dog' ? 1.7 : 2.35;
       this.projected.set(enemy.x, groundHeight(enemy.x, enemy.z) + labelHeight, enemy.z).project(this.camera);
       const visible = this.settings.enemyHealthBars && !sim.dead && enemy.health > 0 && (!main || sim.targetRevealed) && distance < 30 && this.projected.z > -1 && this.projected.z < 1 && Math.abs(this.projected.x) < .9 && Math.abs(this.projected.y) < .7 && hasLineOfSight(sim.player, enemy, sim.boxColliders);
-      bar.style.display = visible ? 'flex' : 'none'; if (!visible) return;
-      bar.style.transform = `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`;
-      bar.children[0].textContent = main ? sim.monsterName : (ROSTER.find(entry => entry.kind === enemy.kind)?.name ?? '游荡目标');
-      (bar.children[1].children[0] as HTMLElement).style.transform = `scaleX(${enemy.health / enemy.maxHealth})`;
-      bar.setAttribute('aria-label', `${bar.children[0].textContent}气血`); bar.setAttribute('aria-valuemax', String(enemy.maxHealth)); bar.setAttribute('aria-valuenow', String(Math.ceil(enemy.health)));
+      setStyle(bar, 'display', visible ? 'flex' : 'none'); if (!visible) return;
+      setStyle(bar, 'transform', `translate(${(this.projected.x * .5 + .5) * width}px,${(-this.projected.y * .5 + .5) * height}px) translate(-50%,-100%)`);
+      setText(bar.children[0], main ? sim.monsterName : (ROSTER.find(entry => entry.kind === enemy.kind)?.name ?? '游荡目标'));
+      setStyle(bar.children[1].children[0] as HTMLElement, 'transform', `scaleX(${enemy.health / enemy.maxHealth})`);
+      setAttribute(bar, 'aria-label', `${bar.children[0].textContent}气血`); setAttribute(bar, 'aria-valuemax', String(enemy.maxHealth)); setAttribute(bar, 'aria-valuenow', String(Math.ceil(enemy.health)));
     });
     this.damage = this.damage.filter(d => {
       if (!sim.paused) d.life -= dt;
@@ -376,24 +419,32 @@ export class Engine {
     this.petShield.visible = !sim.dead && (sim.petEffects.shield > 0 || sim.rescueTime > 0);
     this.petShield.position.set(sim.player.x,groundHeight(sim.player.x,sim.player.z)+1,sim.player.z); this.petShield.scale.set(.65,1,.65);
   }
-  publish() { const snapshot = this.simulation.snapshot(); snapshot.heading = ((-this.yaw * 180 / Math.PI) % 360 + 360) % 360; this.callbacks.snapshot(snapshot); }
-  setPaused(paused: boolean) { if (paused && !this.simulation.paused) this.simulation.persist(); this.simulation.paused = paused; this.audio.setEnvironmentActive(!paused); this.blur(); this.publish(); }
+  publish() { this.publishCount++; this.lastPublishedSave = this.simulation.saveStatus; const snapshot = this.simulation.snapshot(); snapshot.heading = ((-this.yaw * 180 / Math.PI) % 360 + 360) % 360; this.callbacks.snapshot(snapshot); }
+  setPaused(paused: boolean) { if (paused === this.simulation.paused) return; this.dirty = true; this.lastFrameForQuality = 0; if (paused && !this.simulation.paused) this.simulation.persist(); this.simulation.paused = paused; this.audio.setEnvironmentActive(!paused); this.blur(); this.publish(); }
   resetCamera() {
-    this.releaseCameraPointers();
+    this.dirty = true; this.releaseCameraPointers();
     const sim = this.simulation;
     this.orbit.reset(sim.locked && sim.monster.health > 0 ? Math.atan2(sim.monster.x - sim.player.x, sim.monster.z - sim.player.z) : sim.player.facing);
     this.updateCamera(.1, true); this.publish();
   }
+  private applyQuality() {
+    const effective = { ...this.settings, quality: this.adaptive.current };
+    this.renderer.setPixelRatio(pixelRatio(effective, this.softwareRenderer));
+    this.renderer.shadowMap.enabled = !this.softwareRenderer && effective.quality === 'high';
+    // setPixelRatio updates the drawing buffer itself. Quality changes must not
+    // release a held joystick or camera contact; only actual resizes do that.
+    this.world.setQuality(effective, this.softwareRenderer); this.dirty = true;
+  }
   setSettings(settings: Settings) {
-    const renderChanged = this.settings.quality !== settings.quality || this.settings.reducedMotion !== settings.reducedMotion;
+    const renderChanged = this.settings.quality !== settings.quality || this.settings.reducedMotion !== settings.reducedMotion || this.settings.autoQuality !== settings.autoQuality;
     this.settings = settings; this.audio.setVolume(settings.volume, settings.sound); this.audio.setSoundscape(settings.soundscape);
-    this.updateMarkers(0);
+    if (!this.loading) this.updateMarkers(0);
     if (!renderChanged) return;
-    this.renderer.setPixelRatio(pixelRatio(settings, this.softwareRenderer));
-    this.renderer.shadowMap.enabled = !this.softwareRenderer && settings.quality === 'high';
-    this.world.setQuality(settings, this.softwareRenderer); this.resize();
+    this.adaptive.reset(settings.quality, settings.autoQuality !== false);
+    if (!this.loading) this.applyQuality();
   }
   setTouch(x: number, z: number, sprint = false) { this.touch = { x, z, sprint }; }
+  exportProgress() { this.simulation.persist(); return JSON.stringify(this.simulation.progress); }
   action(action: 'attack' | 'heavy' | 'dodge' | 'heal' | 'interact' | 'lock' | 'pet') {
     this.audio.unlock(); const sim = this.simulation;
     if (action === 'attack') sim.attack(); else if (action === 'heavy') sim.attack(true); else if (action === 'dodge') sim.dodge(); else if (action === 'heal') sim.heal(); else if (action === 'interact') sim.interact(); else if (action === 'pet') sim.petSkill(); else sim.toggleLock();
@@ -405,44 +456,72 @@ export class Engine {
     let monster = this.monsters.get(kind);
     if (!monster) { monster = createMonster(kind, this.materials); this.monsters.set(kind, monster); this.scene.add(monster.root); }
     monster.root.visible = true; this.monster = monster;
+    this.trimActorCaches();
     if (this.contactShadows.length > 1) this.contactShadows[1].visible = true;
   }
-  /** Swap the complete urban outfit; cached models avoid rebuilding geometry on every wardrobe visit. */
-  setSkin(skin: Skin) {
-    if (skin === this.simulation.progress.skin) return;
-    this.hunter.root.visible = false;
-    let hunter = this.hunters.get(skin);
-    if (!hunter) { hunter = createHunter(this.materials, skin); this.hunters.set(skin, hunter); this.scene.add(hunter.root); }
+  /** Cache at most two complete outfits; private resources can be safely evicted. */
+  private syncHunter() {
+    const { skin, gender = 'male' } = this.simulation.progress, key = `${skin}:${gender}`;
+    if (this.hunter.root.name === `hunter:${skin}:${gender}`) return;
+    this.dirty = true; this.hunter.root.visible = false;
+    let hunter = this.hunters.get(key);
+    if (!hunter) { hunter = createHunter(this.materials, skin, gender); this.hunters.set(key, hunter); this.scene.add(hunter.root); }
     hunter.root.visible = true; this.hunter = hunter;
-    this.simulation.setSkin(skin); this.publish();
+    for (const [oldKey, old] of this.hunters) if (this.hunters.size > 2 && oldKey !== key) { this.scene.remove(old.root); disposeHero(old.root); this.hunters.delete(oldKey); }
   }
-  /** A bounded cache of at most twelve authored companion outfits. */
+  setSkin(skin: Skin) { if (!this.simulation.setSkin(skin)) return false; this.syncHunter(); this.publish(); return true; }
+  setGender(gender: Gender) { if (!this.simulation.setGender(gender)) return false; this.syncHunter(); this.publish(); return true; }
+  private trimActorCaches() {
+    if (this.companions.size <= 3 && this.monsters.size <= 2 && this.streetModels.size <= 6) return;
+    const shared = new Set<THREE.Material>(Object.values(this.materials));
+    for (const [key, model] of this.companions) if (this.companions.size > 3 && model !== this.companion) { disposeActor(model, shared); this.companions.delete(key); }
+    for (const [key, model] of this.monsters) if (this.monsters.size > 2 && model !== this.monster) { disposeActor(model.root, shared); this.monsters.delete(key); }
+    const active = new Set(this.streetSlots);
+    for (const [key, model] of this.streetModels) if (this.streetModels.size > 6 && !active.has(model)) { disposeActor(model.root, shared); this.streetModels.delete(key); }
+  }
+  /** Keep only the three most recent authored companion models. */
   private syncCompanion() {
     const sim = this.simulation, key = `${sim.progress.pet}:${sim.petGrowth.skin}`;
     if (key === this.companionKey) return;
     const position = this.companion.position.clone(), rotation = this.companion.rotation.clone(); this.companion.visible = false;
     let model = this.companions.get(key);
     if (!model) { model = createPet(sim.progress.pet, sim.petGrowth.skin); this.companions.set(key, model); this.scene.add(model); }
+    else { this.companions.delete(key); this.companions.set(key, model); }
     this.companion = model; this.companion.position.copy(position); this.companion.rotation.copy(rotation); this.companion.visible = true; this.companionKey = key;
+    this.dirty = true; this.trimActorCaches();
   }
   setPet(pet: Pet) { if (this.simulation.setPet(pet)) { this.syncCompanion(); this.publish(); } }
   setPetSkin(pet: Pet, skin: string) { if (this.simulation.setPetSkin(pet,skin)) { this.syncCompanion(); this.publish(); } }
   returnToCamp() {
     if (!this.simulation.returnToCamp()) return;
     this.blur();
-    this.world.updateStreaming(this.simulation.player, true);
+    this.dirty = true; this.follower.reset(); this.world.updateStreaming(this.simulation.player, true);
     const start = resolveCircle({ x: -20.2, z: 32.3 }, .3, this.simulation.colliders, this.simulation.boxColliders);
     this.companion.position.set(start.x, groundHeight(start.x,start.z), start.z);
     this.audio.setWeather(this.simulation.weather); this.updateCamera(.1,true); this.publish();
   }
+  retryEncounter() {
+    if (!this.simulation.dead) return false;
+    this.blur();
+    this.world.updateStreaming(this.simulation.recoveryOrigin, true);
+    if (!this.simulation.retryEncounter()) return false;
+    this.dirty = true; this.follower.reset(); this.world.updateStreaming(this.simulation.player, true);
+    const p = this.simulation.player;
+    const start = resolveCircle({ x: p.x - 2.2, z: p.z + 1.1 }, .3, this.simulation.colliders, this.simulation.boxColliders);
+    this.companion.position.set(start.x, groundHeight(start.x, start.z), start.z);
+    this.yaw = p.facing + Math.PI; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance;
+    this.shake = this.hitLife = 0; this.hitReactions = [];
+    this.damage.forEach(d => d.element.remove()); this.damage = [];
+    this.updateCamera(.1, true); this.publish(); return true;
+  }
   reset() {
-    if (this.simulation.dead) { this.returnToCamp(); return; }
+    if (this.simulation.dead) { this.retryEncounter(); return; }
     if (this.simulation.questPhase !== 'complete') return;
     this.blur(); this.simulation.newHunt(); this.yaw = -.07; this.pitch = CAMERA.pitch; this.cameraDistance = CAMERA.distance; this.elapsed = 0; this.shake = 0;
     this.damage.forEach(d => d.element.remove()); this.damage = []; this.hitLife = 0; this.hitReactions = [];
     this.rebuildMonster();
     this.companion.position.set(-2, groundHeight(-2, 21), 21); this.audio.setWeather('晴夜');
-    this.world.updateStreaming(this.simulation.player, true);
+    this.dirty = true; this.follower.reset(); this.world.updateStreaming(this.simulation.player, true);
     this.updateCamera(.1, true); this.publish();
   }
   dispose() {

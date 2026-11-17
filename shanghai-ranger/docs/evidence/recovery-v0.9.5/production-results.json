@@ -1,0 +1,58 @@
+{
+  "h5": {
+    "version": "0.9.5",
+    "touch": false,
+    "game_reduced_motion": false,
+    "health": 118,
+    "tracked": 3,
+    "save_status": "saved",
+    "audio": {
+      "soundscape": "neon",
+      "scoreStep": 0,
+      "scoreVoices": 0,
+      "root": 110,
+      "cityKind": "taxi",
+      "cityLevel": 0.08174452780402307,
+      "ambientVoices": 0,
+      "ambientCount": 0,
+      "lastAmbient": null,
+      "environmentActive": true,
+      "enabled": false,
+      "volume": 0,
+      "outputConnected": false,
+      "masterLevel": 0,
+      "context": "locked"
+    },
+    "page_errors": [],
+    "failed_requests": [],
+    "external_requests": []
+  },
+  "offline": {
+    "version": "0.9.5",
+    "touch": true,
+    "game_reduced_motion": true,
+    "health": 118,
+    "tracked": 3,
+    "save_status": "saved",
+    "audio": {
+      "soundscape": "neon",
+      "scoreStep": 0,
+      "scoreVoices": 0,
+      "root": 110,
+      "cityKind": "taxi",
+      "cityLevel": 0.08174452780402307,
+      "ambientVoices": 0,
+      "ambientCount": 0,
+      "lastAmbient": null,
+      "environmentActive": true,
+      "enabled": false,
+      "volume": 0,
+      "outputConnected": false,
+      "masterLevel": 0,
+      "context": "locked"
+    },
+    "page_errors": [],
+    "failed_requests": [],
+    "external_requests": []
+  }
+}

@@ -9,7 +9,7 @@ import type { BoxCollider, CircleCollider } from './collision';
 import type { Simulation } from './simulation';
 import type { Point, Settings } from './types';
 
-interface ActiveChunk { key: string; group: THREE.Group }
+interface ActiveChunk { key: string; group: THREE.Group; detail: Settings['quality'] }
 const geometry = (g: THREE.BufferGeometry, list: THREE.BufferGeometry[]) => { list.push(g); return g; };
 
 /**
@@ -19,6 +19,10 @@ const geometry = (g: THREE.BufferGeometry, list: THREE.BufferGeometry[]) => { li
 export class DistrictStreamer {
   private active = new Map<string, ActiveChunk>();
   private pending: string[] = [];
+  private layouts = new Map<string, ReturnType<typeof districtLayout>>();
+  private job: { key: string; iterator: Generator<void> } | null = null;
+  private maxWorkMs = 0;
+  private lastWorkMs = 0;
   private lastX = Number.NaN;
   private lastZ = Number.NaN;
   private materials: THREE.Material[];
@@ -62,40 +66,69 @@ export class DistrictStreamer {
     this.materials = [this.groundMaterial, ...this.buildingMaterials, this.roadMaterial, this.trimMaterial, this.darkMaterial, this.roofMaterial, this.glowMaterial, this.accentMaterial, this.paintMaterial, this.barkMaterial, ...this.leafMaterials, this.lampMaterial, this.waterMaterial];
   }
 
-  get stats() { return { loaded: this.active.size, pending: this.pending.length, center: `${this.lastX},${this.lastZ}` }; }
+  get stats() { return { loaded: this.active.size, pending: this.pending.length + (this.job ? 1 : 0), lastWorkMs: this.lastWorkMs, maxWorkMs: this.maxWorkMs, detail: this.detail, center: `${this.lastX},${this.lastZ}` }; }
   updateTime(time: number) { this.waterMaterial.uniforms.uTime.value = time; }
 
   setQuality(quality: Settings['quality'], software: boolean) {
+    if (this.detail !== quality) { this.job?.iterator.return(undefined); this.job = null; }
     this.detail = quality; this.radius = quality === 'low' || software && quality !== 'high' ? 1 : 2;
     this.lastX = Number.NaN; this.lastZ = Number.NaN;
   }
 
-  update(player: Point, immediate = false) {
+  update(player: Point, _immediate = false) {
     const cx = chunkCoordinate(player.x), cz = chunkCoordinate(player.z);
     if (cx !== this.lastX || cz !== this.lastZ) {
       this.lastX = cx; this.lastZ = cz;
       const desired = new Set(nearbyChunkKeys(player.x, player.z, this.radius));
-      for (const [key, chunk] of this.active) if (!desired.has(key)) this.unload(chunk);
+      if (this.job && !desired.has(this.job.key)) { this.job.iterator.return(undefined); this.job = null; }
+      for (const key of this.layouts.keys()) if (!desired.has(key)) {
+        const chunk = this.active.get(key); if (chunk) this.unload(chunk);
+        else { this.simulation.removeChunkColliders(key); this.layouts.delete(key); }
+      }
+      for (const key of desired) {
+        const [x, z] = key.split(',').map(Number); if (!isAuthoredChunk(x, z) && !this.layouts.has(key)) this.prepare(key, x, z);
+      }
       this.pending = [...desired].filter(key => {
         const [x, z] = key.split(',').map(Number);
-        return !isAuthoredChunk(x, z) && !this.active.has(key);
+        return !isAuthoredChunk(x, z) && this.job?.key !== key && (!this.active.has(key) || this.active.get(key)!.detail !== this.detail);
       }).sort((a, b) => {
         const [ax, az] = a.split(',').map(Number), [bx, bz] = b.split(',').map(Number);
         return (ax - cx) ** 2 + (az - cz) ** 2 - ((bx - cx) ** 2 + (bz - cz) ** 2);
       });
     }
-    if (immediate) while (this.pending.length) this.load(this.pending.shift()!);
-    else for (let count = 0; count < 2 && this.pending.length; count++) this.load(this.pending.shift()!);
+    const start = performance.now();
+    for (let steps = 0; steps < 32 && (this.job || this.pending.length); steps++) {
+      if (!this.job) { const key = this.pending.shift()!; this.job = { key, iterator: this.load(key) }; }
+      if (this.job.iterator.next().done) this.job = null;
+      if (performance.now() - start >= 3) break;
+    }
+    this.lastWorkMs = performance.now() - start; this.maxWorkMs = Math.max(this.maxWorkMs, this.lastWorkMs);
   }
 
-  private load(key: string) {
-    if (this.active.has(key)) return;
+  /** Logical obstacles precede visual generation and survive detail rebuilds. */
+  private prepare(key: string, cx: number, cz: number) {
+    const source = districtLayout(cx, cz);
+    const buildings = source.buildings.filter(b => !this.simulation.boxColliders.some(other => Math.abs(other.x - b.x) < other.halfWidth + b.halfWidth + .7 && Math.abs(other.z - b.z) < other.halfDepth + b.halfDepth + .7));
+    const layout = { ...source, buildings }, circles: CircleCollider[] = [], boxes: BoxCollider[] = [];
+    for (const b of buildings) { const y = groundHeight(b.x, b.z) - .35; boxes.push({ x: b.x, z: b.z, halfWidth: b.halfWidth * 1.06, halfDepth: b.halfDepth * 1.06, minY: y, maxY: y + b.height + 3 }); }
+    for (const t of layout.trees) { const y = groundHeight(t.x, t.z); circles.push({ x: t.x, z: t.z, radius: .3 * t.scale, minY: y, maxY: y + 3.1 * t.scale }); }
+    for (const [dx, dz] of [[-3.1, -20], [3.1, 20], [-20, 3.1], [20, -3.1]]) { const x = cx * CHUNK_SIZE + dx, z = cz * CHUNK_SIZE + dz, y = groundHeight(x, z); circles.push({ x, z, radius: .18, minY: y, maxY: y + 4.42 }); }
+    const side = Math.abs(cx * 7 + cz * 11) % 2 ? 1 : -1;
+    if (['wutong', 'campus', 'office', 'skyscraper'].includes(layout.kind)) for (const offset of layout.kind === 'wutong' || layout.kind === 'campus' ? [-13, 13] : [-14, 14]) circles.push({ x: cx * CHUNK_SIZE + side * (layout.kind === 'wutong' || layout.kind === 'campus' ? 5.25 : 5.15), z: cz * CHUNK_SIZE + offset, radius: .48 });
+    this.layouts.set(key, layout); this.simulation.addChunkColliders(key, circles, boxes);
+  }
+
+  private *load(key: string): Generator<void> {
+    if (this.active.get(key)?.detail === this.detail) return;
     const [cx, cz] = key.split(',').map(Number), centerX = cx * CHUNK_SIZE, centerZ = cz * CHUNK_SIZE;
     const group = new THREE.Group(); group.name = `district:${key}`;
-    const layout = districtLayout(cx, cz), circles: CircleCollider[] = [], boxes: BoxCollider[] = [];
+    const layout = this.layouts.get(key)!, circles: CircleCollider[] = [], boxes: BoxCollider[] = [];
     const urban = createUrbanBuckets(), trim: THREE.BufferGeometry[] = [], paint: THREE.BufferGeometry[] = [];
     const bark: THREE.BufferGeometry[] = [], leaves: THREE.BufferGeometry[][] = [[], [], []], poles: THREE.BufferGeometry[] = [], lamps: THREE.BufferGeometry[] = [], water: THREE.BufferGeometry[] = [];
 
+    let complete = false;
+    try {
+    yield;
     const groundGeo = new THREE.PlaneGeometry(CHUNK_SIZE + .04, CHUNK_SIZE + .04, 12, 12); groundGeo.rotateX(-Math.PI / 2);
     const positions = groundGeo.attributes.position, colors: number[] = [], low = new THREE.Color('#647082'), high = new THREE.Color('#8993a0');
     for (let i = 0; i < positions.count; i++) {
@@ -106,6 +139,7 @@ export class DistrictStreamer {
     groundGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3)); groundGeo.computeVertexNormals();
     const ground = new THREE.Mesh(groundGeo, this.groundMaterial); ground.position.set(centerX, .025, centerZ); ground.receiveShadow = true; group.add(ground);
 
+    yield;
     const addBox = (list: THREE.BufferGeometry[], x: number, y: number, z: number, w: number, h: number, d: number) => {
       const g = new THREE.BoxGeometry(w, h, d); g.translate(x, y, z); geometry(g, list);
     };
@@ -123,26 +157,22 @@ export class DistrictStreamer {
     const roadGeos = trim.splice(0, 16);
 
     for (const b of layout.buildings) {
-      const overlaps = this.simulation.boxColliders.some(other =>
-        Math.abs(other.x - b.x) < other.halfWidth + b.halfWidth + .7 &&
-        Math.abs(other.z - b.z) < other.halfDepth + b.halfDepth + .7);
-      if (overlaps) continue;
       const y = groundHeight(b.x, b.z) - .35;
       appendUrbanBuilding(urban, { x: b.x, z: b.z, y, halfWidth: b.halfWidth, halfDepth: b.halfDepth, height: b.height, kind: layout.kind, variant: b.variant, surface: b.style });
       boxes.push({ x: b.x, z: b.z, halfWidth: b.halfWidth * 1.06, halfDepth: b.halfDepth * 1.06, minY: y, maxY: y + b.height + 3 });
+      yield;
     }
-    layout.trees.forEach((tree, i) => {
-      if (this.detail === 'low' && i % 2) return;
+    for (const [i, tree] of layout.trees.entries()) {
       const y = groundHeight(tree.x, tree.z), s = tree.scale;
       const trunk = new THREE.CylinderGeometry(.13 * s, .23 * s, 3.1 * s, 7); trunk.translate(tree.x, y + 1.55 * s, tree.z); geometry(trunk, bark);
-      for (let k = 0; k < 3; k++) {
-        const crown = new THREE.IcosahedronGeometry(1, 1); crown.scale((1.05 + k * .14) * s, (.75 + k * .06) * s, (1 + k * .1) * s);
+      for (let k = 0; k < (this.detail === 'low' ? 1 : 3); k++) {
+        const crown = new THREE.IcosahedronGeometry(1, this.detail === 'low' ? 0 : 1); crown.scale((1.05 + k * .14) * s, (.75 + k * .06) * s, (1 + k * .1) * s);
         crown.translate(tree.x + (k - 1) * .62 * s, y + (3.25 + (k % 2) * .55) * s, tree.z + (k === 1 ? -.4 : .2) * s); geometry(crown, leaves[(i + k) % leaves.length]);
       }
       circles.push({ x: tree.x, z: tree.z, radius: .3 * s, minY: y, maxY: y + 3.1 * s });
-    });
-    for (const [lampIndex, [dx, dz]] of [[-3.1, -20], [3.1, 20], [-20, 3.1], [20, -3.1]].entries()) {
-      if (this.detail !== 'high' && lampIndex % 2) continue;
+      yield;
+    }
+    for (const [dx, dz] of [[-3.1, -20], [3.1, 20], [-20, 3.1], [20, -3.1]]) {
       const x = centerX + dx, z = centerZ + dz, y = groundHeight(x, z);
       const pole = new THREE.CylinderGeometry(.065, .1, 4.2, 6); pole.translate(x, y + 2.1, z); geometry(pole, poles);
       const lamp = new THREE.SphereGeometry(.16, 7, 5); lamp.translate(x, y + 4.25, z); geometry(lamp, lamps);
@@ -193,20 +223,29 @@ export class DistrictStreamer {
       if (!merged) return;
       const mesh = new THREE.Mesh(merged, material); mesh.castShadow = shadows; mesh.receiveShadow = shadows; group.add(mesh);
     };
-    (Object.keys(urban) as UrbanSurface[]).forEach(surface => batch(urban[surface], this.urbanMaterials[surface], surface !== 'glow'));
+    for (const surface of Object.keys(urban) as UrbanSurface[]) { batch(urban[surface], this.urbanMaterials[surface], surface !== 'glow'); yield; }
     batch(roadGeos, this.roadMaterial, false); batch(trim, this.trimMaterial); batch(paint, this.paintMaterial, false);
     batch(bark, this.barkMaterial); leaves.forEach((geos, i) => batch(geos, this.leafMaterials[i]));
     batch(poles, this.trimMaterial); batch(lamps, this.lampMaterial, false); batch(water, this.waterMaterial, false);
-    this.root.add(group); this.active.set(key, { key, group }); this.simulation.addChunkColliders(key, circles, boxes);
+    const previous = this.active.get(key); if (previous) this.unload(previous, false);
+    this.root.add(group); this.active.set(key, { key, group, detail: this.detail }); complete = true;
+    } finally {
+      if (!complete) {
+        for (const list of [...Object.values(urban), trim, paint, bark, ...leaves, poles, lamps, water]) list.forEach(g => g.dispose());
+        group.traverse(o => { if (o instanceof THREE.Mesh) o.geometry.dispose(); });
+      }
+    }
   }
 
-  private unload(chunk: ActiveChunk) {
-    this.root.remove(chunk.group); this.simulation.removeChunkColliders(chunk.key);
+  private unload(chunk: ActiveChunk, release = true) {
+    this.root.remove(chunk.group); if (release) { this.simulation.removeChunkColliders(chunk.key); this.layouts.delete(chunk.key); }
     chunk.group.traverse(object => { if (object instanceof THREE.Mesh) object.geometry.dispose(); });
     this.active.delete(chunk.key);
   }
 
   dispose() {
+    this.job?.iterator.return(undefined); this.job = null;
+    for (const key of this.layouts.keys()) this.simulation.removeChunkColliders(key); this.layouts.clear();
     for (const chunk of this.active.values()) this.unload(chunk);
     this.pending = [];
     const textures = new Set<THREE.Texture>();

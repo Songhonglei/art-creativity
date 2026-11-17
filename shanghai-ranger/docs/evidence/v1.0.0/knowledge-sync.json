@@ -1,0 +1,19 @@
+{
+  "project": "shanghai-ranger",
+  "workspace": "/Users/songhonglei/space/沪上游侠",
+  "dryRun": {
+    "changed": [
+      "01-CURRENT-STATUS.md"
+    ],
+    "removed": [],
+    "files": 9
+  },
+  "result": {
+    "status": "complete",
+    "files": 9,
+    "source_readbacks_verified": 9,
+    "verified_import_tasks": 1,
+    "snapshot_id": "ec7633cd32a74dd4acd310421b2c6cde69c009bba488ac0918692eb1adcbe457"
+  },
+  "note": "Explicit navigation-document sync only; no source/screenshots/new worktree registered or whitelist expansion."
+}
